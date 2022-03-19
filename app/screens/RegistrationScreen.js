@@ -14,6 +14,7 @@ import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
+import {hp, dp} from '../config/dpTopx';
 
 import colors from '../../assets/colors/colors';
 import {signUp} from '../redux/actions/auth';

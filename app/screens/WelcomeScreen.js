@@ -9,25 +9,23 @@ import {
   SafeAreaView,
 } from 'react-native';
 import React from 'react';
+import {hp, dp, wp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
 
 export default function WelcomeScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.headerWrapper}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logoImage}
-        />
-        <Text style={styles.logoTitle}>datashop.</Text>
-      </View>
 
       {/* illustrate Image */}
       <Image
-        source={require('../../assets/images/connected_world_wuay.png')}
+        source={require('../../assets/images/company_logo.jpeg')}
         style={styles.connectedWorldCanva}
       />
+
+      <View style={styles.headerWrapper}>
+        <Text style={styles.logoTitle}>datashop.</Text>
+      </View>
 
       {/* Intro title */}
       <Text style={styles.introTitle}>your number one datashop</Text>
@@ -65,35 +63,35 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    height: 50,
+    height: hp(50),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 109,
-    paddingHorizontal: 64,
+    marginTop: hp(50),
+    paddingHorizontal: wp(64),
   },
   logoImage: {margin: 5},
   logoTitle: {
-    color: colors.textBlack,
+    color: colors.primary,
     fontFamily: 'Poppins-Bold',
-    fontSize: 36,
+    fontSize: hp(36),
   },
   connectedWorldCanva: {
-    marginTop: 45,
+    marginTop: hp(46),
     alignSelf: 'center',
-    width: 231,
-    height: 199,
+    width: wp(231),
+    height: hp(239),
   },
   introTitle: {
-    marginTop: 45,
+    marginTop: hp(45),
     color: colors.textBlack,
     fontFamily: 'Poppins-Regular',
-    fontSize: 20,
+    fontSize: hp(20),
     textAlign: 'center',
   },
   buttonsWrapper: {
-    marginTop: 20,
-    height: 150,
+    marginTop: hp(20),
+    height: hp(150),
     justifyContent: 'space-between',
     alignItems: 'center',
     // backgroundColor: 'red',
@@ -102,37 +100,37 @@ const styles = StyleSheet.create({
   registerText: {
     color: colors.textWhite,
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
   },
   registerButton: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 20,
+    borderRadius: 10,
   },
   loginText: {
     color: colors.primary,
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
   },
   loginButton: {
     borderWidth: 2,
-    marginTop: 20,
+    marginTop: hp(20),
     paddingHorizontal: 25,
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 10,
   },
   infoText: {
     marginTop: 24,
-    paddingHorizontal: 50,
+    paddingHorizontal: wp(50),
     textAlign: 'center',
     fontFamily: 'Poppins-Light',
-    fontSize: 14,
+    fontSize: hp(14),
   },
   textInfoLink: {
     fontFamily: 'Poppins-Medium',

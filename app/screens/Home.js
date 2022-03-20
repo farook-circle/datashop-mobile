@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
+import {wp, hp} from '../config/dpTopx';
 
 import colors from '../../assets/colors/colors';
 import {USER_LOGOUT} from '../redux/constants/auth';
@@ -34,7 +35,6 @@ export default function HomeScreen({navigation}) {
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
-  console.log(data_purchase_history);
   const balance = useSelector(state => state.wallet.wallet_balance);
   const messages = useSelector(state => state.messages.messages);
   const notifications = useSelector(state => state.messages.notifications);
@@ -50,6 +50,22 @@ export default function HomeScreen({navigation}) {
   if (messages.length !== 0 || notifications.length !== 0) {
     var messageAvailable = true;
   }
+
+  const getPaymentTypeLogo = type => {
+    if (type === 'bank transfer deposit') {
+      return require('../../assets/images/bank-building.png');
+    } else if (type === 'data_purchase_history') {
+      return require('../../assets/images/mtn_logo.png');
+    } else if (type === 'card deposit') {
+      return require('../../assets/images/credit-card.png');
+    } else if (type === 'momo agent') {
+      return require('../../assets/images/momo_logo.png');
+    } else if (type === 'refund') {
+      return require('../../assets/images/money-back.png');
+    } else {
+      return require('../../assets/images/transfer.png');
+    }
+  };
 
   async function removeUserToken() {
     try {
@@ -111,17 +127,20 @@ export default function HomeScreen({navigation}) {
             payment_method: item.payment_method,
           })
         }>
-        <View style={styles.receiverWrapper}>
-          <Image
-            source={require('../../assets/images/mtn_logo.png')}
-            style={styles.mtnLogoImageHistory}
-          />
-          <Text style={styles.receiverText}>{item.customer}</Text>
-        </View>
-        <Text style={styles.quantityText}>{item.quantity}</Text>
+        <Image
+          source={getPaymentTypeLogo(item.type)}
+          style={styles.mtnLogoImageHistory}
+        />
+        <Text style={styles.receiverText}>
+          {item.customer !== 'None' ? item.customer : item.type}
+        </Text>
+
+        <Text style={styles.quantityText}>
+          {item.quantity !== 'None' ? item.quantity : item.amount}
+        </Text>
         <View style={styles.timeAndPriceText}>
           <Text style={styles.timeText}>{item.time.slice(0, 5)}</Text>
-          {/* <Text style={styles.priceText}>{item.price}</Text> */}
+          <Text style={styles.priceText}>{item.date}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -377,12 +396,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   historyItemsWrapper: {
-    width: 370,
+    width: '100%',
+    paddingHorizontal: 20,
     marginBottom: 13,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexGrow: 1,
   },
   receiverWrapper: {
     flexDirection: 'row',
@@ -391,24 +410,26 @@ const styles = StyleSheet.create({
     width: 180,
   },
   mtnLogoImageHistory: {
-    borderRadius: 10,
+    borderRadius: 0,
+    width: wp(20),
+    height: hp(20),
   },
   receiverText: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 16,
+    fontFamily: 'Poppins-Light',
+    fontSize: 13,
   },
   quantityText: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
   },
   timeAndPriceText: {},
   timeText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
+    fontFamily: 'Poppins-Light',
+    fontSize: 13,
     color: colors.textLight,
   },
   priceText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
+    fontFamily: 'Poppins-Light',
+    fontSize: 13,
   },
 });

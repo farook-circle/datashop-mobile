@@ -14,6 +14,8 @@ import {
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 
+import {hp, wp} from '../config/dpTopx';
+
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -24,43 +26,51 @@ import {
 } from '../redux/actions/wallet';
 import CompleteCardPayment from '../components/CompleteCardPayment';
 import AccountNumber from '../components/AccountNumber';
+import MomoAgent from '../components/MomoAgent';
+import AlternatePayment from '../components/AlternatePayment';
 
 export default function DepositToWallet({navigation, route}) {
   useEffect(() => {
     dispatch(getVirtualAccount());
   }, []);
   const dispatch = useDispatch();
-  const account = useSelector(state => state.wallet.account);
-  const [card, setCard] = useState(false);
-  const [bank, setBank] = useState(false);
   const [amount, setAmount] = useState('0');
+  const [selectedId, setSelectedPaymentMethod] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [initWithCard, setInitWithCard] = useState(false);
-  const [initWitchAccount, setInitWithAccount] = useState(false);
+  const [initWithAccount, setInitWithAccount] = useState(false);
+  const [initWithMomoAgent, setInitWithMomoAgent] = useState(false);
+  const [initWithManualFunding, setInitWithManualFunding] = useState(false);
   const [init, setInit] = useState(true);
   const [isLoading, setLoading] = useState(false);
-
   const [paymentLink, setPaymentLink] = useState(null);
 
-  const isEmpty = obj => {
-    return Object.keys(obj).length === 0;
-  };
-  const togglePaymentMethod = id => {
-    if (id == 1) {
-      setCard(true);
-      setBank(false);
-      setPaymentMethod('card');
-      return;
-    }
-    if (account.balance !== undefined) {
-      setInit(false);
-      setInitWithAccount(true);
-    } else {
-      setBank(true);
-      setCard(false);
-      setPaymentMethod('bank');
-    }
-  };
+  const payment_method = [
+    {
+      id: 1,
+      type: 'Card or Ussd',
+      payment_method: 'card',
+      transfer_fee: '50',
+    },
+    {
+      id: 2,
+      type: 'Bank Transfer',
+      payment_method: 'bank_transfer',
+      transfer_fee: '50',
+    },
+    {
+      id: 3,
+      type: 'Momo Agent',
+      payment_method: 'momo_agent',
+      transfer_fee: 'Free',
+    },
+    {
+      id: 4,
+      type: 'Manual Funding',
+      payment_method: 'manual_funding',
+      transfer_fee: 'Free',
+    },
+  ];
 
   const handleNumericInput = value => {
     if (amount.length == 7) {
@@ -72,6 +82,12 @@ export default function DepositToWallet({navigation, route}) {
     }
     const newAmount = amount + value;
     setAmount(newAmount);
+  };
+
+  const togglePaymentMethod = id => {
+    setSelectedPaymentMethod(id);
+    const payment = payment_method.filter(item => item.id === id)[0];
+    setPaymentMethod(payment.payment_method);
   };
 
   const handleDeletButton = () => {
@@ -90,9 +106,17 @@ export default function DepositToWallet({navigation, route}) {
     if (paymentMethod === 'card') {
       setLoading(true);
       dispatch(depositMoneyToWallet(amount, completeCardDeposit));
-    } else {
+    } else if (paymentMethod === 'bank_transfer') {
       setLoading(true);
       dispatch(createVirtualAccount(amount, completeWithAccount));
+    } else if (paymentMethod === 'momo_agent') {
+      setLoading(false);
+      setInit(false);
+      setInitWithMomoAgent(true);
+    } else {
+      setLoading(false);
+      setInit(false);
+      setInitWithManualFunding(true);
     }
   };
 
@@ -118,9 +142,60 @@ export default function DepositToWallet({navigation, route}) {
     setInit(false);
     setInitWithAccount(true);
   };
+
+  const completeWithMomoAgent = status => {
+    if (status === false) {
+      alert('Sorry an error has occur please check your network');
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setInit(false);
+    setInitWithAccount(true);
+  };
+
+  const completeWithManualFunding = status => {
+    if (status === false) {
+      alert('Sorry an error has occur please check your network');
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setInit(false);
+    setInitWithAccount(true);
+  };
+
   const reloadAndGoBack = () => {
     dispatch(getWalletBalance());
     navigation.goBack();
+  };
+
+  const renderPaymentMethod = ({item}) => {
+    return (
+      <TouchableOpacity onPress={() => togglePaymentMethod(item.id)}>
+        <View
+          style={[
+            styles.PaymentMethodItemWrapper,
+            selectedId === item.id ? {backgroundColor: colors.primary} : {},
+          ]}>
+          <Text
+            style={[
+              styles.paymentMethodType,
+              selectedId === item.id ? {color: colors.textWhite} : {},
+            ]}>
+            {item.type}
+          </Text>
+        </View>
+        <Text
+          style={[
+            styles.paymentMethodFee,
+            item.transfer_fee === 'Free' ? {color: 'green'} : {color: 'red'},
+          ]}>
+          Fee: {item.transfer_fee == 'Free' ? '' : '\u20A6'}
+          {item.transfer_fee}
+        </Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -143,29 +218,30 @@ export default function DepositToWallet({navigation, route}) {
 
       {initWithCard && <CompleteCardPayment link={paymentLink} />}
 
-      {initWitchAccount && <AccountNumber />}
+      {initWithAccount && <AccountNumber />}
+      {initWithMomoAgent && <MomoAgent amount={amount} />}
+      {initWithManualFunding && <AlternatePayment />}
 
       {init && (
         <>
+          <Text
+            style={{
+              fontFamily: 'Poppins-Bold',
+              fontSize: hp(16),
+              paddingHorizontal: wp(25),
+              marginTop: hp(10),
+              color: colors.primary,
+            }}>
+            Deposit To your wallet Using ?
+          </Text>
           <View style={styles.paymentTypeWrapper}>
-            <TouchableOpacity
-              style={[
-                styles.usingCard,
-                card && {backgroundColor: colors.secondary},
-              ]}
-              onPress={() => togglePaymentMethod(1)}>
-              <Feather name="credit-card" size={50} color={colors.primary} />
-              <Text style={styles.usingCardText}>CARD</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.usingBank,
-                bank && {backgroundColor: colors.secondary},
-              ]}
-              onPress={() => togglePaymentMethod(0)}>
-              <Text style={styles.usingBankTitle}>BANK</Text>
-              <Text style={styles.usingBankSubtitle}>using bank transfer</Text>
-            </TouchableOpacity>
+            <FlatList
+              data={payment_method}
+              renderItem={renderPaymentMethod}
+              keyExtractor={item => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
           {/* <Text style={styles.textNote}>
         Please press Card or Bank and enter amount you wish to deposit please
@@ -180,7 +256,7 @@ export default function DepositToWallet({navigation, route}) {
           style={styles.textInput}
         /> */}
           </View>
-          <Text style={styles.processingFee}>Proccessing Fee</Text>
+          {/* <Text style={styles.processingFee}>Proccessing Fee</Text> */}
           <View style={styles.numericInputWrapper}>
             <TouchableOpacity
               style={styles.numberContainer}
@@ -314,13 +390,32 @@ const styles = StyleSheet.create({
     color: colors.textWhite,
   },
   paymentTypeWrapper: {
-    marginTop: 24,
+    marginTop: hp(10),
     flexDirection: 'row',
     width: '100%',
     height: 90,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 25,
+  },
+  PaymentMethodItemWrapper: {
+    width: wp(70),
+    marginRight: 10,
+    height: '70%',
+    borderWidth: 2,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: colors.primary,
+  },
+  paymentMethodType: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 12,
+    color: colors.primary,
+  },
+  paymentMethodFee: {
+    fontFamily: 'Poppins-Bold',
+    marginTop: 4,
   },
   usingCard: {
     width: 170,

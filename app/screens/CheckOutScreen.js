@@ -17,6 +17,7 @@ import colors from '../../assets/colors/colors';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch, useSelector} from 'react-redux';
 import {buyDataBundle} from '../redux/actions/data_plans';
+import {hp} from '../config/dpTopx';
 
 export default function CheckOut({route, navigation}) {
   const dispatch = useDispatch();
@@ -24,18 +25,17 @@ export default function CheckOut({route, navigation}) {
   const balance = useSelector(state => state.wallet.wallet_balance);
   const [onClickBuy, setClickBuy] = useState(false);
   const [customer, setCustomer] = useState('');
-  const [pin, setPin] = useState('');
+  const [check_mtn_number, setCheckMtnNumber] = useState(false);
 
   const {id, price, quantity} = route.params;
   const data_bundle_id = id;
-  const PIN = '1234';
   const remark = 'I love this Service';
   const payment_method = 'wallet';
 
   const phoneNumberCheckUp = () => {
     if (customer.length > 1 && customer.length < 11) {
       alert(
-        `please input the right costumer phone number, the number that you put is ${customer.length} and phone number has to be 11`,
+        'Invalid number! Please type out 11-digit phone number and avoid spaces between digits',
       );
       return false;
     }
@@ -45,7 +45,9 @@ export default function CheckOut({route, navigation}) {
     }
 
     if (customer.match(/0(9|8|7)(0|1)\d{8}/g) == null) {
-      alert('phone number format is wrong check and try again');
+      alert(
+        'Invalid number! Please type out 11-digit phone number and avoid spaces between digits',
+      );
       return false;
     }
 
@@ -57,12 +59,12 @@ export default function CheckOut({route, navigation}) {
       return;
     }
     if (Number(balance) < Number(price)) {
-      alert('You do not have enough money on your wallet please deposit');
+      alert('You do not have sufficient balance. Please fund your wallet');
       return;
     }
     dispatch(
       buyDataBundle(
-        {data_bundle_id, customer, payment_method, remark},
+        {check_mtn_number, data_bundle_id, customer, payment_method, remark},
         handleCheckoutSuccess,
       ),
     );
@@ -70,7 +72,7 @@ export default function CheckOut({route, navigation}) {
 
   const handleCheckoutSuccess = () => {
     alert(
-      `you have successfully buy data for ${customer} thank you for using our services`,
+      'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
     );
     navigation.navigate('Home');
   };
@@ -113,14 +115,32 @@ export default function CheckOut({route, navigation}) {
               style={styles.textInput}
               maxLength={11}
             />
-            {/* <TextInput
-              onChangeText={e => setPin(e)}
-              value={pin}
-              secureTextEntry={true}
-              keyboardType="numeric"
-              placeholder="PIN"
-              style={styles.textInput}
-            /> */}
+            <View style={styles.toggleWrapper}>
+              {check_mtn_number ? (
+                <TouchableOpacity
+                  onPress={() => setCheckMtnNumber(!check_mtn_number)}>
+                  <Feather
+                    name="toggle-right"
+                    color={colors.primary}
+                    size={hp(40)}
+                    style={{marginRight: hp(10)}}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => setCheckMtnNumber(!check_mtn_number)}>
+                  <Feather
+                    name="toggle-left"
+                    color={colors.textBlack}
+                    size={hp(40)}
+                    style={{marginRight: hp(10)}}
+                  />
+                </TouchableOpacity>
+              )}
+              <Text style={{fontSize: 16, fontFamily: 'Poppins-Bold'}}>
+                Turn off number validation
+              </Text>
+            </View>
           </View>
 
           <View style={styles.buttonsWrapper}>
@@ -241,6 +261,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     alignSelf: 'center',
+  },
+  toggleWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   textInput: {
     color: 'black',

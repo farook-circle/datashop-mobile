@@ -28,12 +28,16 @@ import {getMessages, getNotifications} from '../redux/actions/messages';
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
+  // const [messageAvailable, setMessageAvailable] = useState(false);
   const user = useSelector(state => state.auth.user);
   const data_bundles = useSelector(state => state.data_bundles.data_bundle);
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
+  console.log(data_purchase_history);
   const balance = useSelector(state => state.wallet.wallet_balance);
+  const messages = useSelector(state => state.messages.messages);
+  const notifications = useSelector(state => state.messages.notifications);
 
   useEffect(() => {
     dispatch(getDataBundle());
@@ -42,6 +46,10 @@ export default function HomeScreen({navigation}) {
     dispatch(getMessages());
     dispatch(getNotifications());
   }, []);
+
+  if (messages.length !== 0 || notifications.length !== 0) {
+    var messageAvailable = true;
+  }
 
   async function removeUserToken() {
     try {
@@ -124,12 +132,10 @@ export default function HomeScreen({navigation}) {
       <SafeAreaView>
         {/* Header */}
         <View style={styles.headerWrapper}>
-          {/* <Image
-            source={require('../../assets/images/profile.png')}
-            style={styles.profileIcon}
-          /> */}
           <TouchableOpacity onPress={handleMessages}>
             <Feather name="message-square" size={24} color={colors.primary} />
+
+            {messageAvailable && <View style={styles.dotIcon}></View>}
           </TouchableOpacity>
           <TouchableOpacity onPress={handleLogout}>
             <Feather name="log-out" size={24} color={colors.primary} />
@@ -213,6 +219,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 25,
+  },
+  dotIcon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 10,
+    height: 10,
+    borderRadius: 50,
+    backgroundColor: 'red',
   },
   welcomeMessage: {
     paddingHorizontal: 25,

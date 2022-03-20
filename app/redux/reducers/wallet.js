@@ -5,11 +5,15 @@ import {
   GET_BALANCE,
   GET_VIRTUAL_ACCOUNT,
   DELETE_VIRTUAL_ACCOUNT,
+  GET_MOMO_AGENT_NUMBER,
+  GET_ACCOUNT_NUMBER,
 } from '../constants/wallet';
 
 const initialState = {
   wallet_balance: '0.00',
   account: {},
+  momo_agent_number: [],
+  payment_method: [],
   isLoading: false,
 };
 
@@ -29,6 +33,16 @@ export default function (state = initialState, action) {
       return {
         ...state,
         account: action.payload,
+      };
+    case GET_MOMO_AGENT_NUMBER:
+      return {
+        ...state,
+        momo_agent_number: action.payload,
+      };
+    case GET_ACCOUNT_NUMBER:
+      return {
+        ...state,
+        payment_method: action.payload,
       };
     case DELETE_VIRTUAL_ACCOUNT:
       return {

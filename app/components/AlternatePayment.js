@@ -6,10 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  getMomoAGentNumber,
-  paymentAccountDetails,
-} from '../redux/actions/wallet';
+import {paymentAccountDetails} from '../redux/actions/wallet';
 
 export default function AlternatePayment() {
   useEffect(() => {

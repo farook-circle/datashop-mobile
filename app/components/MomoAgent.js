@@ -9,7 +9,7 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getMomoAGentNumber} from '../redux/actions/wallet';
 
-export default function ({amount}) {
+export default function MomoAgent({amount}) {
   const dispatch = useDispatch();
   const momo_agent = useSelector(state => state.wallet.momo_agent_number);
   const ussd = `*502*9*${

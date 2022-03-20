@@ -73,12 +73,18 @@ export const buyDataBundle =
       })
       .catch(error => {
         if (error.response) {
-          if (error.response.status === 501) {
-            alert(error.response.data.reason);
+          if (error.response.data) {
+            if (error.response.data.reason) {
+              alert(error.response.data.reason);
+            } else {
+              alert('Something went wrong please try again');
+            }
           }
           dispatch({type: DATA_BUNDLE_CHECKOUT_FAILED});
         } else {
           // do nothing
+          alert('Connection error please check you network and try again');
+          dispatch({type: DATA_BUNDLE_CHECKOUT_FAILED});
         }
       });
   };

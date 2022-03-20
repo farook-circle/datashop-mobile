@@ -3,6 +3,7 @@ import React, {useEffect} from 'react';
 import {WebView} from 'react-native-webview';
 import {useDispatch, useSelector} from 'react-redux';
 import colors from '../../assets/colors/colors';
+import {hp, wp} from '../config/dpTopx';
 import {deleteVirtualAccount} from '../redux/actions/wallet';
 
 export default function AccountNumber({details}) {
@@ -16,8 +17,8 @@ export default function AccountNumber({details}) {
   return (
     <View style={styles.container}>
       <Text style={styles.noteTitleText}>
-        Please Make Bank Transfer to this Account Your wallet will automatically
-        get funded when the transaction is completed
+        Make A transfer to the account below. your wallet will be credited
+        instantly.
       </Text>
       <Text style={styles.fullName}>
         Name: {user.first_name} {user.last_name}
@@ -31,20 +32,21 @@ export default function AccountNumber({details}) {
       </Text>
       <Text style={styles.expire}>
         {' '}
-        Please know this Account Will Expire in 1 hour
+        This is a Virtual Account, and will expire expire after 1 hour.
       </Text>
       <Text style={styles.footerNote}>
-        Please Make sure you send the exact amount and know that processing fee
-        will be applied.
+        NOTE: You are required to send the EXACT amount.
       </Text>
-      {/* <TouchableOpacity style={styles.shareReceiptButton}>
-        <Text style={styles.shareReceiptText}>VERIFY DEPOSIT</Text>
-      </TouchableOpacity> */}
-      <TouchableOpacity
-        style={styles.shareReceiptButton}
-        onPress={createNewVirtualAccount}>
-        <Text style={styles.shareReceiptText}>CREATE NEW DEPOSIT</Text>
-      </TouchableOpacity>
+      <Text
+        style={{
+          fontFamily: 'Poppins-Bold',
+          paddingHorizontal: 25,
+          marginTop: hp(10),
+          fontSize: hp(17),
+          color: 'green',
+        }}>
+        {'\u20A6'}50 charges applied
+      </Text>
     </View>
   );
 }
@@ -95,8 +97,9 @@ const styles = StyleSheet.create({
   },
   footerNote: {
     marginTop: 20,
-    fontFamily: 'Poppins-light',
-    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    fontSize: 18,
+    color: 'red',
     paddingHorizontal: 25,
   },
   shareReceiptButton: {

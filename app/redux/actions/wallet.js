@@ -4,6 +4,9 @@ import {
   GET_BALANCE,
   GET_VIRTUAL_ACCOUNT,
   DELETE_VIRTUAL_ACCOUNT,
+  GET_MOM,
+  GET_ACCOUNT_NUMBER,
+  GET_MOMO_AGENT_NUMBER,
 } from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
 
@@ -161,6 +164,69 @@ export const deleteVirtualAccount = () => (dispatch, getState) => {
     .then(res => {
       dispatch({
         type: DELETE_VIRTUAL_ACCOUNT,
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        // do nothing
+      } else {
+        // do nothing
+      }
+    });
+};
+
+export const getMomoAGentNumber = () => (dispatch, getState) => {
+  const token = getState().auth.token;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  //Check to see if there is an token and to header
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  axios
+    .get('/wallet/momo-agent', config)
+
+    .then(res => {
+      dispatch({
+        type: GET_MOMO_AGENT_NUMBER,
+        payload: res.data[0],
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        // do nothing
+      } else {
+        // do nothing
+      }
+    });
+};
+
+export const paymentAccountDetails = () => (dispatch, getState) => {
+  const token = getState().auth.token;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  //Check to see if there is an token and to header
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  axios
+    .get('/wallet/payment-method', config)
+    .then(res => {
+      dispatch({
+        type: GET_ACCOUNT_NUMBER,
+        payload: res.data[0],
       });
     })
     .catch(error => {

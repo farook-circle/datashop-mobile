@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
+import {hp, wp} from '../config/dpTopx';
 
 export default function DataPlan({navigation}) {
   const dispatch = useDispatch();
@@ -52,7 +53,11 @@ export default function DataPlan({navigation}) {
         {/* Header */}
         <View style={styles.headerWrapper}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="chevron-left" size={35} color={colors.textBlack} />
+            <Feather
+              name="chevron-left"
+              size={hp(35)}
+              color={colors.textBlack}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>Data Plan</Text>
         </View>
@@ -79,41 +84,41 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: 43,
+    marginTop: hp(43),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
-    marginLeft: 93,
+    fontSize: hp(20),
+    marginLeft: wp(93),
   },
   headerUnderLine: {
-    marginTop: 10,
-    height: 2,
-    width: 350,
+    marginTop: hp(10),
+    height: hp(2),
+    width: wp(350),
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
   dataBundleCategoryWrapper: {
-    marginTop: 10,
+    marginTop: hp(10),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
 
     alignSelf: 'center',
     alignItems: 'center',
   },
   dataBundleItemsWrapper: {
-    width: 175,
-    height: 159,
+    width: wp(175),
+    height: hp(159),
     backgroundColor: colors.primary,
-    borderRadius: 20,
+    borderRadius: hp(10),
     alignItems: 'center',
-    marginRight: 15,
-    marginBottom: 20,
+    marginRight: wp(15),
+    marginBottom: hp(20),
     shadowColor: colors.textBlack,
     shadowOffset: {
       width: 0,
@@ -124,14 +129,14 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   mtnLogoImage: {
-    marginTop: 25,
-    width: 66,
-    height: 47,
+    marginTop: hp(25),
+    width: wp(66),
+    height: hp(47),
   },
   roundIconEnter: {
-    marginTop: 10,
-    width: 40,
-    height: 40,
+    marginTop: hp(10),
+    width: wp(40),
+    height: hp(40),
     borderRadius: 20,
     borderWidth: 0,
     justifyContent: 'center',
@@ -147,15 +152,15 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   quantityText: {
-    marginTop: 10,
+    marginTop: hp(10),
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.secondary,
     textAlign: 'center',
   },
   priceText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.textWhite,
     textAlign: 'center',
   },

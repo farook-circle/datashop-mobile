@@ -17,6 +17,7 @@ import {signIn} from '../redux/actions/auth';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
+import {hp} from '../config/dpTopx';
 
 export default function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -113,7 +114,7 @@ export default function LoginScreen({navigation}) {
             {eyePassword ? (
               <Feather
                 name="eye"
-                size={24}
+                size={hp(24)}
                 color={'green'}
                 style={styles.eyeIcon}
                 onPress={() => setEyePassword(!eyePassword)}

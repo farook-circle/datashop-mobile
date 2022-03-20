@@ -16,6 +16,8 @@ import colors from '../../assets/colors/colors';
 
 export default function Receipt({navigation, route}) {
   const {
+    amount,
+    type,
     quantity,
     price,
     customer,
@@ -24,6 +26,22 @@ export default function Receipt({navigation, route}) {
     transaction_ref,
     payment_method,
   } = route.params;
+
+  const getPaymentTypeLogo = type => {
+    if (type === 'bank transfer deposit') {
+      return require('../../assets/images/bank-building.png');
+    } else if (type === 'data_purchase_history') {
+      return require('../../assets/images/mtn_logo.png');
+    } else if (type === 'card deposit') {
+      return require('../../assets/images/credit-card.png');
+    } else if (type === 'momo agent') {
+      return require('../../assets/images/momo_logo.png');
+    } else if (type === 'refund') {
+      return require('../../assets/images/money-back.png');
+    } else {
+      return require('../../assets/images/transfer.png');
+    }
+  };
 
   const monthToString = [
     '',
@@ -55,15 +73,22 @@ export default function Receipt({navigation, route}) {
       <Text style={styles.subTitle}>Detail of transaction</Text>
 
       <View style={styles.dataBundleItemsWrapper}>
-        <Image
-          source={require('../../assets/images/mtn_logo.png')}
-          style={styles.mtnLogoImage}
-        />
-        <Text style={styles.quantityText}>{quantity}</Text>
+        <Image source={getPaymentTypeLogo(type)} style={styles.mtnLogoImage} />
+        <Text style={styles.quantityText}>
+          {quantity !== 'None' ? quantity : amount}
+        </Text>
       </View>
-      <Text style={styles.priceTitle}>Price {price}</Text>
-      <Text style={styles.toText}>To</Text>
-      <Text style={styles.phoneNumberText}>{customer}</Text>
+      <Text style={styles.priceTitle}>
+        {type === 'data_purchase_history'
+          ? `Price ${price}`
+          : `Deposited ${amount}`}
+      </Text>
+      <Text style={styles.toText}>
+        {type === 'data_purchase_history' ? 'To' : 'Using'}
+      </Text>
+      <Text style={styles.phoneNumberText}>
+        {customer !== 'None' ? customer : type}
+      </Text>
       <Text style={styles.detailOfTransaction}>Detail of Transaction</Text>
       <View style={styles.textContainer}>
         <Text style={styles.textLeft}>Date</Text>
@@ -74,7 +99,9 @@ export default function Receipt({navigation, route}) {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.textLeft}>To</Text>
-        <Text style={styles.textRight}>{customer}</Text>
+        <Text style={styles.textRight}>
+          {customer !== 'None' ? customer : 'Wallet'}
+        </Text>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.textLeft}>Transaction ID</Text>

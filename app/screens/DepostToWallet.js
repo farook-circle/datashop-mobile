@@ -204,7 +204,11 @@ export default function DepositToWallet({navigation, route}) {
         {/* Header */}
         <View style={styles.headerWrapper}>
           <TouchableOpacity onPress={reloadAndGoBack}>
-            <Feather name="chevron-left" size={35} color={colors.textBlack} />
+            <Feather
+              name="chevron-left"
+              size={hp(35)}
+              color={colors.textBlack}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>Deposit</Text>
         </View>
@@ -322,7 +326,7 @@ export default function DepositToWallet({navigation, route}) {
             <TouchableOpacity
               style={styles.numberContainer}
               onPress={handleDeletButton}>
-              <Feather name="delete" size={30} color={colors.primary} />
+              <Feather name="delete" size={hp(30)} color={colors.primary} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -351,56 +355,56 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: 43,
+    marginTop: hp(43),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
-    marginLeft: 93,
+    fontSize: hp(20),
+    marginLeft: wp(93),
   },
   balanceContainerWrapper: {
     paddingHorizontal: 25,
     flexDirection: 'row',
-    marginTop: 7,
-    height: 100,
-    width: 370,
+    marginTop: hp(7),
+    height: hp(100),
+    width: wp(370),
     backgroundColor: colors.primary,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 20,
+    borderRadius: 10,
   },
   balanceTextWrapper: {
-    width: 150,
-    height: 60,
+    width: wp(150),
+    height: hp(60),
   },
   balanceTitle: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 16,
+    fontSize: hp(16),
     color: colors.textLight,
   },
   balanceText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textWhite,
   },
   paymentTypeWrapper: {
     marginTop: hp(10),
     flexDirection: 'row',
     width: '100%',
-    height: 90,
+    height: hp(90),
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 25,
   },
   PaymentMethodItemWrapper: {
     width: wp(70),
-    marginRight: 10,
+    marginRight: wp(10),
     height: '70%',
     borderWidth: 2,
     borderRadius: 10,
@@ -410,7 +414,7 @@ const styles = StyleSheet.create({
   },
   paymentMethodType: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 12,
+    fontSize: hp(12),
     color: colors.primary,
   },
   paymentMethodFee: {
@@ -418,8 +422,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   usingCard: {
-    width: 170,
-    height: 83,
+    width: wp(170),
+    height: hp(83),
     borderWidth: 3,
     borderRadius: 10,
     justifyContent: 'center',
@@ -428,11 +432,11 @@ const styles = StyleSheet.create({
   },
   usingCardText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 15,
+    fontSize: hp(15),
   },
   usingBank: {
-    width: 170,
-    height: 83,
+    width: wp(170),
+    height: hp(83),
     borderWidth: 3,
     borderRadius: 10,
     justifyContent: 'center',
@@ -441,23 +445,23 @@ const styles = StyleSheet.create({
   },
   usingBankTitle: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.primary,
   },
   usingBankSubtitle: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 10,
+    fontSize: hp(10),
   },
   textNote: {
-    marginTop: 19,
+    marginTop: hp(19),
     fontFamily: 'Poppins-Regular',
-    fontSize: 14,
+    fontSize: hp(14),
     paddingHorizontal: 25,
     textAlign: 'center',
   },
   textInputWrapper: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: hp(10),
     width: '100%',
     // backgroundColor: 'red',
     alignItems: 'center',
@@ -465,7 +469,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 40,
+    fontSize: hp(40),
     textAlign: 'center',
     color: colors.primary,
     minWidth: 150,
@@ -473,20 +477,20 @@ const styles = StyleSheet.create({
   nairaSign: {
     color: colors.primary,
     fontFamily: 'Poppins-Bold',
-    fontSize: 40,
+    fontSize: hp(40),
   },
   amountText: {
     marginHorizontal: 10,
     color: colors.primary,
     fontFamily: 'Poppins-Regular',
-    fontSize: 60,
+    fontSize: hp(60),
   },
   processingFee: {
     fontFamily: 'Poppins-Light',
     color: colors.textLight,
-    fontSize: 20,
+    fontSize: hp(20),
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: hp(5),
   },
   numericInputWrapper: {
     width: '100%',
@@ -496,7 +500,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   numberContainer: {
-    width: 100,
+    width: wp(100),
     justifyContent: 'center',
     alignItems: 'center',
     // backgroundColor: 'red',
@@ -504,12 +508,12 @@ const styles = StyleSheet.create({
   numberText: {
     fontFamily: 'Poppins-Bold',
     color: colors.primary,
-    fontSize: 30,
+    fontSize: hp(30),
   },
   shareReceiptButton: {
-    marginTop: 10,
-    width: 370,
-    height: 50,
+    marginTop: hp(10),
+    width: wp(370),
+    height: hp(50),
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -521,6 +525,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
     color: colors.textWhite,
-    fontSize: 18,
+    fontSize: hp(18),
   },
 });

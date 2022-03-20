@@ -9,6 +9,8 @@ import {
   SafeAreaView,
   FlatList,
   Alert,
+  RefreshControl,
+  ScrollView,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -26,9 +28,16 @@ import {
 import {getWalletBalance} from '../redux/actions/wallet';
 import {getMessages, getNotifications} from '../redux/actions/messages';
 
+const wait = timeout => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+};
+
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
+
+  const [refreshing, setRefreshing] = useState(false);
+
   // const [messageAvailable, setMessageAvailable] = useState(false);
   const user = useSelector(state => state.auth.user);
   const data_bundles = useSelector(state => state.data_bundles.data_bundle);
@@ -45,6 +54,11 @@ export default function HomeScreen({navigation}) {
     dispatch(getWalletBalance());
     dispatch(getMessages());
     dispatch(getNotifications());
+  }, [refreshing]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
   }, []);
 
   if (messages.length !== 0 || notifications.length !== 0) {
@@ -100,7 +114,11 @@ export default function HomeScreen({navigation}) {
         />
         <TouchableOpacity onPress={() => navigation.navigate('CheckOut', item)}>
           <View style={styles.roundIconEnter}>
-            <Feather name="chevron-right" size={25} color={colors.textBlack} />
+            <Feather
+              name="chevron-right"
+              size={hp(25)}
+              color={colors.textBlack}
+            />
           </View>
         </TouchableOpacity>
         <Text style={styles.priceAndQuantity}>
@@ -118,6 +136,8 @@ export default function HomeScreen({navigation}) {
         style={styles.historyItemsWrapper}
         onPress={() =>
           navigation.navigate('Receipt', {
+            amount: item.amount,
+            type: item.type,
             price: item.price,
             customer: item.customer,
             quantity: item.quantity,
@@ -147,21 +167,43 @@ export default function HomeScreen({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      // refreshControl={
+      //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      // }
+    >
+      <ScrollView
+        style={{
+          position: 'absolute',
+          top: 0,
+          height: hp(700),
+          width: '100%',
+          // backgroundColor: 'red',
+          zIndex: -1,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }></ScrollView>
       <SafeAreaView>
         {/* Header */}
         <View style={styles.headerWrapper}>
           <TouchableOpacity onPress={handleMessages}>
-            <Feather name="message-square" size={24} color={colors.primary} />
+            <Feather
+              name="message-square"
+              size={hp(24)}
+              color={colors.primary}
+            />
 
             {messageAvailable && <View style={styles.dotIcon}></View>}
           </TouchableOpacity>
           <TouchableOpacity onPress={handleLogout}>
-            <Feather name="log-out" size={24} color={colors.primary} />
+            <Feather name="log-out" size={hp(24)} color={colors.primary} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
       {/* Welcome Message To User */}
+
       <Text style={styles.welcomeMessage}>{`Welcome ${user.first_name}`}</Text>
 
       {/* Wallet Balance Container */}
@@ -185,7 +227,11 @@ export default function HomeScreen({navigation}) {
         onPress={() => navigation.navigate('DataPlan')}>
         <Text style={styles.dataPlansTitle}>Data Plans</Text>
         <TouchableOpacity onPress={() => navigation.navigate('DataPlan')}>
-          <Feather name="chevron-right" size={30} color={colors.textBlack} />
+          <Feather
+            name="chevron-right"
+            size={hp(30)}
+            color={colors.textBlack}
+          />
         </TouchableOpacity>
       </TouchableOpacity>
       <View style={styles.underLine} />
@@ -208,7 +254,11 @@ export default function HomeScreen({navigation}) {
           onPress={() => navigation.navigate('History')}>
           <Text style={styles.historyTitle}>History</Text>
           <TouchableOpacity onPress={() => navigation.navigate('History')}>
-            <Feather name="chevron-right" size={30} color={colors.textBlack} />
+            <Feather
+              name="chevron-right"
+              size={hp(30)}
+              color={colors.textBlack}
+            />
           </TouchableOpacity>
         </TouchableOpacity>
         <View style={styles.historyUnderLine} />
@@ -233,7 +283,7 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    height: 50,
+    height: hp(50),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -243,47 +293,47 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
-    width: 10,
-    height: 10,
+    width: wp(10),
+    height: hp(10),
     borderRadius: 50,
     backgroundColor: 'red',
   },
   welcomeMessage: {
     paddingHorizontal: 25,
-    marginTop: 26,
+    marginTop: hp(26),
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textBlack,
   },
   balanceContainerWrapper: {
     paddingHorizontal: 25,
     flexDirection: 'row',
-    marginTop: 7,
-    height: 100,
-    width: 370,
+    marginTop: hp(7),
+    height: hp(100),
+    width: '100%',
     backgroundColor: colors.primary,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 20,
+    borderRadius: 10,
   },
   balanceTextWrapper: {
-    width: 150,
-    height: 60,
+    width: wp(150),
+    height: hp(60),
   },
   balanceTitle: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 16,
+    fontSize: hp(16),
     color: colors.textLight,
   },
   balanceText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textWhite,
   },
   addMoneyButton: {
-    width: 100,
-    height: 40,
+    width: wp(100),
+    height: hp(40),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -291,13 +341,13 @@ const styles = StyleSheet.create({
   },
   addMoneyButtonTitle: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 10,
+    fontSize: hp(10),
     color: colors.textWhite,
   },
   dataPlanWrapper: {
-    marginTop: 22,
+    marginTop: hp(22),
     width: '100%',
-    height: 40,
+    height: hp(40),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'center',
@@ -306,31 +356,32 @@ const styles = StyleSheet.create({
   },
   dataPlansTitle: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textBlack,
   },
 
   underLine: {
     height: 1,
-    width: 370,
+    width: wp(370),
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
   dataBundleCategoryWrapper: {
-    marginTop: 10,
+    marginTop: hp(10),
     flexDirection: 'row',
-    width: 370,
-    height: 200,
+    width: '100%',
+    height: hp(200),
+    paddingHorizontal: 25,
     alignSelf: 'center',
     alignItems: 'center',
   },
   dataBundleItemsWrapper: {
-    width: 130,
-    height: 167,
+    width: wp(130),
+    height: hp(167),
     backgroundColor: colors.primary,
-    borderRadius: 20,
+    borderRadius: 10,
     alignItems: 'center',
-    marginRight: 20,
+    marginRight: wp(20),
     shadowColor: colors.textBlack,
     shadowOffset: {
       width: 0,
@@ -341,13 +392,13 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   mtnLogoImage: {
-    marginTop: 25,
+    marginTop: hp(25),
   },
   roundIconEnter: {
-    marginTop: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    marginTop: hp(10),
+    width: wp(40),
+    height: hp(40),
+    borderRadius: 10,
     borderWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
@@ -362,16 +413,16 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   priceAndQuantity: {
-    marginTop: 10,
+    marginTop: hp(10),
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.textWhite,
     textAlign: 'center',
   },
   historyTitleWrapper: {
-    marginTop: 22,
+    marginTop: hp(22),
     width: '100%',
-    height: 40,
+    height: hp(40),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'center',
@@ -380,25 +431,28 @@ const styles = StyleSheet.create({
   },
   historyTitle: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textBlack,
   },
 
   historyUnderLine: {
     height: 1,
-    width: 370,
+
+    width: wp(370),
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
   historyDataWrapper: {
-    marginTop: 10,
+    marginTop: hp(10),
     alignSelf: 'center',
-    flexGrow: 1,
+    width: '100%',
+    paddingHorizontal: wp(20),
   },
   historyItemsWrapper: {
     width: '100%',
-    paddingHorizontal: 20,
-    marginBottom: 13,
+    marginBottom: hp(13),
+    borderBottomWidth: 1,
+    borderColor: colors.textLight,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -407,7 +461,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: 180,
+    width: wp(180),
   },
   mtnLogoImageHistory: {
     borderRadius: 0,
@@ -416,20 +470,20 @@ const styles = StyleSheet.create({
   },
   receiverText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
   },
   quantityText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: hp(13),
   },
   timeAndPriceText: {},
   timeText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
     color: colors.textLight,
   },
   priceText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
   },
 });

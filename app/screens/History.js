@@ -49,6 +49,8 @@ export default function History({navigation}) {
         style={styles.historyItemsWrapper}
         onPress={() =>
           navigation.navigate('Receipt', {
+            amount: item.amount,
+            type: item.type,
             price: item.price,
             customer: item.customer,
             quantity: item.quantity,
@@ -82,7 +84,11 @@ export default function History({navigation}) {
         {/* Header */}
         <View style={styles.headerWrapper}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="chevron-left" size={35} color={colors.textBlack} />
+            <Feather
+              name="chevron-left"
+              size={hp(35)}
+              color={colors.textBlack}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>Transaction History</Text>
         </View>
@@ -111,34 +117,34 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: 43,
+    marginTop: hp(43),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
     textAlign: 'center',
-    marginLeft: 40,
+    marginLeft: wp(40),
   },
   headerUnderLine: {
-    marginTop: 10,
-    height: 2,
-    width: 350,
+    marginTop: hp(10),
+    height: hp(2),
+    width: wp(350),
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
   historyDataWrapper: {
-    width: 350,
-    marginTop: 10,
+    width: wp(350),
+    marginTop: hp(10),
     alignSelf: 'center',
     flexGrow: 1,
   },
   historyItemsWrapper: {
-    width: 350,
+    width: wp(350),
     height: '100%',
     borderBottomWidth: 1,
     borderColor: colors.textLight,
@@ -150,7 +156,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: 180,
+    width: wp(180),
   },
   mtnLogoImageHistory: {
     width: wp(20),
@@ -159,20 +165,20 @@ const styles = StyleSheet.create({
   },
   receiverText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
   },
   quantityText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: hp(13),
   },
   timeAndPriceText: {},
   timeText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
     color: colors.textLight,
   },
   priceText: {
     fontFamily: 'Poppins-Light',
-    fontSize: 13,
+    fontSize: hp(13),
   },
 });

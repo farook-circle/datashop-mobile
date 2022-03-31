@@ -32,7 +32,7 @@ export default function AccountNumber({details}) {
       </Text>
       <Text style={styles.expire}>
         {' '}
-        This is a Virtual Account, and will expire expire after 1 hour.
+        This is a Virtual Account and will expire after 1 hour.
       </Text>
       <Text style={styles.footerNote}>
         NOTE: You are required to send the EXACT amount.
@@ -59,53 +59,53 @@ const styles = StyleSheet.create({
   },
   noteTitleText: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 16,
+    fontSize: hp(16),
     paddingHorizontal: 25,
-    marginBottom: 10,
+    marginBottom: hp(10),
   },
   fullName: {
     color: colors.primary,
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     paddingHorizontal: 25,
   },
   bankName: {
     color: colors.primary,
 
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     paddingHorizontal: 25,
   },
   accountNumber: {
     color: colors.primary,
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     paddingHorizontal: 25,
   },
   amount: {
     color: colors.primary,
 
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     paddingHorizontal: 25,
   },
   expire: {
     color: colors.secondary,
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     paddingHorizontal: 25,
   },
   footerNote: {
-    marginTop: 20,
+    marginTop: hp(20),
     fontFamily: 'Poppins-Bold',
-    fontSize: 18,
+    fontSize: hp(18),
     color: 'red',
     paddingHorizontal: 25,
   },
   shareReceiptButton: {
-    marginTop: 20,
-    width: 370,
-    height: 50,
+    marginTop: hp(20),
+    width: wp(370),
+    height: hp(50),
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -117,6 +117,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
     color: colors.textWhite,
-    fontSize: 18,
+    fontSize: hp(18),
   },
 });

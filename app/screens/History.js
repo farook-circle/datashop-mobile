@@ -119,7 +119,8 @@ const styles = StyleSheet.create({
   headerWrapper: {
     marginTop: hp(43),
     flexDirection: 'row',
-    width: wp(370),
+    width: '100%',
+    paddingHorizontal: 25,
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
@@ -138,14 +139,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textLight,
   },
   historyDataWrapper: {
-    width: wp(350),
+    width: '100%',
     marginTop: hp(10),
     alignSelf: 'center',
     flexGrow: 1,
+    paddingHorizontal: 25,
   },
   historyItemsWrapper: {
-    width: wp(350),
-    height: '100%',
+    width: '100%',
     borderBottomWidth: 1,
     borderColor: colors.textLight,
     flexDirection: 'row',

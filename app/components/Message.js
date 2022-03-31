@@ -10,6 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
+import {wp, hp} from '../config/dpTopx';
 
 export default function Message() {
   const messages = useSelector(state => state.messages.messages);
@@ -63,21 +64,21 @@ const styles = StyleSheet.create({
   noData: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   noDataTitle: {
     fontFamily: 'Poppins-Light',
-    fontSize: 16,
+    fontSize: hp(16),
   },
   messageContainer: {
     paddingVertical: 5,
-    marginTop: 4,
+    marginTop: hp(4),
     borderBottomWidth: 2,
     borderColor: colors.textLight,
   },
   messageTitle: {
     fontFamily: 'Poppins-Bold',
     color: colors.secondary,
-    fontSize: 20,
+    fontSize: hp(20),
   },
   messageBody: {
     fontFamily: 'Poppins-Light',
-    fontSize: 14,
+    fontSize: hp(14),
   },
 });

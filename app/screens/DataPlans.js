@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
   headerWrapper: {
     marginTop: hp(43),
     flexDirection: 'row',
-    width: wp(370),
+    width: '100%',
+    paddingHorizontal: 25,
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
@@ -106,13 +107,13 @@ const styles = StyleSheet.create({
   dataBundleCategoryWrapper: {
     marginTop: hp(10),
     flexDirection: 'row',
-    width: wp(370),
-
+    width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
+    paddingHorizontal: 25,
   },
   dataBundleItemsWrapper: {
-    width: wp(175),
+    width: wp(145),
     height: hp(159),
     backgroundColor: colors.primary,
     borderRadius: hp(10),

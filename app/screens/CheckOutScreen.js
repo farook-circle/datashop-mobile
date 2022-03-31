@@ -10,7 +10,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 
 import colors from '../../assets/colors/colors';
@@ -25,7 +25,7 @@ export default function CheckOut({route, navigation}) {
   const balance = useSelector(state => state.wallet.wallet_balance);
   const [onClickBuy, setClickBuy] = useState(false);
   const [customer, setCustomer] = useState('');
-  const [check_mtn_number, setCheckMtnNumber] = useState(false);
+  const [check_mtn_number, setCheckMtnNumber] = useState(true);
 
   const {id, price, quantity} = route.params;
   const data_bundle_id = id;
@@ -162,8 +162,8 @@ export default function CheckOut({route, navigation}) {
           </View>
         </View>
         <Text style={styles.noteText}>
-          <Text style={styles.noteTextColor}>NOTE</Text>: Please make sure you
-          put right number, because this is irreversible
+          <Text style={styles.noteTextColor}>NOTE</Text>: Please confirm the
+          number before proceeding because this action is irreversible
         </Text>
       </KeyboardAwareScrollView>
     </View>
@@ -179,7 +179,8 @@ const styles = StyleSheet.create({
   headerWrapper: {
     marginTop: hp(43),
     flexDirection: 'row',
-    width: wp(370),
+    width: '100%',
+    paddingHorizontal: 25,
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
   },
   buttonsWrapper: {
     width: wp(310),
-    height: hp(101),
+
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -291,16 +292,16 @@ const styles = StyleSheet.create({
     fontSize: hp(20),
   },
   buyButton: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderRadius: 10,
   },
   noteText: {
-    paddingHorizontal: 50,
-    fontFamily: 'Poppins-Light',
+    paddingHorizontal: 25,
+    fontFamily: 'Poppins-Bold',
     fontSize: hp(15),
   },
   noteTextColor: {

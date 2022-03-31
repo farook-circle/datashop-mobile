@@ -14,7 +14,7 @@ import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
-import {hp, dp} from '../config/dpTopx';
+import {hp, dp, wp} from '../config/dpTopx';
 
 import colors from '../../assets/colors/colors';
 import {signUp} from '../redux/actions/auth';
@@ -255,44 +255,44 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    height: 50,
+    height: hp(50),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: hp(20),
     paddingHorizontal: 64,
   },
   logoImage: {margin: 5},
   logoTitle: {
     color: colors.textBlack,
     fontFamily: 'Poppins-Bold',
-    fontSize: 36,
+    fontSize: hp(36),
   },
 
   introTitle: {
-    marginTop: 45,
+    marginTop: hp(45),
     color: colors.textBlack,
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     textAlign: 'center',
   },
   introSubtitle: {
-    marginTop: 19,
+    marginTop: hp(19),
     color: colors.textBlack,
     fontFamily: 'Poppins-Regular',
-    fontSize: 13,
+    fontSize: hp(13),
     textAlign: 'center',
   },
   textInputWrapper: {
-    width: 310,
-    height: 300,
-    marginTop: 20,
+    width: wp(310),
+    height: hp(300),
+    marginTop: hp(20),
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
   },
   fullNameWrapper: {
-    width: 310,
+    width: wp(310),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -300,17 +300,17 @@ const styles = StyleSheet.create({
   textInput: {
     color: 'black',
     fontFamily: 'Poppins-Medium',
-    fontSize: 14,
+    fontSize: hp(14),
     borderWidth: 2,
     borderColor: colors.textLight,
-    width: 310,
-    height: 50,
+    width: wp(310),
+    height: hp(50),
     borderRadius: 10,
     paddingHorizontal: 30,
   },
   passwordWrapper: {
-    width: 310,
-    height: 50,
+    width: wp(310),
+    height: hp(50),
     borderRadius: 10,
     borderWidth: 2,
     borderColor: colors.textLight,
@@ -321,8 +321,8 @@ const styles = StyleSheet.create({
   textInputPassword: {
     color: 'black',
     fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    height: 60,
+    fontSize: hp(16),
+    height: hp(60),
     paddingHorizontal: 30,
     flex: 1,
   },
@@ -330,9 +330,9 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   buttonsWrapper: {
-    width: 310,
-    height: 101,
-    marginTop: 20,
+    width: wp(310),
+    height: hp(101),
+    marginTop: hp(20),
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -342,11 +342,11 @@ const styles = StyleSheet.create({
   registerText: {
     color: colors.textWhite,
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
   },
   registerButton: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.primary,
@@ -355,9 +355,9 @@ const styles = StyleSheet.create({
 
   textLogin: {
     alignSelf: 'flex-start',
-    marginTop: 15,
+    marginTop: hp(15),
     fontFamily: 'Poppins-Light',
-    fontSize: 14,
+    fontSize: hp(14),
   },
   textLoginLink: {
     fontFamily: 'Poppins-Medium',

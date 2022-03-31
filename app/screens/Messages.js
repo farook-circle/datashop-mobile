@@ -19,6 +19,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {buyDataBundle} from '../redux/actions/data_plans';
 import Message from '../components/Message';
 import Notification from '../components/Notification';
+import {hp, wp} from '../config/dpTopx';
 
 export default function Messages({route, navigation}) {
   const [messageSelect, setMessageSelect] = useState(true);
@@ -89,9 +90,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: 43,
+    marginTop: hp(43),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -106,56 +107,56 @@ const styles = StyleSheet.create({
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
-    marginLeft: 93,
+    fontSize: hp(20),
+    marginLeft: wp(93),
   },
   headerUnderLine: {
-    marginTop: 10,
+    marginTop: hp(10),
     height: 2,
-    width: 350,
+    width: wp(350),
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
   bodyWrapper: {
-    marginTop: 30,
+    marginTop: hp(30),
     alignItems: 'center',
   },
   dataBundleCategoryWrapper: {
-    marginTop: 10,
+    marginTop: hp(10),
     flexDirection: 'row',
-    width: 370,
+    width: wp(370),
 
     alignSelf: 'center',
     alignItems: 'center',
   },
   dataBundleItemsWrapper: {
-    width: 175,
-    height: 159,
+    width: wp(175),
+    height: hp(159),
     backgroundColor: colors.primary,
     borderRadius: 20,
     alignItems: 'center',
     marginRight: 15,
-    marginBottom: 20,
+    marginBottom: hp(20),
   },
   mtnLogoImage: {
-    marginTop: 25,
-    width: 66,
-    height: 47,
+    marginTop: hp(25),
+    width: wp(66),
+    height: hp(47),
   },
   quantityText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.secondary,
   },
   priceText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textWhite,
   },
   balanceWrapper: {
-    marginTop: 20,
-    width: 245,
-    height: 80,
+    marginTop: hp(20),
+    width: wp(245),
+    height: hp(80),
     backgroundColor: colors.primary,
     borderRadius: 10,
     justifyContent: 'center',
@@ -164,19 +165,19 @@ const styles = StyleSheet.create({
   availableBalanceText: {
     marginBottom: 0,
     fontFamily: 'Poppins-Regular',
-    fontSize: 18,
+    fontSize: hp(18),
     color: colors.textLight,
   },
   balanceText: {
     marginTop: 0,
     fontFamily: 'Poppins-Bold',
-    fontSize: 25,
+    fontSize: hp(25),
     color: colors.textWhite,
   },
   textInputWrapper: {
-    marginTop: 20,
-    width: 310,
-    height: 150,
+    marginTop: hp(20),
+    width: wp(310),
+    height: hp(150),
     // backgroundColor: 'red',
     justifyContent: 'space-evenly',
     alignItems: 'center',
@@ -185,16 +186,16 @@ const styles = StyleSheet.create({
   textInput: {
     color: 'black',
     fontFamily: 'Poppins-Medium',
-    fontSize: 16,
+    fontSize: hp(16),
     borderWidth: 2,
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     borderRadius: 20,
     paddingHorizontal: 30,
   },
   buttonsWrapper: {
-    width: 310,
-    height: 101,
+    width: wp(310),
+    height: hp(101),
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -203,11 +204,11 @@ const styles = StyleSheet.create({
   buyText: {
     color: colors.primary,
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
   },
   buyButton: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   noteText: {
     paddingHorizontal: 50,
     fontFamily: 'Poppins-Light',
-    fontSize: 15,
+    fontSize: hp(15),
   },
   noteTextColor: {
     color: colors.secondary,

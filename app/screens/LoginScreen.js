@@ -17,7 +17,7 @@ import {signIn} from '../redux/actions/auth';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {hp} from '../config/dpTopx';
+import {hp, wp} from '../config/dpTopx';
 
 export default function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -122,7 +122,7 @@ export default function LoginScreen({navigation}) {
             ) : (
               <Feather
                 name="eye-off"
-                size={24}
+                size={hp(24)}
                 color={colors.textLight}
                 style={styles.eyeIcon}
                 onPress={() => setEyePassword(!eyePassword)}
@@ -172,36 +172,36 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    height: 50,
+    height: hp(50),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 109,
+    marginTop: hp(50),
     paddingHorizontal: 64,
   },
   logoImage: {margin: 5},
   logoTitle: {
     color: colors.textBlack,
     fontFamily: 'Poppins-Bold',
-    fontSize: 36,
+    fontSize: hp(36),
   },
   illustratedImage: {
-    marginTop: 45,
+    marginTop: hp(45),
     alignSelf: 'center',
-    width: 231,
-    height: 199,
+    width: wp(231),
+    height: hp(199),
   },
 
   introTitle: {
-    marginTop: 30,
+    marginTop: hp(30),
     color: colors.textBlack,
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     paddingHorizontal: 60,
   },
   textInputWrapper: {
-    width: 310,
-    height: 150,
+    width: wp(310),
+    height: hp(150),
     // backgroundColor: 'red',
     justifyContent: 'space-evenly',
     alignItems: 'center',
@@ -210,17 +210,17 @@ const styles = StyleSheet.create({
   textInput: {
     color: 'black',
     fontFamily: 'Poppins-Medium',
-    fontSize: 16,
+    fontSize: hp(16),
     borderWidth: 2,
     // borderColor: colors.textLight,
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     borderRadius: 10,
     paddingHorizontal: 30,
   },
   passwordWrapper: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     borderRadius: 10,
     borderWidth: 2,
     // borderColor: colors.textLight,
@@ -231,8 +231,8 @@ const styles = StyleSheet.create({
   textInputPassword: {
     color: 'black',
     fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    height: 60,
+    fontSize: hp(16),
+    height: hp(60),
     paddingHorizontal: 30,
     flex: 1,
   },
@@ -240,9 +240,9 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   buttonsWrapper: {
-    width: 310,
-    height: 101,
-    marginTop: 10,
+    width: wp(310),
+    height: hp(101),
+    marginTop: hp(10),
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -252,22 +252,22 @@ const styles = StyleSheet.create({
   registerText: {
     color: colors.textWhite,
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
   },
   registerButton: {
-    width: 310,
-    height: 60,
+    width: wp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 20,
+    borderRadius: 10,
   },
 
   textLogin: {
     alignSelf: 'flex-start',
-    marginTop: 14,
+    marginTop: hp(14),
     fontFamily: 'Poppins-Light',
-    fontSize: 14,
+    fontSize: hp(14),
   },
   textLoginLink: {
     fontFamily: 'Poppins-Medium',

@@ -50,7 +50,7 @@ export default function DepositToWallet({navigation, route}) {
       id: 1,
       type: 'Card or Ussd',
       payment_method: 'card',
-      transfer_fee: '50',
+      transfer_fee: '1.5%',
     },
     {
       id: 2,
@@ -357,7 +357,8 @@ const styles = StyleSheet.create({
   headerWrapper: {
     marginTop: hp(43),
     flexDirection: 'row',
-    width: wp(370),
+    width: '100%',
+    paddingHorizontal: 25,
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
@@ -512,7 +513,7 @@ const styles = StyleSheet.create({
   },
   shareReceiptButton: {
     marginTop: hp(10),
-    width: wp(370),
+    width: wp(300),
     height: hp(50),
     justifyContent: 'center',
     alignItems: 'center',

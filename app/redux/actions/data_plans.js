@@ -7,6 +7,7 @@ import {
   SET_LOADING,
   DATA_PURCHASE_HISTORY,
 } from '../constants/data_bundles';
+import {GET_BALANCE} from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
 
 export const getDataBundle = () => (dispatch, getState) => {
@@ -67,6 +68,13 @@ export const buyDataBundle =
       .then(res => {
         dispatch({
           type: DATA_BUNDLE_CHECKOUT_SUCCESS,
+        });
+        dispatch({
+          type: DATA_PURCHASE_HISTORY,
+          payload: res.data.history,
+        });
+        dispatch({
+          type: GET_BALANCE,
           payload: res.data,
         });
         handleCheckoutSuccess();

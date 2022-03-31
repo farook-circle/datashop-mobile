@@ -13,6 +13,7 @@ import React from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 
 import colors from '../../assets/colors/colors';
+import {hp, wp} from '../config/dpTopx';
 
 export default function Receipt({navigation, route}) {
   const {
@@ -64,7 +65,11 @@ export default function Receipt({navigation, route}) {
         {/* Header */}
         <View style={styles.headerWrapper}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="chevron-left" size={35} color={colors.textBlack} />
+            <Feather
+              name="chevron-left"
+              size={hp(35)}
+              color={colors.textBlack}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>Data Plan</Text>
         </View>
@@ -127,70 +132,71 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: 43,
+    marginTop: hp(43),
     flexDirection: 'row',
-    width: 370,
+    width: '100%',
+    paddingHorizontal: 25,
     justifyContent: 'flex-start',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
-    marginLeft: 93,
+    fontSize: hp(20),
+    marginLeft: wp(93),
   },
   subTitle: {
     textAlign: 'center',
     fontFamily: 'Poppins-Light',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.textLight,
   },
   dataBundleItemsWrapper: {
-    marginTop: 41,
-    width: 175,
-    height: 159,
+    marginTop: hp(41),
+    width: wp(175),
+    height: hp(159),
     backgroundColor: colors.primary,
     borderRadius: 10,
     alignItems: 'center',
     alignSelf: 'center',
     marginRight: 15,
-    marginBottom: 20,
+    marginBottom: hp(20),
   },
   mtnLogoImage: {
-    marginTop: 25,
-    width: 70,
-    height: 50,
+    marginTop: hp(25),
+    width: wp(70),
+    height: hp(50),
   },
   quantityText: {
-    marginTop: 20,
+    marginTop: hp(20),
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textWhite,
   },
   priceTitle: {
-    marginTop: 10,
+    marginTop: hp(10),
     textAlign: 'center',
     fontFamily: 'Poppins-Medium',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textBlack,
   },
   toText: {
     textAlign: 'center',
     fontFamily: 'Poppins-Bold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textLight,
   },
   phoneNumberText: {
     textAlign: 'center',
     fontFamily: 'Poppins-Bold',
-    fontSize: 20,
+    fontSize: hp(20),
     color: colors.textBlack,
   },
   detailOfTransaction: {
-    marginTop: 10,
+    marginTop: hp(10),
     paddingHorizontal: 30,
     fontFamily: 'Poppins-Bold',
-    fontSize: 16,
+    fontSize: hp(16),
     color: colors.textBlack,
   },
   textContainer: {
@@ -203,20 +209,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.textLight,
   },
   textRight: {
     paddingHorizontal: 30,
     textAlign: 'right',
     fontFamily: 'Poppins-Regular',
-    fontSize: 15,
+    fontSize: hp(15),
     color: colors.textLight,
   },
   shareReceiptButton: {
-    marginTop: 10,
-    width: 310,
-    height: 60,
+    marginTop: hp(10),
+    width: hp(310),
+    height: hp(60),
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -228,6 +234,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
     color: colors.textWhite,
-    fontSize: 18,
+    fontSize: hp(18),
   },
 });

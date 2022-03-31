@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: hp(7),
     height: hp(100),
-    width: '100%',
+    width: wp(330),
     backgroundColor: colors.primary,
     alignSelf: 'center',
     alignItems: 'center',

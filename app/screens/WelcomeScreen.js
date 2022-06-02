@@ -7,12 +7,26 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Linking,
 } from 'react-native';
 import React from 'react';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {hp, dp, wp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
+import {useSelector} from 'react-redux';
 
 export default function WelcomeScreen({navigation}) {
+  const whatsapp = useSelector(state => state.config.contact_info);
+
+  const openWhatsapp = () => {
+    Linking.openURL(
+      'whatsapp://send?text=' +
+        whatsapp.message +
+        '&phone=234' +
+        whatsapp.number,
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -51,6 +65,10 @@ export default function WelcomeScreen({navigation}) {
         <Text style={styles.textInfoLink}>terms of service</Text>and
         <Text style={styles.textInfoLink}>privacy policy</Text>
       </Text>
+      <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
+        <MaterialCommunityIcons name="whatsapp" size={hp(25)} color={'green'} />
+        <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -61,13 +79,26 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.background,
   },
+  whatAppButton: {
+    marginTop: hp(5),
+    alignSelf: 'center',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  whatAppButtonText: {
+    fontFamily: 'Poppins-Medium',
+    color: 'green',
+    fontSize: hp(16),
+    marginLeft: wp(5),
+  },
   headerWrapper: {
     width: '100%',
     height: hp(50),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp(50),
+    marginTop: hp(20),
     paddingHorizontal: wp(64),
   },
   logoImage: {margin: 5},
@@ -83,7 +114,7 @@ const styles = StyleSheet.create({
     height: hp(239),
   },
   introTitle: {
-    marginTop: hp(45),
+    marginTop: hp(25),
     color: colors.textBlack,
     fontFamily: 'Poppins-Regular',
     fontSize: hp(20),
@@ -126,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   infoText: {
-    marginTop: 24,
+    marginTop: 10,
     paddingHorizontal: wp(50),
     textAlign: 'center',
     fontFamily: 'Poppins-Light',

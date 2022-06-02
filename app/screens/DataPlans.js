@@ -32,6 +32,7 @@ export default function DataPlan({navigation}) {
         style={styles.dataBundleItemsWrapper}
         onPress={() =>
           navigation.navigate('CheckOut', {
+            id: item.id,
             image: item.image,
             price: item.price,
             quantity: item.quantity,

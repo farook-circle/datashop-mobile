@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -62,12 +63,7 @@ export default function CheckOut({route, navigation}) {
       alert('You do not have sufficient balance. Please fund your wallet');
       return;
     }
-    dispatch(
-      buyDataBundle(
-        {check_mtn_number, data_bundle_id, customer, payment_method, remark},
-        handleCheckoutSuccess,
-      ),
-    );
+    completeCheckOut();
   };
 
   const handleCheckoutSuccess = () => {
@@ -75,6 +71,36 @@ export default function CheckOut({route, navigation}) {
       'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
     );
     navigation.navigate('Home');
+  };
+
+  const completeCheckOut = () => {
+    Alert.alert(
+      'Buy Data',
+      `Please confirm that you want to order for ${customer}`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          style: 'default',
+          onPress: () =>
+            dispatch(
+              buyDataBundle(
+                {
+                  check_mtn_number,
+                  data_bundle_id,
+                  customer,
+                  payment_method,
+                  remark,
+                },
+                handleCheckoutSuccess,
+              ),
+            ),
+        },
+      ],
+    );
   };
   return (
     <View style={styles.container}>
@@ -98,7 +124,7 @@ export default function CheckOut({route, navigation}) {
               style={styles.mtnLogoImage}
             />
             <Text style={styles.quantityText}>{quantity}</Text>
-            <Text style={styles.priceText}>{price}</Text>
+            {/* <Text style={styles.priceText}>{price}</Text> */}
           </View>
           <View style={styles.balanceWrapper}>
             <Text style={styles.availableBalanceText}>Avail Balance: </Text>
@@ -217,6 +243,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: wp(15),
     marginBottom: hp(20),
+    justifyContent: 'center',
   },
   mtnLogoImage: {
     marginTop: hp(25),

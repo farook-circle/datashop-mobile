@@ -72,7 +72,7 @@ export default function RegistrationScreen({navigation}) {
   };
 
   const passwordCheckup = () => {
-    if (password.length < 4 || password_again < 4) {
+    if (password.length < 4 || password_again.length < 4) {
       alert('Password cannot be empty or less than 4 for your own protection');
       return false;
     }

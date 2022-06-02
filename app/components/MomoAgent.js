@@ -22,6 +22,7 @@ export default function MomoAgent({amount}) {
 
   const copyToClipboard = () => {
     Clipboard.setString(ussd);
+    alert('Copied');
   };
   return (
     <View style={styles.container}>

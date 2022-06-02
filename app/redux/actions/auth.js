@@ -14,6 +14,8 @@ import {
   USER_LOGOUT,
   SET_TOKEN,
   USER_RESTORING,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_FAILED,
 } from '../constants/auth';
 
 export const restoreUser = () => (dispatch, getState) => {
@@ -117,3 +119,39 @@ export const signIn = (userData, ErrorOccur) => dispatch => {
       }
     });
 };
+
+export const changeUserPassword =
+  (userData, requestStatus) => (dispatch, getState) => {
+    dispatch({type: USER_LOADING});
+
+    const token = getState().auth.token;
+    // Header
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    if (token) {
+      config.headers['Authorization'] = `Token ${token}`;
+    }
+    const body = JSON.stringify(userData);
+
+    axios
+      .post('/api/change-password', body, config)
+      .then(res => {
+        requestStatus();
+        dispatch({
+          type: CHANGE_PASSWORD_SUCCESS,
+          payload: res.data,
+        });
+      })
+      .catch(error => {
+        if (error.response) {
+          console.log(error.response.data);
+          alert('your old password is wrong');
+          dispatch({type: CHANGE_PASSWORD_FAILED});
+        } else {
+          alert('network error please check your internet');
+        }
+      });
+  };

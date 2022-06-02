@@ -2,9 +2,11 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React, {useEffect} from 'react';
 import {WebView} from 'react-native-webview';
 import {useDispatch, useSelector} from 'react-redux';
+import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../assets/colors/colors';
 import {hp, wp} from '../config/dpTopx';
 import {deleteVirtualAccount} from '../redux/actions/wallet';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 export default function AccountNumber({details}) {
   useEffect(() => {});
@@ -13,6 +15,11 @@ export default function AccountNumber({details}) {
   const account = useSelector(state => state.wallet.account);
   const createNewVirtualAccount = () => {
     dispatch(deleteVirtualAccount());
+  };
+
+  const copyToClipboard = () => {
+    Clipboard.setString(account.account_number);
+    alert('Copied');
   };
   return (
     <View style={styles.container}>
@@ -24,9 +31,30 @@ export default function AccountNumber({details}) {
         Name: {user.first_name} {user.last_name}
       </Text>
       <Text style={styles.bankName}>Bank: {account.bank_name}</Text>
-      <Text style={styles.accountNumber}>
-        Account: {account.account_number}
-      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          // backgroundColor: 'red',
+        }}>
+        <Text style={[styles.accountNumber, {margin: 0}]}>Account: </Text>
+        <TouchableOpacity onPress={copyToClipboard}>
+          <Text
+            style={{
+              color: colors.primary,
+              fontFamily: 'Poppins-Bold',
+              fontSize: hp(18),
+            }}>
+            {account.account_number}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={copyToClipboard}>
+          <Text style={{marginLeft: 20, alignItems: 'center'}}>
+            {' '}
+            <Feather name="arrow-left" size={20} color={'red'} /> Click to copy
+          </Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.amount}>
         Amount: {account.amount} {'\u20A6'}
       </Text>
@@ -80,7 +108,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontFamily: 'Poppins-Bold',
     fontSize: hp(18),
-    paddingHorizontal: 25,
+    paddingLeft: 25,
   },
   amount: {
     color: colors.primary,

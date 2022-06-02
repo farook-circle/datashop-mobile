@@ -13,6 +13,8 @@ import {
   USER_LOGOUT,
   RESTORE_TOKEN,
   USER_RESTORING,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_FAILED,
 } from '../constants/auth';
 
 async function saveUserToken(token) {
@@ -92,6 +94,16 @@ export default function (state = initialState, action) {
         ...state,
         ...action.payload,
         isAuthenticated: true,
+        isLoading: false,
+      };
+    case CHANGE_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case CHANGE_PASSWORD_FAILED:
+      return {
+        ...state,
         isLoading: false,
       };
     case LOGIN_FAIL:

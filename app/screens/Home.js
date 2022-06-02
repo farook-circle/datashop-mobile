@@ -11,14 +11,13 @@ import {
   Alert,
   RefreshControl,
   ScrollView,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
-
 import colors from '../../assets/colors/colors';
 import {USER_LOGOUT} from '../redux/constants/auth';
 import {
@@ -36,6 +35,7 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
 
+  const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
 
   // const [messageAvailable, setMessageAvailable] = useState(false);
@@ -81,28 +81,17 @@ export default function HomeScreen({navigation}) {
     }
   };
 
-  async function removeUserToken() {
-    try {
-      await EncryptedStorage.removeItem('token');
-      // Congrats! You've just removed your first value!
-    } catch (error) {
-      // There was an error on the native side
-    }
-    dispatch({type: USER_LOGOUT});
-  }
-
-  const handleLogout = () => {
-    Alert.alert('Alert', 'Are you sure you want to log-out', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => removeUserToken()},
-    ]);
-  };
-
   const handleMessages = () => {
     navigation.navigate('Messages');
+  };
+
+  const openWhatsapp = () => {
+    Linking.openURL(
+      'whatsapp://send?text=' +
+        whatsapp.message +
+        '&phone=234' +
+        whatsapp.number,
+    );
   };
 
   const renderDataBundleItem = ({item}) => {
@@ -188,17 +177,38 @@ export default function HomeScreen({navigation}) {
       <SafeAreaView>
         {/* Header */}
         <View style={styles.headerWrapper}>
-          <TouchableOpacity onPress={handleMessages}>
-            <Feather
-              name="message-square"
-              size={hp(24)}
-              color={colors.primary}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity onPress={handleMessages}>
+              <Feather
+                name="message-square"
+                size={hp(24)}
+                color={colors.primary}
+              />
 
-            {messageAvailable && <View style={styles.dotIcon}></View>}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleLogout}>
-            <Feather name="log-out" size={hp(24)} color={colors.primary} />
+              {messageAvailable && <View style={styles.dotIcon}></View>}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{marginLeft: hp(20)}}
+              onPress={openWhatsapp}>
+              <MaterialCommunityIcons
+                name="whatsapp"
+                size={hp(24)}
+                color="green"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={{
+              backgroundColor: colors.textLight,
+              padding: hp(10),
+              borderRadius: 50,
+            }}>
+            <Feather name="user" size={hp(28)} color={colors.primary} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>

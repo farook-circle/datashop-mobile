@@ -11,37 +11,34 @@ import {
 } from 'react-native';
 import React, {useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 
-export default function DataPlan({route, navigation}) {
+export default function DataCategoryScreen({navigation}) {
   const dispatch = useDispatch();
 
-  const {data_bundles} = route.params;
+  const data_category = useSelector(state => state.data_bundles.data_category);
 
   useEffect(() => {}, []);
 
-  const renderDataBundleItem = ({item}) => {
+  const renderDataCategory = ({item}) => {
     return (
       <TouchableOpacity
-        style={styles.dataBundleItemsWrapper}
+        style={styles.dataCategory}
         onPress={() =>
-          navigation.navigate('CheckOut', {
-            id: item.id,
-            image: item.image,
-            price: item.price,
-            quantity: item.quantity,
+          navigation.navigate('DataPlan', {
+            data_bundles: item.data_plan_items,
           })
         }>
-        <Image
-          source={require('../../assets/images/mtn_logo.png')}
-          style={styles.mtnLogoImage}
-        />
-        <Text style={styles.quantityText}>{item.quantity}</Text>
-        <Text style={styles.priceText}>{item.price}</Text>
+        <View style={styles.iconBox}>
+          <FontAwesome name="globe" size={20} color={'white'} />
+        </View>
+        <Text style={styles.categoryTitle}>{item.title}</Text>
+        <Feather name="chevron-right" color={'black'} size={30} />
       </TouchableOpacity>
     );
   };
@@ -58,16 +55,15 @@ export default function DataPlan({route, navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Data Plan</Text>
+          <Text style={styles.headerTitleText}>Data Category</Text>
           <Text>{'  '}</Text>
         </View>
         <View style={styles.headerUnderLine} />
       </SafeAreaView>
       <View style={styles.dataBundleCategoryWrapper}>
         <FlatList
-          numColumns={2}
-          data={data_bundles}
-          renderItem={renderDataBundleItem}
+          data={data_category}
+          renderItem={renderDataCategory}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 100}}
@@ -88,7 +84,6 @@ const styles = StyleSheet.create({
     marginTop: hp(3),
     flexDirection: 'row',
     width: '100%',
-
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
@@ -101,67 +96,27 @@ const styles = StyleSheet.create({
     marginTop: hp(10),
     height: hp(1),
     width: '100%',
-
+    alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
-  dataBundleCategoryWrapper: {
+  dataCategory: {
     marginTop: hp(10),
     flexDirection: 'row',
-    width: '100%',
-    alignSelf: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  dataBundleItemsWrapper: {
-    width: wp(145),
-    height: hp(159),
-    backgroundColor: colors.primary,
-    borderRadius: hp(10),
-    alignItems: 'center',
-    marginRight: wp(15),
-    marginBottom: hp(20),
-    shadowColor: colors.textBlack,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 4,
-    shadowRadius: 20,
-    elevation: 4,
-  },
-  mtnLogoImage: {
-    marginTop: hp(25),
-    width: wp(66),
-    height: hp(47),
-  },
-  roundIconEnter: {
-    marginTop: hp(10),
-    width: wp(40),
-    height: hp(40),
-    borderRadius: 20,
-    borderWidth: 0,
+  iconBox: {
+    width: wp(70),
+    height: hp(53),
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.textWhite,
-    shadowColor: colors.textBlack,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 4,
-    shadowRadius: 20,
-    elevation: 4,
+    backgroundColor: '#000000',
+    borderRadius: 5,
   },
-  quantityText: {
-    marginTop: hp(10),
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(15),
-    color: colors.secondary,
-    textAlign: 'center',
-  },
-  priceText: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(15),
-    color: colors.textWhite,
-    textAlign: 'center',
+  categoryTitle: {
+    flex: 1,
+    fontFamily: 'Poppins-Medium',
+    fontSize: hp(20),
+    paddingLeft: wp(10),
   },
 });

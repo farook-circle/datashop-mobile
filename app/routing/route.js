@@ -20,6 +20,7 @@ import DepositToWallet from '../screens/DepostToWallet';
 import Messages from '../screens/Messages';
 import Profile from '../screens/Profile';
 import {getContactInfo} from '../redux/actions/config';
+import DataCategoryScreen from '../screens/DataCategoryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -83,6 +84,11 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Deposit"
               component={DepositToWallet}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="DataCategory"
+              component={DataCategoryScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

@@ -6,10 +6,12 @@ import {
   SET_LOADING,
   DATA_PURCHASE_HISTORY,
   DATA_BUNDLE_CHECKOUT_FAILED,
+  GET_DATA_CATEGORY,
 } from '../constants/data_bundles';
 
 const initialState = {
   data_bundle: [],
+  data_category: [],
   data_purchase_history: [],
   isLoading: false,
 };
@@ -26,7 +28,11 @@ export default function (state = initialState, action) {
         ...state,
         data_bundle: action.payload,
       };
-
+    case GET_DATA_CATEGORY:
+      return {
+        ...state,
+        data_category: action.payload,
+      };
     case DATA_BUNDLE_CHECKOUT_SUCCESS:
     case DATA_BUNDLE_CHECKOUT_FAILED:
       return {

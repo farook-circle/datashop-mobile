@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
@@ -23,6 +24,7 @@ import colors from '../../assets/colors/colors';
 import {USER_LOGOUT} from '../redux/constants/auth';
 import {
   getDataBundle,
+  getDataCategory,
   getDataPurchaseHistory,
 } from '../redux/actions/data_plans';
 import {getPaymentStatus, getWalletBalance} from '../redux/actions/wallet';
@@ -59,6 +61,8 @@ export default function HomeScreen({navigation}) {
     dispatch(getMessages());
     dispatch(getNotifications());
     dispatch(getPaymentStatus());
+    dispatch(getDataCategory());
+
     handleSetMessageAvailable();
   }, [refreshing]);
 
@@ -269,14 +273,14 @@ export default function HomeScreen({navigation}) {
         </View>
 
         {/* Data Plans Container */}
-        <TouchableOpacity
-          style={styles.dataPlanWrapper}
-          onPress={() => navigation.navigate('DataPlan')}>
-          <Text style={styles.dataPlansTitle}>Data Plans</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('DataPlan')}>
+        <TouchableOpacity style={styles.dataPlanWrapper}>
+          <Text style={styles.dataPlansTitle}>Services</Text>
+          <TouchableOpacity
+          // onPress={() => navigation.navigate('DataPlan')}
+          >
             <Feather
               name="chevron-right"
-              size={hp(30)}
+              size={hp(25)}
               color={colors.textBlack}
             />
           </TouchableOpacity>
@@ -285,13 +289,41 @@ export default function HomeScreen({navigation}) {
 
         {/* List of data Bundle */}
         <View style={styles.dataBundleCategoryWrapper}>
-          <FlatList
+          <View style={styles.serviceContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('DataCategory')}
+              activeOpacity={0.8}
+              style={[styles.serviceBox]}>
+              <FontAwesome name="globe" color={'white'} size={27} />
+            </TouchableOpacity>
+            <Text style={styles.serviceTitle}>Data</Text>
+          </View>
+
+          <View style={styles.serviceContainer}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[styles.serviceBox, {backgroundColor: '#524F45'}]}>
+              <FontAwesome name="phone" color={'white'} size={27} />
+            </TouchableOpacity>
+            <Text style={styles.serviceTitle}>Airtime</Text>
+          </View>
+
+          <View style={styles.serviceContainer}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[styles.serviceBox, {backgroundColor: colors.primary}]}>
+              <FontAwesome name="align-justify" color={'white'} size={27} />
+            </TouchableOpacity>
+            <Text style={styles.serviceTitle}>Bill Payment</Text>
+          </View>
+
+          {/* <FlatList
             data={data_bundles}
             renderItem={renderDataBundleItem}
             keyExtractor={item => item.id}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-          />
+          /> */}
         </View>
 
         {/* History  */}
@@ -404,7 +436,7 @@ const styles = StyleSheet.create({
   },
   dataPlansTitle: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
+    fontSize: hp(16),
     color: colors.textBlack,
   },
 
@@ -418,10 +450,29 @@ const styles = StyleSheet.create({
     marginTop: hp(10),
     flexDirection: 'row',
     width: '100%',
-    height: hp(200),
+    // height: hp(200),
     paddingHorizontal: 25,
     alignSelf: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  serviceContainer: {
+    marginTop: hp(20),
+    alignItems: 'center',
+  },
+  serviceBox: {
+    width: wp(100),
+    height: hp(100),
+    backgroundColor: '#FCC60D',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  serviceTitle: {
+    marginTop: hp(10),
+    fontFamily: 'Poppins-Medium',
+    fontSize: hp(16),
   },
   dataBundleItemsWrapper: {
     width: wp(130),
@@ -479,13 +530,12 @@ const styles = StyleSheet.create({
   },
   historyTitle: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
+    fontSize: hp(16),
     color: colors.textBlack,
   },
 
   historyUnderLine: {
     height: 1,
-
     width: wp(370),
     alignSelf: 'center',
     backgroundColor: colors.textLight,

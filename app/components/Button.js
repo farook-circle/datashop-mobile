@@ -2,16 +2,16 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import colors from '../../assets/colors/colors';
 
-const Button = ({text, background_color, outline}) => {
+const Button = ({text, buttonStyle, background_color, outline}) => {
   return (
-    <TouchableOpacity style={styles.buttonStyle}>
+    <TouchableOpacity style={[styles.button, buttonStyle]}>
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonStyle: {
+  button: {
     width: '100%',
     height: 60,
     justifyContent: 'center',

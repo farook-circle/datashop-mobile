@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
+  TextInput,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 
 import colors from '../../assets/colors/colors';
@@ -19,13 +20,38 @@ import {hp, wp} from '../config/dpTopx';
 
 export default function History({navigation}) {
   const dispatch = useDispatch();
+  const [searchItem, setSearchItem] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [toggleSearch, setToggleSearch] = useState(false);
+
+  const data_purchase_history = useSelector(
+    state => state.data_bundles.data_purchase_history,
+  );
 
   useEffect(() => {
     dispatch(getDataPurchaseHistory());
   }, []);
-  const data_purchase_history = useSelector(
-    state => state.data_bundles.data_purchase_history,
-  );
+
+  const handleSearch = text => {
+    setSearchValue(text);
+    if (text !== '') {
+      const search = data_purchase_history.filter(item => {
+        if (item.customer.includes(text)) {
+          return item;
+        }
+      });
+      setSearchItem(search);
+      return;
+    }
+
+    setSearchItem(null);
+  };
+
+  const handleToggleSearch = () => {
+    setToggleSearch(!toggleSearch);
+    setSearchItem(null);
+    setSearchValue('');
+  };
 
   const getPaymentTypeLogo = type => {
     if (type === 'bank transfer deposit') {
@@ -58,6 +84,8 @@ export default function History({navigation}) {
             time: item.time,
             payment_method: item.payment_method,
             transaction_ref: item.transaction_ref,
+            remark: item.remark,
+            status: item.status
           })
         }>
         <Image
@@ -90,16 +118,32 @@ export default function History({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Transaction History</Text>
+          {toggleSearch ? (
+            <TextInput
+              onChangeText={text => handleSearch(text)}
+              value={searchValue}
+              placeholder="Search..."
+              style={styles.searchBox}
+            />
+          ) : (
+            <Text style={styles.headerTitleText}>History</Text>
+          )}
+          <TouchableOpacity onPress={handleToggleSearch}>
+            <Feather
+              name={toggleSearch ? 'x' : 'search'}
+              size={hp(25)}
+              color={colors.textBlack}
+            />
+          </TouchableOpacity>
         </View>
+
         <View style={styles.headerUnderLine} />
       </SafeAreaView>
 
       {/* History Items */}
       <View style={styles.historyDataWrapper}>
         <FlatList
-          numColumns={2}
-          data={data_purchase_history}
+          data={searchItem !== null ? searchItem : data_purchase_history}
           renderItem={renderHistoryItem}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
@@ -117,23 +161,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: hp(43),
+    marginTop: hp(3),
     flexDirection: 'row',
     width: '100%',
     paddingHorizontal: 25,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
+    fontSize: hp(16),
     textAlign: 'center',
-    marginLeft: wp(40),
+  },
+  searchBox: {
+    flex: 1,
+    marginHorizontal: wp(20),
+    // backgroundColor: 'red',
+    fontFamily: 'Poppins-Medium',
   },
   headerUnderLine: {
     marginTop: hp(10),
-    height: hp(2),
+    height: hp(1),
     width: wp(350),
     alignSelf: 'center',
     backgroundColor: colors.textLight,

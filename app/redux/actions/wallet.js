@@ -7,6 +7,7 @@ import {
   GET_MOM,
   GET_ACCOUNT_NUMBER,
   GET_MOMO_AGENT_NUMBER,
+  GET_PAYMENT_STATUS,
 } from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
 
@@ -31,6 +32,39 @@ export const getWalletBalance = () => (dispatch, getState) => {
     .then(res => {
       dispatch({
         type: GET_BALANCE,
+        payload: res.data,
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        // do nothing
+      } else {
+        // do nothing
+      }
+    });
+};
+
+export const getPaymentStatus = () => (dispatch, getState) => {
+  //Get Token from the state
+
+  const token = getState().auth.token;
+  // Header
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  //Check to see if there is an token and to header
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  axios
+    .get('/wallet/payment-status', config)
+    .then(res => {
+      dispatch({
+        type: GET_PAYMENT_STATUS,
         payload: res.data,
       });
     })

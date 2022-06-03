@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   View,
   Text,
@@ -24,8 +25,10 @@ import {
   getDataBundle,
   getDataPurchaseHistory,
 } from '../redux/actions/data_plans';
-import {getWalletBalance} from '../redux/actions/wallet';
+import {getPaymentStatus, getWalletBalance} from '../redux/actions/wallet';
 import {getMessages, getNotifications} from '../redux/actions/messages';
+import OverLayModel from '../components/OverLayModel';
+import Button from '../components/Button';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -34,11 +37,12 @@ const wait = timeout => {
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
+  const [showMessage, setShowMessage] = useState(true);
 
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
 
-  // const [messageAvailable, setMessageAvailable] = useState(false);
+  const [messageAvailable, setMessageAvailable] = useState(true);
   const user = useSelector(state => state.auth.user);
   const data_bundles = useSelector(state => state.data_bundles.data_bundle);
   const data_purchase_history = useSelector(
@@ -54,16 +58,14 @@ export default function HomeScreen({navigation}) {
     dispatch(getWalletBalance());
     dispatch(getMessages());
     dispatch(getNotifications());
+    dispatch(getPaymentStatus());
+    handleSetMessageAvailable();
   }, [refreshing]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-
-  if (messages.length !== 0 || notifications.length !== 0) {
-    var messageAvailable = true;
-  }
 
   const getPaymentTypeLogo = type => {
     if (type === 'bank transfer deposit') {
@@ -81,16 +83,15 @@ export default function HomeScreen({navigation}) {
     }
   };
 
+  const handleSetMessageAvailable = () => {};
+
   const handleMessages = () => {
     navigation.navigate('Messages');
   };
 
   const openWhatsapp = () => {
     Linking.openURL(
-      'whatsapp://send?text=' +
-        whatsapp.message +
-        '&phone=234' +
-        whatsapp.number,
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );
   };
 
@@ -134,6 +135,8 @@ export default function HomeScreen({navigation}) {
             time: item.time,
             transaction_ref: item.transaction_ref,
             payment_method: item.payment_method,
+            remark: item.remark,
+            status: item.status,
           })
         }>
         <Image
@@ -156,114 +159,121 @@ export default function HomeScreen({navigation}) {
   };
 
   return (
-    <View
-      style={styles.container}
-      // refreshControl={
-      //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      // }
-    >
-      <ScrollView
-        style={{
-          position: 'absolute',
-          top: 0,
-          height: hp(700),
-          width: '100%',
-          // backgroundColor: 'red',
-          zIndex: -1,
-        }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }></ScrollView>
-      <SafeAreaView>
-        {/* Header */}
-        <View style={styles.headerWrapper}>
+    <>
+      {showMessage && (
+        <OverLayModel onOverlayPress={() => setShowMessage(false)}>
           <View
             style={{
-              flexDirection: 'row',
+              width: wp(250),
+              height: wp(200),
+              padding: 20,
+              backgroundColor: colors.textWhite,
+              borderRadius: 20,
               alignItems: 'center',
             }}>
-            <TouchableOpacity onPress={handleMessages}>
-              <Feather
-                name="message-square"
-                size={hp(24)}
-                color={colors.primary}
-              />
+            <Text
+              style={{
+                fontFamily: 'Poppins-Regular',
+                fontSize: 20,
+                color: 'red',
+              }}>
+              Hello world
+            </Text>
+            <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(13)}}>
+              This is the message content this is the message content this is
+              the message content this is the message content This is the
+              message content this is the
+            </Text>
+            <Button
+              text={'close'}
+              buttonStyle={{marginTop: 10, width: 100, height: 30}}
+            />
+          </View>
+        </OverLayModel>
+      )}
+      <View
+        style={styles.container}
+        // refreshControl={
+        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        // }
+      >
+        <ScrollView
+          style={{
+            position: 'absolute',
+            top: 0,
+            height: hp(700),
+            width: '100%',
+            // backgroundColor: 'red',
+            zIndex: -1,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+        <SafeAreaView>
+          {/* Header */}
+          <View style={styles.headerWrapper}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity onPress={handleMessages}>
+                <Feather
+                  name="message-square"
+                  size={hp(24)}
+                  color={colors.primary}
+                />
 
-              {messageAvailable && <View style={styles.dotIcon}></View>}
-            </TouchableOpacity>
+                {messageAvailable && <View style={styles.dotIcon} />}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{marginLeft: hp(20)}}
+                onPress={openWhatsapp}>
+                <MaterialCommunityIcons
+                  name="whatsapp"
+                  size={hp(24)}
+                  color="green"
+                />
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
-              style={{marginLeft: hp(20)}}
-              onPress={openWhatsapp}>
-              <MaterialCommunityIcons
-                name="whatsapp"
-                size={hp(24)}
-                color="green"
-              />
+              onPress={() => navigation.navigate('Profile')}
+              style={{
+                backgroundColor: colors.textLight,
+                padding: hp(10),
+                borderRadius: 50,
+              }}>
+              <Feather name="user" size={hp(28)} color={colors.primary} />
             </TouchableOpacity>
           </View>
+        </SafeAreaView>
+        {/* Welcome Message To User */}
+
+        <Text
+          style={styles.welcomeMessage}>{`Welcome ${user.first_name}`}</Text>
+
+        {/* Wallet Balance Container */}
+        <View style={styles.balanceContainerWrapper}>
+          <View style={styles.balanceTextWrapper}>
+            <Text style={styles.balanceTitle}>BALANCE:</Text>
+            <Text style={styles.balanceText}>
+              {'\u20A6'} {balance}
+            </Text>
+          </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
-            style={{
-              backgroundColor: colors.textLight,
-              padding: hp(10),
-              borderRadius: 50,
-            }}>
-            <Feather name="user" size={hp(28)} color={colors.primary} />
+            style={styles.addMoneyButton}
+            onPress={() => navigation.navigate('Deposit')}>
+            <Text style={styles.addMoneyButtonTitle}>ADD MONEY</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-      {/* Welcome Message To User */}
 
-      <Text style={styles.welcomeMessage}>{`Welcome ${user.first_name}`}</Text>
-
-      {/* Wallet Balance Container */}
-      <View style={styles.balanceContainerWrapper}>
-        <View style={styles.balanceTextWrapper}>
-          <Text style={styles.balanceTitle}>BALANCE:</Text>
-          <Text style={styles.balanceText}>
-            {'\u20A6'} {balance}
-          </Text>
-        </View>
+        {/* Data Plans Container */}
         <TouchableOpacity
-          style={styles.addMoneyButton}
-          onPress={() => navigation.navigate('Deposit')}>
-          <Text style={styles.addMoneyButtonTitle}>ADD MONEY</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Data Plans Container */}
-      <TouchableOpacity
-        style={styles.dataPlanWrapper}
-        onPress={() => navigation.navigate('DataPlan')}>
-        <Text style={styles.dataPlansTitle}>Data Plans</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('DataPlan')}>
-          <Feather
-            name="chevron-right"
-            size={hp(30)}
-            color={colors.textBlack}
-          />
-        </TouchableOpacity>
-      </TouchableOpacity>
-      <View style={styles.underLine} />
-
-      {/* List of data Bundle */}
-      <View style={styles.dataBundleCategoryWrapper}>
-        <FlatList
-          data={data_bundles}
-          renderItem={renderDataBundleItem}
-          keyExtractor={item => item.id}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
-
-      {/* History  */}
-      <View style={styles.historyWrapper}>
-        <TouchableOpacity
-          style={styles.historyTitleWrapper}
-          onPress={() => navigation.navigate('History')}>
-          <Text style={styles.historyTitle}>History</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('History')}>
+          style={styles.dataPlanWrapper}
+          onPress={() => navigation.navigate('DataPlan')}>
+          <Text style={styles.dataPlansTitle}>Data Plans</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('DataPlan')}>
             <Feather
               name="chevron-right"
               size={hp(30)}
@@ -271,17 +281,45 @@ export default function HomeScreen({navigation}) {
             />
           </TouchableOpacity>
         </TouchableOpacity>
-        <View style={styles.historyUnderLine} />
+        <View style={styles.underLine} />
+
+        {/* List of data Bundle */}
+        <View style={styles.dataBundleCategoryWrapper}>
+          <FlatList
+            data={data_bundles}
+            renderItem={renderDataBundleItem}
+            keyExtractor={item => item.id}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+
+        {/* History  */}
+        <View style={styles.historyWrapper}>
+          <TouchableOpacity
+            style={styles.historyTitleWrapper}
+            onPress={() => navigation.navigate('History')}>
+            <Text style={styles.historyTitle}>History</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('History')}>
+              <Feather
+                name="chevron-right"
+                size={hp(30)}
+                color={colors.textBlack}
+              />
+            </TouchableOpacity>
+          </TouchableOpacity>
+          <View style={styles.historyUnderLine} />
+        </View>
+        <View style={styles.historyDataWrapper}>
+          <FlatList
+            data={data_purchase_history}
+            renderItem={renderHistoryItem}
+            keyExtractor={item => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
       </View>
-      <View style={styles.historyDataWrapper}>
-        <FlatList
-          data={data_purchase_history}
-          renderItem={renderHistoryItem}
-          keyExtractor={item => item.id}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
-    </View>
+    </>
   );
 }
 

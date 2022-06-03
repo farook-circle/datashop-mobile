@@ -28,11 +28,13 @@ import CompleteCardPayment from '../components/CompleteCardPayment';
 import AccountNumber from '../components/AccountNumber';
 import MomoAgent from '../components/MomoAgent';
 import AlternatePayment from '../components/AlternatePayment';
+import AirtimePaymentFunding from '../components/AirtimePaymentFunding';
 
 export default function DepositToWallet({navigation, route}) {
   useEffect(() => {
     dispatch(getVirtualAccount());
   }, []);
+
   const dispatch = useDispatch();
   const [amount, setAmount] = useState('0');
   const [selectedId, setSelectedPaymentMethod] = useState(null);
@@ -41,9 +43,12 @@ export default function DepositToWallet({navigation, route}) {
   const [initWithAccount, setInitWithAccount] = useState(false);
   const [initWithMomoAgent, setInitWithMomoAgent] = useState(false);
   const [initWithManualFunding, setInitWithManualFunding] = useState(false);
+  const [initWithAirtimeFunding, setInitWithAirtimeFunding] = useState(false);
   const [init, setInit] = useState(true);
   const [isLoading, setLoading] = useState(false);
   const [paymentLink, setPaymentLink] = useState(null);
+
+  const payment_status = useSelector(state => state.wallet.payment_status);
 
   const payment_method = [
     {
@@ -70,6 +75,12 @@ export default function DepositToWallet({navigation, route}) {
       payment_method: 'manual_funding',
       transfer_fee: 'Free',
     },
+    {
+      id: 5,
+      type: 'Airtime Funding',
+      payment_method: 'airtime_funding',
+      transfer_fee: 'Free',
+    },
   ];
 
   const handleNumericInput = value => {
@@ -78,6 +89,7 @@ export default function DepositToWallet({navigation, route}) {
     }
     if (amount == 0) {
       setAmount(value);
+
       return;
     }
     const newAmount = amount + value;
@@ -85,8 +97,17 @@ export default function DepositToWallet({navigation, route}) {
   };
 
   const togglePaymentMethod = id => {
-    setSelectedPaymentMethod(id);
     const payment = payment_method.filter(item => item.id === id)[0];
+
+    const status = payment_status.filter(
+      item => item.type === payment.payment_method,
+    )[0];
+    if (!status.status) {
+      alert(`${payment.type} Deposit is not available at the moment`);
+      setSelectedPaymentMethod(null);
+      return;
+    }
+    setSelectedPaymentMethod(id);
     setPaymentMethod(payment.payment_method);
   };
 
@@ -113,10 +134,14 @@ export default function DepositToWallet({navigation, route}) {
       setLoading(false);
       setInit(false);
       setInitWithMomoAgent(true);
-    } else {
+    } else if (paymentMethod === 'manual_funding') {
       setLoading(false);
       setInit(false);
       setInitWithManualFunding(true);
+    } else if (paymentMethod === 'airtime_funding') {
+      setLoading(false);
+      setInit(false);
+      setInitWithAirtimeFunding(true);
     }
   };
 
@@ -225,6 +250,7 @@ export default function DepositToWallet({navigation, route}) {
       {initWithAccount && <AccountNumber />}
       {initWithMomoAgent && <MomoAgent amount={amount} />}
       {initWithManualFunding && <AlternatePayment />}
+      {initWithAirtimeFunding && <AirtimePaymentFunding />}
 
       {init && (
         <>

@@ -20,10 +20,7 @@ export default function WelcomeScreen({navigation}) {
 
   const openWhatsapp = () => {
     Linking.openURL(
-      'whatsapp://send?text=' +
-        whatsapp.message +
-        '&phone=234' +
-        whatsapp.number,
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );
   };
 

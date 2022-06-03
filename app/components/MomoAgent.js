@@ -12,7 +12,7 @@ import {getMomoAGentNumber} from '../redux/actions/wallet';
 export default function MomoAgent({amount}) {
   const dispatch = useDispatch();
   const momo_agent = useSelector(state => state.wallet.momo_agent_number);
-  const ussd = `*502*9*${
+  const ussd = `${momo_agent.ussd}${
     momo_agent !== undefined ? momo_agent.phone_number : '070xxx'
   }*${amount}#`;
 
@@ -31,10 +31,7 @@ export default function MomoAgent({amount}) {
         style={styles.momoAgentLogo}
       />
       <Text style={styles.infoText}>
-        Send a FLOAT from your registered phone number to{' '}
-        <Text>{momo_agent !== undefined ? momo_agent.phone_number : ''}</Text>{' '}
-        <Text>{momo_agent !== undefined ? momo_agent.name : ''}</Text>. Your
-        wallet will be credited Automatically.
+       {momo_agent !== undefined ? momo_agent.instruction : ''}
       </Text>
       <TouchableOpacity onPress={copyToClipboard}>
         <Text style={styles.ussdText}>{ussd}</Text>
@@ -58,7 +55,7 @@ const styles = StyleSheet.create({
     marginTop: hp('2.5'),
     fontFamily: 'Poppins-Regular',
     fontSize: hp('2.5'),
-    paddingHorizontal: 25,
+    paddingHorizontal: 35,
   },
   ussdText: {
     marginTop: hp('5%'),

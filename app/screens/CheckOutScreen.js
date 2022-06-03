@@ -109,9 +109,10 @@ export default function CheckOut({route, navigation}) {
           {/* Header */}
           <View style={styles.headerWrapper}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather name="x" size={hp(35)} color={colors.textBlack} />
+              <Feather name="x" size={hp(30)} color={colors.textBlack} />
             </TouchableOpacity>
             <Text style={styles.headerTitleText}>Check Out</Text>
+            <Text>{'   '}</Text>
           </View>
           <View style={styles.headerUnderLine} />
         </SafeAreaView>
@@ -203,22 +204,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: hp(43),
+    marginTop: hp(3),
     flexDirection: 'row',
     width: '100%',
     paddingHorizontal: 25,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
-    marginLeft: wp(93),
+    fontSize: hp(16),
   },
   headerUnderLine: {
     marginTop: hp(10),
-    height: hp(2),
+    height: hp(1),
     width: wp(350),
     alignSelf: 'center',
     backgroundColor: colors.textLight,

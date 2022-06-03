@@ -107,7 +107,7 @@ export default function DepositToWallet({navigation, route}) {
       setSelectedPaymentMethod(null);
       return;
     }
-    setSelectedPaymentMethod(id);
+    setSelectedPaymentMethod(id); 
     setPaymentMethod(payment.payment_method);
   };
 

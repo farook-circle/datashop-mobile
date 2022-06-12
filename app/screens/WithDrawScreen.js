@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
+  TextInput,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -18,31 +19,13 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
+import Input from '../components/Input';
+import Button from '../components/Button';
 
-export default function DataCategoryScreen({navigation}) {
+export default function Withdraw({navigation}) {
   const dispatch = useDispatch();
 
-  const data_category = useSelector(state => state.data_bundles.data_category);
-
   useEffect(() => {}, []);
-
-  const renderDataCategory = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={styles.dataCategory}
-        onPress={() =>
-          navigation.navigate('DataPlan', {
-            data_bundles: item.data_plan_items,
-          })
-        }>
-        <View style={styles.iconBox}>
-          <FontAwesome name="globe" size={20} color={'white'} />
-        </View>
-        <Text style={styles.categoryTitle}>{item.title}</Text>
-        <Feather name="chevron-right" color={'black'} size={30} />
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -56,33 +39,36 @@ export default function DataCategoryScreen({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Data Category</Text>
+          <Text style={styles.headerTitleText}>Withdraw</Text>
           <Text>{'  '}</Text>
         </View>
         <View style={styles.headerUnderLine} />
       </SafeAreaView>
-
-      <View style={styles.dataBundleCategoryWrapper}>
-        <FlatList
-          data={data_category}
-          renderItem={renderDataCategory}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 100}}
-        />
-      </View>
-      {data_category.length < 1 && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{fontFamily: 'Poppins-Regular', fontSize: 20}}>
-            Nothing here come back later
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <Text style={styles.headerText}>{'Withdraw \nfrom your wallet'}</Text>
+        <Text style={styles.amountLabel}>Amount</Text>
+        <View style={{justifyContent: 'center'}}>
+          <Text
+            style={{
+              position: 'absolute',
+              marginLeft: 10,
+              fontFamily: 'Poppins-Regular',
+              fontSize: hp(16),
+            }}>
+            {'\u20A6'}
           </Text>
+          <TextInput
+            style={styles.amountInput}
+            placeholder="Amount"
+            keyboardType={'numeric'}
+          />
         </View>
-      )}
+
+        <Text style={styles.noteText}>Minimum Withdraw {'\u20A6'}100</Text>
+      </View>
+      <TouchableOpacity style={styles.buttonStyle}>
+        <Text style={styles.buttonText}>Request</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -93,6 +79,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.background,
     paddingHorizontal: 25,
+    justifyContent: 'flex-end',
   },
   headerWrapper: {
     marginTop: hp(3),
@@ -113,24 +100,39 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.textLight,
   },
-  dataCategory: {
-    marginTop: hp(10),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  iconBox: {
-    width: wp(70),
-    height: hp(53),
+  buttonStyle: {
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000',
-    borderRadius: 5,
+    backgroundColor: colors.primary,
+    paddingVertical: hp(8),
+    marginBottom: hp(20),
   },
-  categoryTitle: {
-    flex: 1,
+  buttonText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
-    paddingLeft: wp(10),
+    fontSize: hp(16),
+    color: colors.textWhite,
+  },
+  headerText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: hp(26),
+    color: colors.primary,
+  },
+  amountLabel: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: hp(14),
+    color: colors.textLight,
+  },
+  amountInput: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    fontFamily: 'Poppins-Regular',
+    paddingHorizontal: wp(28),
+  },
+  noteText: {
+    marginTop: 20,
+    fontFamily: 'Poppins-Medium',
+    width: '100%',
+    textAlign: 'center',
   },
 });

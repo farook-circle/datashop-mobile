@@ -19,7 +19,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 
-export default function DataCategoryScreen({navigation}) {
+export default function DataManagement({navigation}) {
   const dispatch = useDispatch();
 
   const data_category = useSelector(state => state.data_bundles.data_category);
@@ -56,33 +56,11 @@ export default function DataCategoryScreen({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Data Category</Text>
+          <Text style={styles.headerTitleText}>Manage Data</Text>
           <Text>{'  '}</Text>
         </View>
         <View style={styles.headerUnderLine} />
       </SafeAreaView>
-
-      <View style={styles.dataBundleCategoryWrapper}>
-        <FlatList
-          data={data_category}
-          renderItem={renderDataCategory}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 100}}
-        />
-      </View>
-      {data_category.length < 1 && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{fontFamily: 'Poppins-Regular', fontSize: 20}}>
-            Nothing here come back later
-          </Text>
-        </View>
-      )}
     </View>
   );
 }

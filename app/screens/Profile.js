@@ -37,6 +37,7 @@ export default function Profile({navigation}) {
   async function removeUserToken() {
     try {
       await EncryptedStorage.removeItem('token');
+      await EncryptedStorage.removeItem('userPin');
       // Congrats! You've just removed your first value!
     } catch (error) {
       // There was an error on the native side
@@ -142,7 +143,7 @@ export default function Profile({navigation}) {
               <Feather name={'x'} size={hp(45)} color="black" />
             </TouchableOpacity>
             <View style={styles.profileIcon}>
-              <Feather name="user" color={colors.primary} size={100} />
+              <Feather name="user" color={colors.primary} size={50} />
             </View>
             <Text
               style={
@@ -150,6 +151,18 @@ export default function Profile({navigation}) {
               }>{`${user.first_name} ${user.last_name}`}</Text>
             <Text style={styles.phoneNumber}>{user.username}</Text>
             <View style={styles.underline} />
+            <TouchableOpacity
+              style={styles.buttonWrapper}
+              // onPress={() => setChangePassoword(!changePassword)}
+            >
+              <Feather
+                name="book"
+                size={hp(25)}
+                color={colors.secondary}
+                style={{marginLeft: wp(20)}}
+              />
+              <Text style={styles.buttonText}>Manual Funding</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.buttonWrapper}
               onPress={() => setChangePassoword(!changePassword)}>
@@ -160,6 +173,18 @@ export default function Profile({navigation}) {
                 style={{marginLeft: wp(20)}}
               />
               <Text style={styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonWrapper}
+              // onPress={handleLogout}
+            >
+              <Feather
+                name="key"
+                size={hp(25)}
+                color={colors.secondary}
+                style={{marginLeft: wp(20)}}
+              />
+              <Text style={styles.buttonText}>Change Pin</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.buttonWrapper}
@@ -186,8 +211,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileIcon: {
-    marginTop: hp(100),
-    padding: hp(30),
+    marginTop: hp(20),
+    padding: hp(40),
     borderRadius: 300,
     borderWidth: 5,
     borderColor: colors.primary,

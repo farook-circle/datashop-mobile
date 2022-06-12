@@ -50,36 +50,46 @@ export default function DepositToWallet({navigation, route}) {
 
   const payment_status = useSelector(state => state.wallet.payment_status);
 
+  const getDepositFee = type => {
+    const fee = payment_status.filter(item => item.type === type)[0];
+
+    if (fee.fee) {
+      return fee.fee;
+    }
+
+    return 'Free';
+  };
+
   const payment_method = [
     {
       id: 1,
       type: 'Card or Ussd',
       payment_method: 'card',
-      transfer_fee: '1.5%',
+      transfer_fee: getDepositFee('card'),
     },
     {
       id: 2,
       type: 'Bank Transfer',
       payment_method: 'bank_transfer',
-      transfer_fee: '50',
+      transfer_fee: getDepositFee('bank_transfer'),
     },
     {
       id: 3,
       type: 'Momo Agent',
       payment_method: 'momo_agent',
-      transfer_fee: 'Free',
+      transfer_fee: getDepositFee('momo_agent'),
     },
     {
       id: 4,
       type: 'Manual Funding',
       payment_method: 'manual_funding',
-      transfer_fee: 'Free',
+      transfer_fee: getDepositFee('manual_funding'),
     },
     {
       id: 5,
       type: 'Airtime Funding',
       payment_method: 'airtime_funding',
-      transfer_fee: 'Free',
+      transfer_fee: getDepositFee('airtime_funding'),
     },
   ];
 
@@ -107,7 +117,7 @@ export default function DepositToWallet({navigation, route}) {
       setSelectedPaymentMethod(null);
       return;
     }
-    setSelectedPaymentMethod(id); 
+    setSelectedPaymentMethod(id);
     setPaymentMethod(payment.payment_method);
   };
 
@@ -236,6 +246,7 @@ export default function DepositToWallet({navigation, route}) {
             />
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>Deposit</Text>
+          <Text>{'  '}</Text>
         </View>
       </SafeAreaView>
       {/* <View style={styles.balanceContainerWrapper}>
@@ -381,18 +392,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerWrapper: {
-    marginTop: hp(43),
+    marginTop: hp(3),
     flexDirection: 'row',
     width: '100%',
     paddingHorizontal: 25,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
   },
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
-    marginLeft: wp(93),
+    fontSize: hp(16),
   },
   balanceContainerWrapper: {
     paddingHorizontal: 25,

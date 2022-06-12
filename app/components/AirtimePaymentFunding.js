@@ -6,41 +6,27 @@ import {
 } from 'react-native-responsive-screen';
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {paymentAccountDetails} from '../redux/actions/wallet';
+import {
+  getAirtimeFundingInstruction,
+  paymentAccountDetails,
+} from '../redux/actions/wallet';
 
 export default function AirtimePaymentFunding() {
   useEffect(() => {
-    dispatch(paymentAccountDetails());
+    dispatch(getAirtimeFundingInstruction());
   }, []);
 
   const dispatch = useDispatch();
-  const account_details = useSelector(state => state.wallet.payment_method);
+  const airtime = useSelector(state => state.wallet.airtime_instruction);
 
   return (
     <View style={styles.container}>
-      <View style={styles.accountInfoWrapper}>
-        <Text style={styles.bankNameText}>
-          Bank Name:{' '}
-          {account_details !== undefined ? account_details.bank_name : ''}{' '}
-        </Text>
-        <Text style={styles.accountNumberText}>
-          Account Number:{' '}
-          {account_details !== undefined ? account_details.account_number : ''}
-        </Text>
-        <Text style={styles.accountNumberName}>
-          Account Name:{' '}
-          {account_details !== undefined ? account_details.account_name : ''}
-        </Text>
-      </View>
-      <View style={styles.instructionWrapper}>
-        <Text style={styles.instructionText}>
-          Instruction:
-          <Text style={styles.instructionTitleText}>
-            {' '}
-            {account_details !== undefined ? account_details.instruction : ''}
-          </Text>
-        </Text>
-      </View>
+      <Text style={styles.instruction}>
+        {airtime !== null && airtime.instruction}
+      </Text>
+      {!airtime && (
+        <Text style={styles.error}>Service not available At the moment</Text>
+      )}
     </View>
   );
 }
@@ -48,35 +34,18 @@ export default function AirtimePaymentFunding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 25,
   },
-  accountInfoWrapper: {
-    marginTop: hp('5.9'),
-    width: wp('90%'),
-    borderWidth: 2,
-    padding: hp('2.5'),
-    borderRadius: 10,
-    borderColor: colors.textLight,
-  },
-  bankNameText: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: hp('2.08'),
-  },
-  accountNumberText: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: hp('2.08'),
-  },
-  accountNumberName: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: hp('2.08'),
-  },
-  instructionWrapper: {
-    marginTop: hp('5.8'),
-    width: wp('90%'),
-  },
-  instructionText: {
+  instruction: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 20,
     color: colors.primary,
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp('2.5'),
+  },
+  error: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 20,
+    color: colors.secondary,
   },
 });

@@ -1,6 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import axios from '../../axios';
+import {entityId} from '../../config/collConfig';
 import {
   USER_LOADED,
   USER_LOADING,
@@ -97,7 +98,13 @@ export const signIn = (userData, ErrorOccur) => dispatch => {
     },
   };
 
-  const body = JSON.stringify(userData);
+  // get entity id
+  const cid = entityId.cid;
+
+  const body = JSON.stringify({
+    ...userData,
+    username: cid ? `${userData.user} - ${cid}` : userData.username,
+  });
 
   axios
     .post('/api/login', body, config)

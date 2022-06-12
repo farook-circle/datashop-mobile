@@ -8,6 +8,7 @@ import {
   GET_MOMO_AGENT_NUMBER,
   GET_ACCOUNT_NUMBER,
   GET_PAYMENT_STATUS,
+  GET_AIRTIME_FUNDING,
 } from '../constants/wallet';
 
 const initialState = {
@@ -16,6 +17,7 @@ const initialState = {
   momo_agent_number: [],
   payment_method: [],
   payment_status: [],
+  airtime_instruction: null,
   isLoading: false,
 };
 
@@ -35,6 +37,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         account: action.payload,
+      };
+    case GET_AIRTIME_FUNDING:
+      return {
+        ...state,
+        airtime_instruction: action.payload,
       };
     case GET_VIRTUAL_ACCOUNT:
       return {

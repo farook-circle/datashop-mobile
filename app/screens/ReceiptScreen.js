@@ -35,6 +35,8 @@ const options = {
 export default function Receipt({navigation, route}) {
   const viewShotRef = useRef();
   const whatsapp = useSelector(state => state.config.contact_info);
+  const user = useSelector(state => state.auth.user);
+
   const [show, setShow] = useState(false);
   const [image, setImage] = useState(null);
 
@@ -56,8 +58,6 @@ export default function Receipt({navigation, route}) {
       //
     }
   };
-
-  const user = useSelector(state => state.auth.user);
 
   const openWhatsapp = () => {
     Linking.openURL(
@@ -264,24 +264,36 @@ export default function Receipt({navigation, route}) {
           </View>
           <View
             style={[styles.buttonGroup, {position: 'absolute', bottom: 20}]}>
-            <TouchableOpacity
-              onPress={openWhatsapp}
-              style={[
-                styles.shareReceiptButton,
-                {
-                  borderColor: colors.secondary,
-                },
-              ]}>
-              <MaterialCommunityIcons
-                name="whatsapp"
-                size={hp(20)}
-                color={'green'}
-                style={{marginRight: hp(5)}}
-              />
-              <Text style={[styles.shareReceiptText, {color: 'red'}]}>
-                Report Issue
-              </Text>
-            </TouchableOpacity>
+            {status !== 'completed' && (
+              <TouchableOpacity
+                // onPress={openWhatsapp}
+                onPress={() =>
+                  navigation.navigate('Complain', {
+                    amount,
+                    type,
+                    quantity,
+                    price,
+                    customer,
+                    date,
+                    time,
+                    transaction_ref,
+                    payment_method,
+                    remark,
+                    status,
+                  })
+                }
+                style={[
+                  styles.shareReceiptButton,
+                  {
+                    borderColor: colors.secondary,
+                    marginRight: wp(15),
+                  },
+                ]}>
+                <Text style={[styles.shareReceiptText, {color: 'red'}]}>
+                  Report Issue
+                </Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               onPress={async () => {
                 await share({
@@ -400,7 +412,7 @@ const styles = StyleSheet.create({
   },
   shareReceiptButton: {
     marginTop: hp(19),
-    width: '49%',
+    flex: 1,
     height: hp(50),
     justifyContent: 'center',
     alignItems: 'center',
@@ -419,6 +431,7 @@ const styles = StyleSheet.create({
   },
   buttonGroup: {
     // backgroundColor: 'red',
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

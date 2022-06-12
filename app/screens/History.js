@@ -85,7 +85,7 @@ export default function History({navigation}) {
             payment_method: item.payment_method,
             transaction_ref: item.transaction_ref,
             remark: item.remark,
-            status: item.status
+            status: item.status,
           })
         }>
         <Image

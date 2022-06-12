@@ -3,6 +3,7 @@ import auth from './auth';
 import data_bundles from './data_bundles';
 import wallet from './wallet';
 import messages from './messages';
+import bill_payment from './bill_payment';
 import config from './config';
 
 export default combineReducers({
@@ -11,4 +12,5 @@ export default combineReducers({
   wallet,
   messages,
   config,
+  bill_payment,
 });

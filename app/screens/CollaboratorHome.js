@@ -34,13 +34,12 @@ import {getMessages, getNotifications} from '../redux/actions/messages';
 import OverLayModel from '../components/OverLayModel';
 import Button from '../components/Button';
 import {getElectricProviders} from '../redux/actions/bill_payment';
-import {entityId} from '../config/collConfig';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 
-export default function Home({navigation}) {
+export default function CollaboratorHome({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
 
@@ -50,9 +49,6 @@ export default function Home({navigation}) {
 
   const [messageAvailable, setMessageAvailable] = useState(true);
   const user = useSelector(state => state.auth.user);
-  const [admin, setAdmin] = useState(true);
-  const collaborator = useSelector(state => state.auth);
-  console.log(collaborator);
   const data_bundles = useSelector(state => state.data_bundles.data_bundle);
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
@@ -223,27 +219,26 @@ export default function Home({navigation}) {
           </View>
         </OverLayModel>
       )}
-
       <View
         style={styles.container}
         // refreshControl={
         //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         // }
       >
+        <ScrollView
+          style={{
+            position: 'absolute',
+            top: 0,
+            height: hp(700),
+            width: '100%',
+            // backgroundColor: 'red',
+            zIndex: -1,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
         <View style={styles.secContainer}>
-          <ScrollView
-            style={{
-              position: 'absolute',
-              top: 0,
-              height: hp(700),
-              width: '100%',
-              // backgroundColor: 'red',
-              zIndex: -1,
-            }}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
           {/* Header */}
           <View style={styles.headerWrapper}>
             <View
@@ -308,19 +303,17 @@ export default function Home({navigation}) {
                 onPress={() => navigation.navigate('Deposit')}>
                 <Text style={styles.buttonTitle}>ADD FUND</Text>
               </TouchableOpacity>
-              {admin && (
-                <TouchableOpacity
-                  style={[styles.buttonStyle, {backgroundColor: '#E53429'}]}
-                  onPress={() => navigation.navigate('Withdraw')}>
-                  <Text style={styles.buttonTitle}>WITHDRAW</Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                style={[styles.buttonStyle, {backgroundColor: '#E53429'}]}
+                onPress={() => navigation.navigate('Withdraw')}>
+                <Text style={styles.buttonTitle}>WITHDRAW</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
         {/* Data Plans Container */}
-        <TouchableOpacity style={styles.dataPlanWrapper}>
+        {/* <TouchableOpacity style={styles.dataPlanWrapper}>
           <Text style={styles.dataPlansTitle}>Services</Text>
           <TouchableOpacity
           // onPress={() => navigation.navigate('DataPlan')}
@@ -331,75 +324,30 @@ export default function Home({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={styles.underLine} />
 
         {/* List of data Bundle */}
         <View style={styles.dataBundleCategoryWrapper}>
-          <View style={[styles.serviceContainer]}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('DataCategory')}
-              activeOpacity={0.8}
-              style={[
-                styles.serviceBox,
-                admin && {width: wp(60), height: hp(60)},
-              ]}>
-              <FontAwesome name="globe" color={'white'} size={27} />
-            </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
-              Data
-            </Text>
-          </View>
-
-          <View style={[styles.serviceContainer]}>
+          <View style={styles.serviceContainer}>
             <TouchableOpacity
               onPress={() => navigation.navigate('Airtime')}
               activeOpacity={0.8}
-              style={[
-                styles.serviceBox,
-                {backgroundColor: '#524F45'},
-                admin && {width: wp(60), height: hp(60)},
-              ]}>
-              <FontAwesome name="phone" color={'white'} size={27} />
+              style={[styles.serviceBox, {backgroundColor: '#524F45'}]}>
+              <FontAwesome name="users" color={'white'} size={27} />
             </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
-              Airtime
-            </Text>
+            <Text style={styles.serviceTitle}>Agents</Text>
           </View>
 
-          <View style={[styles.serviceContainer]}>
+          <View style={styles.serviceContainer}>
             <TouchableOpacity
+              onPress={() => navigation.navigate('DataManagement')}
               activeOpacity={0.8}
-              onPress={() => navigation.navigate('BillPaymentCategory')}
-              style={[
-                styles.serviceBox,
-                {backgroundColor: colors.primary},
-                admin && {width: wp(60), height: hp(60)},
-              ]}>
-              <FontAwesome name="align-justify" color={'white'} size={27} />
+              style={[styles.serviceBox]}>
+              <FontAwesome name="globe" color={'white'} size={27} />
             </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
-              Bill Payment
-            </Text>
+            <Text style={styles.serviceTitle}>Data Management</Text>
           </View>
-
-          {admin && (
-            <View style={[styles.serviceContainer]}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('ManageAgent')}
-                style={[
-                  styles.serviceBox,
-                  {backgroundColor: colors.textLight},
-                  admin && {width: wp(60), height: hp(60)},
-                ]}>
-                <FontAwesome name="users" color={'white'} size={27} />
-              </TouchableOpacity>
-              <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
-                Agents
-              </Text>
-            </View>
-          )}
 
           {/* <FlatList
             data={data_bundles}
@@ -415,7 +363,7 @@ export default function Home({navigation}) {
           <TouchableOpacity
             style={styles.historyTitleWrapper}
             onPress={() => navigation.navigate('History')}>
-            <Text style={styles.historyTitle}>History</Text>
+            <Text style={styles.historyTitle}>Earning History</Text>
             <TouchableOpacity onPress={() => navigation.navigate('History')}>
               <Feather
                 name="chevron-right"
@@ -533,18 +481,17 @@ const styles = StyleSheet.create({
     width: '100%',
     // height: hp(200),
     paddingHorizontal: 25,
-    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
 
   serviceContainer: {
     marginTop: hp(20),
     alignItems: 'center',
+    marginRight: hp(10),
   },
   serviceBox: {
-    width: wp(100),
-    height: hp(100),
+    width: wp(70),
+    height: hp(60),
     backgroundColor: '#FCC60D',
     justifyContent: 'center',
     alignItems: 'center',
@@ -553,7 +500,7 @@ const styles = StyleSheet.create({
   serviceTitle: {
     marginTop: hp(10),
     fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
+    fontSize: hp(12),
   },
   dataBundleItemsWrapper: {
     width: wp(130),

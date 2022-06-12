@@ -4,6 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useSelector, useDispatch} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
+import {entityId} from '../config/collConfig';
+
 // My Screens
 import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -21,6 +23,14 @@ import Messages from '../screens/Messages';
 import Profile from '../screens/Profile';
 import {getContactInfo} from '../redux/actions/config';
 import DataCategoryScreen from '../screens/DataCategoryScreen';
+import Airtime from '../screens/Airtime';
+import ElectricityPayment from '../screens/ElectricityPayment';
+import BillPaymentCategory from '../screens/BillPaymentCategory';
+import ComplainScreen from '../screens/ComplainScreen';
+import CollaboratorHome from '../screens/CollaboratorHome';
+import Withdraw from '../screens/WithDrawScreen';
+import DataManagement from '../screens/DataManagement';
+import AddTypePin from '../screens/AddTypePin';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,10 +82,16 @@ const RootNavigator = () => {
         ) : (
           <>
             <Stack.Screen
+              name="Auth"
+              component={AddTypePin}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
               name="Home"
               component={HomeScreen}
               options={{headerShown: false}}
             />
+
             <Stack.Screen
               name="Profile"
               component={Profile}
@@ -87,13 +103,38 @@ const RootNavigator = () => {
               options={{headerShown: false}}
             />
             <Stack.Screen
+              name="Withdraw"
+              component={Withdraw}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
               name="DataCategory"
               component={DataCategoryScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
+              name="DataManagement"
+              component={DataManagement}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
               name="DataPlan"
               component={DataPlan}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Airtime"
+              component={Airtime}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ElectricityPayment"
+              component={ElectricityPayment}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="BillPaymentCategory"
+              component={BillPaymentCategory}
               options={{headerShown: false}}
             />
             <Stack.Screen
@@ -110,6 +151,11 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Receipt"
               component={Receipt}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Complain"
+              component={ComplainScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

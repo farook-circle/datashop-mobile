@@ -45,6 +45,7 @@ const initialState = {
   isRestoringUser: true,
   isLoading: false,
   user: null,
+  collaborator: false,
 };
 
 export default function (state = initialState, action) {

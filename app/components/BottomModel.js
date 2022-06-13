@@ -10,7 +10,7 @@ import React from 'react';
 export default function BottomModel({onBlankPress, children}) {
   return (
     <Pressable style={styles.container} onPress={onBlankPress}>
-      {children}
+      <View>{children}</View>
     </Pressable>
   );
 }

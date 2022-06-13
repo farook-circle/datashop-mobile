@@ -5,6 +5,7 @@ import wallet from './wallet';
 import messages from './messages';
 import bill_payment from './bill_payment';
 import config from './config';
+import airtime from './airtime';
 
 export default combineReducers({
   auth,
@@ -13,4 +14,5 @@ export default combineReducers({
   messages,
   config,
   bill_payment,
+  airtime,
 });

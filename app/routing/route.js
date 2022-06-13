@@ -31,6 +31,7 @@ import CollaboratorHome from '../screens/CollaboratorHome';
 import Withdraw from '../screens/WithDrawScreen';
 import DataManagement from '../screens/DataManagement';
 import AddTypePin from '../screens/AddTypePin';
+import AgentManagement from '../screens/AgentManagement';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,18 +41,18 @@ const RootNavigator = () => {
 
   useEffect(() => {
     dispatch(getContactInfo());
-    async function getUserToken() {
+    async function getUserSession() {
       try {
-        const token = await EncryptedStorage.getItem('token');
-        if (token !== undefined) {
-          dispatch({type: RESTORE_TOKEN, payload: JSON.parse(token)});
+        const user_session = await EncryptedStorage.getItem('user_session');
+        if (user_session !== undefined) {
+          dispatch({type: RESTORE_TOKEN, payload: JSON.parse(user_session)});
         }
       } catch (error) {
         // There was an error on the native side
       }
       dispatch(restoreUser());
     }
-    getUserToken();
+    getUserSession();
   }, []);
 
   if (auth.isRestoringUser) {
@@ -115,6 +116,11 @@ const RootNavigator = () => {
             <Stack.Screen
               name="DataManagement"
               component={DataManagement}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AgentManagement"
+              component={AgentManagement}
               options={{headerShown: false}}
             />
             <Stack.Screen

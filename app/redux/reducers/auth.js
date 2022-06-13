@@ -17,12 +17,13 @@ import {
   CHANGE_PASSWORD_FAILED,
 } from '../constants/auth';
 
-async function saveUserToken(token) {
+async function saveUserSession(token, collaborator) {
   try {
     await EncryptedStorage.setItem(
-      'token',
+      'user_session',
       JSON.stringify({
         token: token,
+        collaborator: collaborator,
       }),
     );
   } catch (error) {
@@ -30,9 +31,9 @@ async function saveUserToken(token) {
   }
 }
 
-async function removeUserToken() {
+async function removeUserSession() {
   try {
-    await EncryptedStorage.removeItem('token');
+    await EncryptedStorage.removeItem('user_session');
     // Congrats! You've just removed your first value!
   } catch (error) {
     // There was an error on the native side
@@ -53,7 +54,7 @@ export default function (state = initialState, action) {
     case RESTORE_TOKEN:
       return {
         ...state,
-        token: action.payload.token,
+        ...action.payload,
       };
     case SET_TOKEN:
       return {
@@ -90,7 +91,7 @@ export default function (state = initialState, action) {
         isLoading: false,
       };
     case LOGIN_SUCCESS:
-      saveUserToken(action.payload.token);
+      saveUserSession(action.payload.token, action.payload.collaborator);
       return {
         ...state,
         ...action.payload,
@@ -113,7 +114,7 @@ export default function (state = initialState, action) {
         isLoading: false,
       };
     case REGISTER_SUCCESS:
-      saveUserToken(action.payload.token);
+      saveUserSession(action.payload.token, action.payload.collaborator);
       return {
         ...state,
         ...action.payload,
@@ -121,13 +122,14 @@ export default function (state = initialState, action) {
         isLoading: false,
       };
     case AUTH_ERROR:
-      removeUserToken();
+      removeUserSession();
       return {
         ...state,
         token: null,
         user: null,
         isAuthenticated: false,
         isRestoringUser: false,
+        collaborator: false,
       };
     case LOGIN_FAIL:
     case REGISTER_FAIL:

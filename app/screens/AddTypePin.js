@@ -66,7 +66,7 @@ export default function AddTypePin({navigation}) {
 
   async function removeUserToken() {
     try {
-      await EncryptedStorage.removeItem('token');
+      await EncryptedStorage.removeItem('user_session');
       await EncryptedStorage.removeItem('userPin');
       // Congrats! You've just removed your first value!
     } catch (error) {
@@ -112,6 +112,20 @@ export default function AddTypePin({navigation}) {
       },
       {text: 'OK', onPress: () => removeUserToken()},
     ]);
+  };
+
+  const handleForgotPin = () => {
+    Alert.alert(
+      'Alert',
+      "forgot your PIN? Don't worry after you log-out you pin will be reset note that you have to use your password",
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {text: 'Log-out', onPress: () => removeUserToken()},
+      ],
+    );
   };
 
   const handleCreatePin = async () => {
@@ -289,7 +303,9 @@ export default function AddTypePin({navigation}) {
             <Feather name="delete" size={hp(30)} color={colors.primary} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={[styles.shareReceiptButton]}>
+        <TouchableOpacity
+          style={[styles.shareReceiptButton]}
+          onPress={() => handleForgotPin()}>
           <Text style={styles.shareReceiptText}>Forgot PIN?</Text>
         </TouchableOpacity>
       </>

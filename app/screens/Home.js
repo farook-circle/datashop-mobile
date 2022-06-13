@@ -35,6 +35,7 @@ import OverLayModel from '../components/OverLayModel';
 import Button from '../components/Button';
 import {getElectricProviders} from '../redux/actions/bill_payment';
 import {entityId} from '../config/collConfig';
+import {getAirtimeServices} from '../redux/actions/airtime';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -50,9 +51,8 @@ export default function Home({navigation}) {
 
   const [messageAvailable, setMessageAvailable] = useState(true);
   const user = useSelector(state => state.auth.user);
-  const [admin, setAdmin] = useState(true);
-  const collaborator = useSelector(state => state.auth);
-  console.log(collaborator);
+
+  const collaborator = useSelector(state => state.auth.collaborator);
   const data_bundles = useSelector(state => state.data_bundles.data_bundle);
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
@@ -76,6 +76,7 @@ export default function Home({navigation}) {
     dispatch(getPaymentStatus());
     dispatch(getDataCategory());
     dispatch(getElectricProviders());
+    dispatch(getAirtimeServices());
     // checkIfPriorityMessage();
 
     handleSetMessageAvailable();
@@ -308,7 +309,7 @@ export default function Home({navigation}) {
                 onPress={() => navigation.navigate('Deposit')}>
                 <Text style={styles.buttonTitle}>ADD FUND</Text>
               </TouchableOpacity>
-              {admin && (
+              {collaborator && (
                 <TouchableOpacity
                   style={[styles.buttonStyle, {backgroundColor: '#E53429'}]}
                   onPress={() => navigation.navigate('Withdraw')}>
@@ -342,11 +343,12 @@ export default function Home({navigation}) {
               activeOpacity={0.8}
               style={[
                 styles.serviceBox,
-                admin && {width: wp(60), height: hp(60)},
+                collaborator && {width: wp(60), height: hp(60)},
               ]}>
               <FontAwesome name="globe" color={'white'} size={27} />
             </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
+            <Text
+              style={[styles.serviceTitle, collaborator && {fontSize: hp(10)}]}>
               Data
             </Text>
           </View>
@@ -358,11 +360,12 @@ export default function Home({navigation}) {
               style={[
                 styles.serviceBox,
                 {backgroundColor: '#524F45'},
-                admin && {width: wp(60), height: hp(60)},
+                collaborator && {width: wp(60), height: hp(60)},
               ]}>
               <FontAwesome name="phone" color={'white'} size={27} />
             </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
+            <Text
+              style={[styles.serviceTitle, collaborator && {fontSize: hp(10)}]}>
               Airtime
             </Text>
           </View>
@@ -374,28 +377,33 @@ export default function Home({navigation}) {
               style={[
                 styles.serviceBox,
                 {backgroundColor: colors.primary},
-                admin && {width: wp(60), height: hp(60)},
+                collaborator && {width: wp(60), height: hp(60)},
               ]}>
               <FontAwesome name="align-justify" color={'white'} size={27} />
             </TouchableOpacity>
-            <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
+            <Text
+              style={[styles.serviceTitle, collaborator && {fontSize: hp(10)}]}>
               Bill Payment
             </Text>
           </View>
 
-          {admin && (
+          {collaborator && (
             <View style={[styles.serviceContainer]}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('ManageAgent')}
+                onPress={() => navigation.navigate('AgentManagement')}
                 style={[
                   styles.serviceBox,
                   {backgroundColor: colors.textLight},
-                  admin && {width: wp(60), height: hp(60)},
+                  collaborator && {width: wp(60), height: hp(60)},
                 ]}>
                 <FontAwesome name="users" color={'white'} size={27} />
               </TouchableOpacity>
-              <Text style={[styles.serviceTitle, admin && {fontSize: hp(10)}]}>
+              <Text
+                style={[
+                  styles.serviceTitle,
+                  collaborator && {fontSize: hp(10)},
+                ]}>
                 Agents
               </Text>
             </View>

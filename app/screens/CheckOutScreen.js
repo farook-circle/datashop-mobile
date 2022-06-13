@@ -76,7 +76,7 @@ export default function CheckOut({route, navigation}) {
   const completeCheckOut = () => {
     Alert.alert(
       'Buy Data',
-      `Please confirm that you want to order for ${customer}`,
+      `Please confirm that you want to order ${quantity} for ${customer}`,
       [
         {
           text: 'Cancel',

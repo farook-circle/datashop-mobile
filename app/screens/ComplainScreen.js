@@ -70,8 +70,6 @@ export default function ComplainScreen({route, navigation}) {
       status,
       extraDetail,
     };
-
-    console.log(data);
   };
 
   if (isLoading) {

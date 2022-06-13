@@ -65,7 +65,13 @@ export const signUp = (userData, ErrorOccur) => dispatch => {
     },
   };
 
-  const body = JSON.stringify(userData);
+  // get entity id
+  const cid = entityId.cid;
+
+  const body = JSON.stringify({
+    ...userData,
+    username: cid ? `${userData.username}-${cid}` : userData.username,
+  });
 
   axios
     .post('/api/register', body, config)
@@ -103,7 +109,7 @@ export const signIn = (userData, ErrorOccur) => dispatch => {
 
   const body = JSON.stringify({
     ...userData,
-    username: cid ? `${userData.user} - ${cid}` : userData.username,
+    username: cid ? `${userData.username}-${cid}` : userData.username,
   });
 
   axios
@@ -154,7 +160,6 @@ export const changeUserPassword =
       })
       .catch(error => {
         if (error.response) {
-          console.log(error.response.data);
           alert('your old password is wrong');
           dispatch({type: CHANGE_PASSWORD_FAILED});
         } else {

@@ -29,13 +29,12 @@ export default function DataPlan({route, navigation}) {
   const [editedAmount, setEditedAmount] = useState('');
 
   const {data_bundles} = route.params;
-
-  const [admin, setAdmin] = useState(true);
+  const collaborator = useSelector(state => state.auth.collaborator);
 
   useEffect(() => {}, []);
 
   const handleDataItemClick = item => {
-    if (admin) {
+    if (collaborator) {
       setItemClick(true);
       setItemValue(item);
       return;

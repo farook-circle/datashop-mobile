@@ -28,6 +28,7 @@ export default function Profile({navigation}) {
   const [new_password_again, setNewPasswordAgain] = useState('');
 
   const user = useSelector(state => state.auth.user);
+  const collaborator = useSelector(state => state.auth.collaborator);
   const isLoading = useSelector(state => state.auth.isLoading);
 
   const cancelPasswordChange = () => {
@@ -36,7 +37,7 @@ export default function Profile({navigation}) {
 
   async function removeUserToken() {
     try {
-      await EncryptedStorage.removeItem('token');
+      await EncryptedStorage.removeItem('user_session');
       await EncryptedStorage.removeItem('userPin');
       // Congrats! You've just removed your first value!
     } catch (error) {
@@ -149,20 +150,24 @@ export default function Profile({navigation}) {
               style={
                 styles.userName
               }>{`${user.first_name} ${user.last_name}`}</Text>
-            <Text style={styles.phoneNumber}>{user.username}</Text>
+            <Text style={styles.phoneNumber}>{`${
+              user.username.split('-')[0]
+            }`}</Text>
             <View style={styles.underline} />
-            <TouchableOpacity
-              style={styles.buttonWrapper}
-              // onPress={() => setChangePassoword(!changePassword)}
-            >
-              <Feather
-                name="book"
-                size={hp(25)}
-                color={colors.secondary}
-                style={{marginLeft: wp(20)}}
-              />
-              <Text style={styles.buttonText}>Manual Funding</Text>
-            </TouchableOpacity>
+            {collaborator && (
+              <TouchableOpacity
+                style={styles.buttonWrapper}
+                // onPress={() => setChangePassoword(!changePassword)}
+              >
+                <Feather
+                  name="book"
+                  size={hp(25)}
+                  color={colors.secondary}
+                  style={{marginLeft: wp(20)}}
+                />
+                <Text style={styles.buttonText}>Payment Method</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.buttonWrapper}
               onPress={() => setChangePassoword(!changePassword)}>
@@ -173,18 +178,6 @@ export default function Profile({navigation}) {
                 style={{marginLeft: wp(20)}}
               />
               <Text style={styles.buttonText}>Change Password</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonWrapper}
-              // onPress={handleLogout}
-            >
-              <Feather
-                name="key"
-                size={hp(25)}
-                color={colors.secondary}
-                style={{marginLeft: wp(20)}}
-              />
-              <Text style={styles.buttonText}>Change Pin</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.buttonWrapper}

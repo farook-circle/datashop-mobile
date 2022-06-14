@@ -32,6 +32,7 @@ import Withdraw from '../screens/WithDrawScreen';
 import DataManagement from '../screens/DataManagement';
 import AddTypePin from '../screens/AddTypePin';
 import AgentManagement from '../screens/AgentManagement';
+import EditProfile from '../screens/EditProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -96,6 +97,11 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Profile"
               component={Profile}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfile}
               options={{headerShown: false}}
             />
             <Stack.Screen

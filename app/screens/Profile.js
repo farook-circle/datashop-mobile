@@ -157,15 +157,14 @@ export default function Profile({navigation}) {
             {collaborator && (
               <TouchableOpacity
                 style={styles.buttonWrapper}
-                // onPress={() => setChangePassoword(!changePassword)}
-              >
+                onPress={() => navigation.navigate('EditProfile')}>
                 <Feather
-                  name="book"
+                  name="user"
                   size={hp(25)}
                   color={colors.secondary}
                   style={{marginLeft: wp(20)}}
                 />
-                <Text style={styles.buttonText}>Payment Method</Text>
+                <Text style={styles.buttonText}>Profile Settings</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity

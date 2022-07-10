@@ -58,7 +58,7 @@ export const getPaymentStatus = () => (dispatch, getState) => {
 
   //Check to see if there is an token and to header
   if (token) {
-    config.headers['Authorization'] = `Token ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
 
   axios
@@ -96,7 +96,7 @@ export const getAirtimeFundingInstruction = () => (dispatch, getState) => {
 
   axios
     .get('/wallet/airtime-funding', config)
-    .then(res => {     
+    .then(res => {
       dispatch({
         type: GET_AIRTIME_FUNDING,
         payload: res.data,

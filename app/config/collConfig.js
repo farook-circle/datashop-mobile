@@ -1,5 +1,5 @@
 export const entityId = {
-  cid: '1234567890',
+  cid: null,
   dateIssued: '2020-20-10',
   dateExpire: '2022-19-06',
 };

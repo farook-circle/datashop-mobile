@@ -36,6 +36,11 @@ import Button from '../components/Button';
 import {getElectricProviders} from '../redux/actions/bill_payment';
 import {entityId} from '../config/collConfig';
 import {getAirtimeServices} from '../redux/actions/airtime';
+import {
+  getCollaboratorBank,
+  getCollaboratorData,
+  getCollaboratorWhatsapp,
+} from '../redux/actions/collaborator';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -57,9 +62,14 @@ export default function Home({navigation}) {
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
+
   const balance = useSelector(state => state.wallet.wallet_balance);
   const messages = useSelector(state => state.messages.messages);
   const notifications = useSelector(state => state.messages.notifications);
+
+  const collaborator_whatsapp = useSelector(
+    state => state.collaborator.collaborator_whatsapp,
+  );
 
   const priority_message = notifications.filter(
     item => item.priority === true,
@@ -77,6 +87,11 @@ export default function Home({navigation}) {
     dispatch(getDataCategory());
     dispatch(getElectricProviders());
     dispatch(getAirtimeServices());
+    if (entityId.cid) {
+      dispatch(getCollaboratorData());
+      dispatch(getCollaboratorWhatsapp());
+      dispatch(getCollaboratorBank());
+    }
     // checkIfPriorityMessage();
 
     handleSetMessageAvailable();
@@ -117,57 +132,32 @@ export default function Home({navigation}) {
   };
 
   const openWhatsapp = () => {
-    Linking.openURL(
-      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
-    );
-  };
-
-  const renderDataBundleItem = ({item}) => {
-    return (
-      <View style={styles.dataBundleItemsWrapper}>
-        <Image
-          source={require('../../assets/images/mtn_logo.png')}
-          style={styles.mtnLogoImage}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate('CheckOut', item)}>
-          <View style={styles.roundIconEnter}>
-            <Feather
-              name="chevron-right"
-              size={hp(25)}
-              color={colors.textBlack}
-            />
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.priceAndQuantity}>
-          <Text style={{color: colors.secondary}}>{item.quantity}</Text>
-          {'  '}
-          {item.price}
-        </Text>
-      </View>
-    );
+    entityId.cid
+      ? Linking.openURL(
+          'whatsapp://send?text=' +
+            collaborator_whatsapp.message +
+            '&phone=+234' +
+            collaborator_whatsapp.whatsapp_number,
+        )
+      : Linking.openURL(
+          'whatsapp://send?text=' +
+            whatsapp.message +
+            '&phone=' +
+            whatsapp.number,
+        );
   };
 
   const renderHistoryItem = ({item}) => {
     return (
       <TouchableOpacity
         style={styles.historyItemsWrapper}
-        onPress={() =>
-          navigation.navigate('Receipt', {
-            amount: item.amount,
-            type: item.type,
-            price: item.price,
-            customer: item.customer,
-            quantity: item.quantity,
-            date: item.date,
-            time: item.time,
-            transaction_ref: item.transaction_ref,
-            payment_method: item.payment_method,
-            remark: item.remark,
-            status: item.status,
-          })
-        }>
+        onPress={() => navigation.navigate('Receipt', {transaction: item})}>
         <Image
-          source={getPaymentTypeLogo(item.type)}
+          source={
+            item.image !== null
+              ? {uri: item.image}
+              : getPaymentTypeLogo(item.type)
+          }
           style={styles.mtnLogoImageHistory}
         />
         <Text style={styles.receiverText}>
@@ -268,7 +258,7 @@ export default function Home({navigation}) {
                   color: colors.textWhite,
                   fontSize: hp(16),
                   marginLeft: wp(15),
-                }}>{`Welcome ${user.first_name}`}</Text>
+                }}>{`Welcome, ${user.first_name}`}</Text>
             </View>
             <View
               style={{

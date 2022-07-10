@@ -25,6 +25,7 @@ import {hp, wp} from '../config/dpTopx';
 import BottomModel from '../components/BottomModel';
 import {buyElectricity, verifyMeter} from '../redux/actions/bill_payment';
 import KeyboardAvoidingView from 'react-native-keyboard-aware-scroll-view';
+import GetElectricityToken from '../components/GetElectricityToken';
 
 const meterTypeData = [
   {id: 1, code: '01', title: 'Prepaid'},
@@ -36,11 +37,14 @@ export default function ElectricityPayment({navigation}) {
   const [electricityCompany, setElectricityCompany] = useState(null);
   const [meterType, setMeterType] = useState(null);
   const [meterNumber, setMeterNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [meterName, setMeterName] = useState('');
   const [error, setError] = useState(false);
   const [disableContinue, setDisableContinue] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
+  const [electricityOrderData, setElectricityOrderData] = useState(null);
   const [buyingElectricityOnprogress, setBuyingElectricityOnprogress] =
     useState(false);
   const [toggleElectricityProviderSelect, setToggleElectricityProviderSelect] =
@@ -51,6 +55,7 @@ export default function ElectricityPayment({navigation}) {
   const electric_providers = useSelector(
     state => state.bill_payment.electric_providers,
   );
+  const balance = useSelector(state => state.wallet.wallet_balance);
 
   useEffect(() => {}, []);
 
@@ -101,7 +106,7 @@ export default function ElectricityPayment({navigation}) {
       return;
     }
 
-    setMeterName('wrong meter details');
+    setMeterName('Unable to verify meter');
     setError(true);
   };
 
@@ -125,7 +130,7 @@ export default function ElectricityPayment({navigation}) {
     setButtonLoading(false);
     setDisableContinue(false);
     if (res_status > 300) {
-      setMeterName('wrong meter details');
+      setMeterName('unable to fetch meter detail');
       setError(true);
       return;
     }
@@ -141,25 +146,50 @@ export default function ElectricityPayment({navigation}) {
   };
 
   const finishBuyNow = () => {
+    if (balance < Number(amount)) {
+      alert('You do not have sufficient balance. Please fund your wallet');
+      return;
+    }
     setBuyingElectricityOnprogress(true);
 
-    // dispatch(
-    //   buyElectricity(
-    //     {
-    //       electricityCompany: electricityCompany.code,
-    //       meterType: meterType.code,
-    //       meterNo: meterNumber,
-    //       amount: amount,
-    //     },
-    //     handleBuyResponse,
-    //   ),
-    // );
+    dispatch(
+      buyElectricity(
+        {
+          providers: electricityCompany.id,
+          meterType: meterType.code,
+          meterNumber: meterNumber,
+          amount: amount,
+          customerPhone: phoneNumber,
+          customerEmail: emailAddress,
+          customer: meterNumber,
+        },
+        handleBuyResponse,
+      ),
+    );
   };
 
-  const handleBuyResponse = (res_data, res_status) => {};
+  const handleBuyResponse = (res_data, res_status) => {
+    if (res_status < 300) {
+      // order success handle
+      setBuyingElectricityOnprogress(false);
+      setElectricityOrderData(res_data);
+      return;
+    }
+
+    if (res_status > 800) {
+      alert('Network error please check your service');
+      setBuyingElectricityOnprogress(false);
+    }
+
+    alert('Something went wrong please try again');
+    setBuyingElectricityOnprogress(false);
+  };
 
   return (
     <>
+      {electricityOrderData && (
+        <GetElectricityToken data={electricityOrderData} />
+      )}
       {buyingElectricityOnprogress && (
         <View
           style={{
@@ -257,6 +287,25 @@ export default function ElectricityPayment({navigation}) {
             keyboardType={'numeric'}
             value={amount}
             onChangeText={text => setAmount(text)}
+          />
+          <Text style={styles.inputLabel}>
+            Customer Phone Number(optional):
+          </Text>
+          <TextInput
+            placeholder="Phone Number"
+            style={styles.input}
+            keyboardType={'numeric'}
+            value={phoneNumber}
+            onChangeText={text => setPhoneNumber(text)}
+          />
+          <Text style={styles.inputLabel}>
+            Customer Email address(optional):
+          </Text>
+          <TextInput
+            placeholder="Email Address"
+            style={styles.input}
+            value={emailAddress}
+            onChangeText={text => setEmailAddress(text)}
           />
         </ScrollView>
         <TouchableOpacity

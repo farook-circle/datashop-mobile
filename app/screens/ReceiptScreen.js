@@ -38,7 +38,7 @@ export default function Receipt({navigation, route}) {
   const user = useSelector(state => state.auth.user);
 
   const [show, setShow] = useState(false);
-  const [image, setImage] = useState(null);
+  const [screenShotImage, setScreenShotImage] = useState(null);
 
   useEffect(() => {
     takeScreenShot();
@@ -47,7 +47,7 @@ export default function Receipt({navigation, route}) {
   const takeScreenShot = () => {
     setShow(true);
     viewShotRef.current.capture().then(uri => {
-      setImage(uri);
+      setScreenShotImage(uri);
     });
   };
 
@@ -77,9 +77,12 @@ export default function Receipt({navigation, route}) {
     );
   };
 
+  const {transaction} = route.params;
+
   const {
     amount,
     type,
+    image,
     quantity,
     price,
     customer,
@@ -89,7 +92,9 @@ export default function Receipt({navigation, route}) {
     payment_method,
     remark,
     status,
-  } = route.params;
+  } = transaction;
+
+  console.log(image);
 
   const getPaymentTypeLogo = type => {
     if (type === 'bank transfer deposit') {
@@ -209,7 +214,9 @@ export default function Receipt({navigation, route}) {
           <View style={styles.sectionGroup}>
             <View style={styles.dataBundleItemsWrapper}>
               <Image
-                source={getPaymentTypeLogo(type)}
+                source={
+                  image !== null ? {uri: image} : getPaymentTypeLogo(type)
+                }
                 style={styles.mtnLogoImage}
               />
               <Text style={styles.quantityText}>
@@ -298,7 +305,7 @@ export default function Receipt({navigation, route}) {
               onPress={async () => {
                 await share({
                   title: 'Share receipt',
-                  url: image,
+                  url: screenShotImage,
                 });
               }}
               style={styles.shareReceiptButton}>

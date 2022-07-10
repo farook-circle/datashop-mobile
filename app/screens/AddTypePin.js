@@ -132,7 +132,7 @@ export default function AddTypePin({navigation}) {
     const result = await setUserPin(amount);
     if (result) {
       setLoading(false);
-      Alert.alert('Success', `You have successfully set ${amount} as you PIN`, [
+      Alert.alert('Success', `You have successfully set ${amount} as your PIN`, [
         {
           text: 'OK',
           onPress: () => navigation.dispatch(StackActions.replace('Home')),

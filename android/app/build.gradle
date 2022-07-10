@@ -200,6 +200,10 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    
+    // this is for the in app update
+    implementation "com.google.android.material:material:1.1.0"
+    implementation 'com.google.android.play:core:1.7.3' //  at the end
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

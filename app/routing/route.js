@@ -33,6 +33,10 @@ import DataManagement from '../screens/DataManagement';
 import AddTypePin from '../screens/AddTypePin';
 import AgentManagement from '../screens/AgentManagement';
 import EditProfile from '../screens/EditProfile';
+import ForgotPasswordRequest from '../screens/ForgotPasswordRequest';
+import ResetPassword from '../screens/ResetPassword';
+
+import InAppUpdate from '../utils/InAppUpdate';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +45,8 @@ const RootNavigator = () => {
   const auth = useSelector(state => state.auth);
 
   useEffect(() => {
+    InAppUpdate.checkUpdate();
+
     dispatch(getContactInfo());
     async function getUserSession() {
       try {
@@ -78,6 +84,16 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ForgotPasswordRequest"
+              component={ForgotPasswordRequest}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
               options={{headerShown: false}}
             />
           </>

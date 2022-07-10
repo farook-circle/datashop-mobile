@@ -14,6 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {hp, dp, wp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
+import {entityId} from '../config/collConfig';
 
 export default function WelcomeScreen({navigation}) {
   const whatsapp = useSelector(state => state.config.contact_info);
@@ -62,10 +63,16 @@ export default function WelcomeScreen({navigation}) {
         <Text style={styles.textInfoLink}>terms of service</Text>and
         <Text style={styles.textInfoLink}>privacy policy</Text>
       </Text>
-      <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
-        <MaterialCommunityIcons name="whatsapp" size={hp(25)} color={'green'} />
-        <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
-      </TouchableOpacity>
+      {!entityId.cid && (
+        <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
+          <MaterialCommunityIcons
+            name="whatsapp"
+            size={hp(25)}
+            color={'green'}
+          />
+          <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 }

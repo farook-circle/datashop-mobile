@@ -130,7 +130,18 @@ export default function LoginScreen({navigation}) {
             )}
           </View>
         </View>
-
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ForgotPasswordRequest')}
+          style={{alignSelf: 'flex-end', marginRight: 25}}>
+          <Text
+            style={{
+              fontFamily: 'Poppins-Medium',
+              fontSize: hp(16),
+              color: colors.primary,
+            }}>
+            Forgot Password?
+          </Text>
+        </TouchableOpacity>
         <View style={styles.buttonsWrapper}>
           <TouchableOpacity
             style={[
@@ -264,7 +275,8 @@ const styles = StyleSheet.create({
   },
 
   textLogin: {
-    alignSelf: 'flex-start',
+    width: '100%',
+    textAlign: 'center',
     marginTop: hp(14),
     fontFamily: 'Poppins-Light',
     fontSize: hp(14),

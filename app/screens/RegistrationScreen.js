@@ -135,14 +135,14 @@ export default function RegistrationScreen({navigation}) {
               onChangeText={e => setFirstName(e)}
               value={first_name}
               placeholder="First Name"
-              style={[styles.textInput, {width: 150}]}
+              style={[styles.textInput, {width: '49%'}]}
               maxLength={30}
             />
             <TextInput
               onChangeText={e => setLastName(e)}
               value={last_name}
               placeholder="Last Name"
-              style={[styles.textInput, {width: 150}]}
+              style={[styles.textInput, {width: '49%'}]}
               maxLength={30}
             />
           </View>
@@ -354,7 +354,8 @@ const styles = StyleSheet.create({
   },
 
   textLogin: {
-    alignSelf: 'flex-start',
+    width: '100%',
+    textAlign: 'center',
     marginTop: hp(15),
     fontFamily: 'Poppins-Light',
     fontSize: hp(14),

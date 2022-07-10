@@ -22,12 +22,13 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import {getComplain} from '../redux/actions/complain';
+import {getComplain, makeComplain} from '../redux/actions/complain';
 
 export default function ComplainScreen({route, navigation}) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [extraDetail, setExtraDetail] = useState('');
+  const [complainResponse, setComplainResponse] = useState(null);
   const user = useSelector(state => state.auth.user);
 
   // data from route
@@ -50,26 +51,72 @@ export default function ComplainScreen({route, navigation}) {
   }, []);
 
   const fetchComplainItem = () => {
+    setIsLoading(true);
     dispatch(getComplain(transaction_ref, handleGetResponse));
   };
 
   const handleGetResponse = (res_data, res_status) => {
-    // nothing yet
+    if (res_status === 200) {
+      if (res_data.complainResponse) {
+        setComplainResponse(res_data);
+      }
+      setIsLoading(false);
+
+      return;
+    }
+
+    if (res_status === 900) {
+      alert('alert network error');
+      setIsLoading(false);
+      navigation.goBack();
+      return;
+    }
+
+    setIsLoading(false);
   };
 
   const sendComplain = () => {
+    setIsLoading(true);
     const data = {
-      agent: user.username,
-      amount,
-      quantity,
-      customer,
-      date,
-      time,
-      transaction_ref,
-      payment_method,
-      status,
-      extraDetail,
+      agent_id: user.id,
+      type: type,
+      amount: amount,
+      quantity: quantity,
+      customer: quantity,
+      date: date,
+      time: time,
+      transaction_ref: transaction_ref,
+      payment_method: payment_method,
+      status: status,
+      dispute_message: extraDetail,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
     };
+
+    dispatch(makeComplain(data, handleMakeComplainResponse));
+  };
+
+  const handleMakeComplainResponse = (res_data, res_status) => {
+    if (res_status === 201) {
+      // eslint-disable-next-line no-alert
+      alert(res_data.message_response);
+
+      setIsLoading(false);
+      navigation.goBack();
+      return;
+    }
+
+    if (res_status === 900) {
+      alert('Network error please try again');
+      setIsLoading(false);
+
+      return;
+    }
+
+    alert(res_data.error_message);
+    setIsLoading(false);
   };
 
   if (isLoading) {
@@ -133,22 +180,37 @@ export default function ComplainScreen({route, navigation}) {
         <Text style={styles.infoContent}>{payment_method}</Text>
 
         <Text style={styles.label}>Extra Details</Text>
+        {!complainResponse ? (
+          <>
+            <TextInput
+              placeholder="other information"
+              multiline={true}
+              numberOfLines={6}
+              textAlignVertical={'top'}
+              style={styles.extraDetailInput}
+              value={extraDetail}
+              onChangeText={text => setExtraDetail(text)}
+            />
+            <TouchableOpacity
+              style={styles.sendButton}
+              activeOpacity={0.7}
+              onPress={sendComplain}>
+              <Text style={styles.sendText}>Send Complaint</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.infoContent}>
+              {complainResponse && complainResponse.dispute_message}
+            </Text>
+            <Text />
+            <Text style={styles.infoLabel}>Complain Response</Text>
 
-        <TextInput
-          placeholder="other information"
-          multiline={true}
-          numberOfLines={6}
-          textAlignVertical={'top'}
-          style={styles.extraDetailInput}
-          value={extraDetail}
-          onChangeText={text => setExtraDetail(text)}
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          activeOpacity={0.7}
-          onPress={sendComplain}>
-          <Text style={styles.sendText}>Send Complaint</Text>
-        </TouchableOpacity>
+            <Text style={[styles.infoContent, {color: 'green'}]}>
+              {complainResponse && complainResponse.response_message}
+            </Text>
+          </>
+        )}
       </KeyboardAwareScrollView>
     </View>
   );

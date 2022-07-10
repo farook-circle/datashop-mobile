@@ -41,6 +41,7 @@ export default function Airtime({navigation}) {
     useState(false);
 
   const airtime = useSelector(state => state.airtime.airtime);
+  const balance = useSelector(state => state.wallet.wallet_balance);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isBuyLoading, setIsBuyLoading] = useState(false);
@@ -75,14 +76,16 @@ export default function Airtime({navigation}) {
   };
 
   const getServiceImage = service => {
-    switch (service) {
-      case 'MTN':
+    switch (service.toLowerCase()) {
+      case 'mtn':
         return require('../../assets/images/mtn.jpg');
-      case 'AIRTEL':
+      case 'airtel':
+      case 'zain':
         return require('../../assets/images/airtel.jpg');
-      case 'ETISALAT':
+      case 'etisalat':
+      case '9mobile':
         return require('../../assets/images/9mobile.jpg');
-      case 'GLO':
+      case 'glo':
         return require('../../assets/images/glo.png');
       default:
         return require('../../assets/images/bank-building.png');
@@ -100,7 +103,10 @@ export default function Airtime({navigation}) {
       alert('Amount cannot be less thant 50 naira');
       return;
     }
-
+    if (balance < Number(amount)) {
+      alert('You do not have sufficient balance. Please fund your wallet');
+      return;
+    }
     // Alert.alert(
     //   'Alert',
     //   `you are about time buy ${amount} naira airtime to ${customer}`,
@@ -118,7 +124,7 @@ export default function Airtime({navigation}) {
           amount,
           customer,
           recharge_type: rechargeType,
-          service: selectedService.service,
+          service: selectedService.id,
         },
         handleResponse,
       ),

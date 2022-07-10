@@ -10,8 +10,10 @@ import {
   SafeAreaView,
   FlatList,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
@@ -21,11 +23,66 @@ import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import {withdrawCollaborator} from '../redux/actions/collaborator';
 
 export default function Withdraw({navigation}) {
   const dispatch = useDispatch();
 
-  useEffect(() => {}, []);
+  const [amount, setAmount] = useState('');
+  const [disableButton, setDisableButton] = useState(false);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+
+  const user = useSelector(state => state.auth.user);
+  const balance = useSelector(state => state.wallet.wallet_balance);
+
+  useEffect(() => {
+    Number(amount) < 100 ? setDisableButton(true) : setDisableButton(false);
+  }, [amount]);
+
+  const handleValidateWithdraw = () => {
+    if (Number(balance) < Number(amount)) {
+      return alert('Your balance is too low');
+    }
+
+    Alert.alert(
+      'alert',
+      `You are about to withdraw \u20A6${Number(
+        amount,
+      )} from your wallet\nthis will be your wallet balance after withdraw \u20A6${
+        Number(balance) - Number(amount)
+      }`,
+
+      [{text: 'Cancel'}, {text: 'Proceed', onPress: handleWithdraw}],
+    );
+  };
+
+  const handleWithdraw = () => {
+    setWithdrawLoading(true);
+    setDisableButton(true);
+    dispatch(withdrawCollaborator({amount}, handleWithdrawResponse));
+  };
+
+  const handleWithdrawResponse = (res_data, res_status) => {
+    if (res_status < 300) {
+      setWithdrawLoading(false);
+      setDisableButton(false);
+      alert(
+        `you have successfully request a withdrawal of \u20A6${amount} from you wallet you request will be process shortly`,
+      );
+      navigation.navigate('Home');
+      return;
+    }
+
+    if (res_status > 300 && res_status < 1000) {
+      setWithdrawLoading(false);
+      setDisableButton(false);
+      alert('Something went wrong please try again later');
+      return;
+    }
+
+    setWithdrawLoading(false);
+    setDisableButton(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -61,13 +118,25 @@ export default function Withdraw({navigation}) {
             style={styles.amountInput}
             placeholder="Amount"
             keyboardType={'numeric'}
+            value={amount}
+            onChangeText={text => setAmount(text)}
           />
         </View>
 
         <Text style={styles.noteText}>Minimum Withdraw {'\u20A6'}100</Text>
       </View>
-      <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText}>Request</Text>
+      <TouchableOpacity
+        onPress={handleValidateWithdraw}
+        disabled={disableButton}
+        style={[
+          styles.buttonStyle,
+          disableButton && {backgroundColor: colors.textLight},
+        ]}>
+        {withdrawLoading ? (
+          <ActivityIndicator size={'large'} color={colors.primary} />
+        ) : (
+          <Text style={styles.buttonText}>Request</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

@@ -73,27 +73,17 @@ export default function History({navigation}) {
     return (
       <TouchableOpacity
         style={styles.historyItemsWrapper}
-        onPress={() =>
-          navigation.navigate('Receipt', {
-            amount: item.amount,
-            type: item.type,
-            price: item.price,
-            customer: item.customer,
-            quantity: item.quantity,
-            date: item.date,
-            time: item.time,
-            payment_method: item.payment_method,
-            transaction_ref: item.transaction_ref,
-            remark: item.remark,
-            status: item.status,
-          })
-        }>
+        onPress={() => navigation.navigate('Receipt', {transaction: item})}>
         <Image
-          source={getPaymentTypeLogo(item.type)}
+          source={
+            item.image !== null
+              ? {uri: item.image}
+              : getPaymentTypeLogo(item.type)
+          }
           style={styles.mtnLogoImageHistory}
         />
         <Text style={styles.receiverText}>
-          {item.customer !== 'None' ? item.customer : item.type}
+          {item.customer !== 'None  ' ? item.customer : item.type}
         </Text>
         <Text style={styles.quantityText}>
           {item.quantity !== 'None' ? item.quantity : item.amount}

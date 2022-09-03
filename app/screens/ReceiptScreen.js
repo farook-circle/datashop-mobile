@@ -271,7 +271,7 @@ export default function Receipt({navigation, route}) {
           </View>
           <View
             style={[styles.buttonGroup, {position: 'absolute', bottom: 20}]}>
-            {status !== 'completed' && (
+            {status !== 'delivered' && (
               <TouchableOpacity
                 // onPress={openWhatsapp}
                 onPress={() =>

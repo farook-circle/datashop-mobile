@@ -15,6 +15,7 @@ import {hp, dp, wp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
 import {entityId} from '../config/collConfig';
+import { Button, VStack } from 'native-base';
 
 export default function WelcomeScreen({navigation}) {
   const whatsapp = useSelector(state => state.config.contact_info);
@@ -49,7 +50,6 @@ export default function WelcomeScreen({navigation}) {
           onPress={() => navigation.navigate('Register')}>
           <Text style={styles.registerText}>Register</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.loginButton}
           onPress={() => navigation.navigate('Login')}>

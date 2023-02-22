@@ -11,7 +11,7 @@ import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import LoginScreen from '../screens/LoginScreen';
-import HomeScreen from '../screens/Home';
+
 import DataPlan from '../screens/DataPlans';
 import History from '../screens/History';
 import CheckOut from '../screens/CheckOutScreen';
@@ -37,6 +37,8 @@ import ForgotPasswordRequest from '../screens/ForgotPasswordRequest';
 import ResetPassword from '../screens/ResetPassword';
 
 import InAppUpdate from '../utils/InAppUpdate';
+import DrawerNavigator from './drawerNavigator';
+import VerifyEmailScreen from '../screens/VerifyEmail';
 
 const Stack = createNativeStackNavigator();
 
@@ -68,7 +70,7 @@ const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         {auth.token == null ? (
           <>
             <Stack.Screen
@@ -85,6 +87,10 @@ const RootNavigator = () => {
               name="Login"
               component={LoginScreen}
               options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
             />
             <Stack.Screen
               name="ForgotPasswordRequest"
@@ -106,7 +112,7 @@ const RootNavigator = () => {
             />
             <Stack.Screen
               name="Home"
-              component={HomeScreen}
+              component={DrawerNavigator}
               options={{headerShown: false}}
             />
 

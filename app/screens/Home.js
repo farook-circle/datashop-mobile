@@ -41,6 +41,7 @@ import {
   getCollaboratorData,
   getCollaboratorWhatsapp,
 } from '../redux/actions/collaborator';
+import { Avatar, HStack, Pressable } from 'native-base';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -222,6 +223,19 @@ export default function Home({navigation}) {
         // }
       >
         <View style={styles.secContainer}>
+          <Image
+            style={{
+              marginTop: 0,
+              position: 'absolute',
+              width: '100%',
+              height: hp(240),
+              zIndex: 0,
+            }}
+            source={{
+              uri: 'https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
+            }}
+            alt={'bgimage'}
+          />
           <ScrollView
             style={{
               position: 'absolute',
@@ -243,43 +257,36 @@ export default function Home({navigation}) {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Profile')}
-                style={{
-                  backgroundColor: 'white',
-                  padding: hp(5),
-                  borderRadius: 50,
-                }}>
-                <Feather name="user" size={hp(20)} color={colors.primary} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Regular',
-                  color: colors.textWhite,
-                  fontSize: hp(16),
-                  marginLeft: wp(15),
-                }}>{`Welcome, ${user.first_name}`}</Text>
+              <Pressable onPress={() => navigation.openDrawer()}>
+                <Avatar size={'sm'} bgColor={'rgba(0,0,0,0.5)'}>
+                  <Feather name="menu" size={hp(20)} color={'white'} />
+                </Avatar>
+              </Pressable>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={handleMessages}>
-                <Feather name="message-square" size={hp(24)} color={'white'} />
-
-                {messageAvailable && <View style={styles.dotIcon} />}
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{marginLeft: hp(20)}}
-                onPress={openWhatsapp}>
+            <HStack
+              bgColor={'rgba(0,0,0,0.5)'}
+              p={'2'}
+              rounded={'full'}
+              alignItems={'center'}
+              space={'2'}>
+              <Pressable onPress={openWhatsapp}>
                 <MaterialCommunityIcons
                   name="whatsapp"
                   size={hp(24)}
                   color="white"
                 />
-              </TouchableOpacity>
-            </View>
+              </Pressable>
+              <Pressable onPress={handleMessages}>
+                <Feather name="message-circle" size={hp(24)} color={'white'} />
+                {messageAvailable && <View style={styles.dotIcon} />}
+              </Pressable>
+
+              <Pressable onPress={() => navigation.navigate('Profile')}>
+                <Avatar size={'sm'} bgColor={'white'}>
+                  <Feather name="user" size={hp(20)} color={colors.primary} />
+                </Avatar>
+              </Pressable>
+            </HStack>
           </View>
 
           {/* Wallet Balance Container */}
@@ -398,14 +405,6 @@ export default function Home({navigation}) {
               </Text>
             </View>
           )}
-
-          {/* <FlatList
-            data={data_bundles}
-            renderItem={renderDataBundleItem}
-            keyExtractor={item => item.id}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          /> */}
         </View>
 
         {/* History  */}
@@ -475,6 +474,7 @@ const styles = StyleSheet.create({
     // flexDirection: 'row',
     marginTop: hp(30),
     width: '100%',
+
   },
   balanceTextWrapper: {
     width: wp(150),
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     paddingVertical: hp(10),
-    paddingHorizontal: wp(30),
+    paddingHorizontal: wp(20),
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,

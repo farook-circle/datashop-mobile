@@ -9,106 +9,61 @@ import {
   SafeAreaView,
   TextInput,
   ActivityIndicator,
+
 } from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
 import {hp, dp, wp} from '../config/dpTopx';
+import {Button, FormControl, Input, VStack, Pressable} from 'native-base';
+import {Formik} from 'formik';
+import * as validation from '../utils/validations';
 
 import colors from '../../assets/colors/colors';
 import {signUp} from '../redux/actions/auth';
+
+const registerInitialValue = {
+  full_name: '',
+  phone: '',
+  email: '',
+  password: '',
+  password_again: '',
+};
 
 export default function RegistrationScreen({navigation}) {
   const dispatch = useDispatch();
 
   const [eyePassword, setEyePassword] = useState(false);
   const [eyePasswordAgain, setEyePasswordAgain] = useState(false);
-  const buttonStatus = useSelector(state => state.auth.isLoading);
+
+  const {isLoading} = useSelector(state => state.auth);
 
   /* registration form */
-  const [first_name, setFirstName] = useState('');
-  const [last_name, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [password_again, setPasswordAgain] = useState('');
+  
+  const handleRegister = (data) => {
+    
+    navigation.navigate('VerifyEmail', {email: data.email});
+    return;
 
-  const handlePhoneNumber = e => {
-    if (Number(e) || e === '' || e === '0') {
-      setPhone(e);
-    }
-  };
+    const [first_name, last_name ] = data.full_name.split(' ');
 
-  const phoneNumberCheckUp = () => {
-    if (phone.length > 1 && phone.length < 11) {
-      alert(
-        `please input the right phone number number that you put is ${phone.length} and phone number has to 11`,
-      );
-      return false;
-    }
-    if (phone.length < 1) {
-      alert('phone should not be empty');
-      return false;
-    }
-
-    if (phone.match(/0(9|8|7)(0|1)\d{8}/g) == null) {
-      alert('phone number format is wrong check and try again');
-      return false;
-    }
-
-    return true;
-  };
-
-  const emailCheckUp = () => {
-    if (email.length < 1) {
-      alert('email cannot be empty');
-    }
-    if (email.match(/[A-Za-z0-9\.]+@([a-z]+).com/g) == null) {
-      alert('please check your email');
-      return false;
-    }
-    return true;
-  };
-
-  const passwordCheckup = () => {
-    if (password.length < 4 || password_again.length < 4) {
-      alert('Password cannot be empty or less than 4 for your own protection');
-      return false;
-    }
-    if (password !== password_again) {
-      alert('password are not the same');
-      return false;
-    }
-    return true;
-  };
-  const handleRegister = () => {
-    if (first_name.length < 2 && last_name.length < 2) {
-      alert('First name and last cannot be emppty or less than 2 characters');
-      return;
-    }
-    if (!phoneNumberCheckUp()) {
-      return;
-    }
-    if (!emailCheckUp()) {
-      return;
-    }
-    if (!passwordCheckup()) {
-      return;
-    }
-
-    const ErrorOccur = status => {
-      alert(status);
-    };
-    const userData = {
-      username: phone,
-      email,
+    const payload = {
       first_name,
       last_name,
-      password,
-    };
-    dispatch(signUp(userData, ErrorOccur));
+      email: data.email,
+      username: data.phone,
+      password: data.password
+    }
+
+    dispatch(signUp(payload, ErrorOccur));
   };
+
+  const ErrorOccur = status => {
+    alert(status);
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView>
@@ -129,110 +84,116 @@ export default function RegistrationScreen({navigation}) {
         </Text>
 
         {/* Registration Form and button wrapper */}
-        <View style={styles.textInputWrapper}>
-          <View style={styles.fullNameWrapper}>
-            <TextInput
-              onChangeText={e => setFirstName(e)}
-              value={first_name}
-              placeholder="First Name"
-              style={[styles.textInput, {width: '49%'}]}
-              maxLength={30}
-            />
-            <TextInput
-              onChangeText={e => setLastName(e)}
-              value={last_name}
-              placeholder="Last Name"
-              style={[styles.textInput, {width: '49%'}]}
-              maxLength={30}
-            />
-          </View>
-          <TextInput
-            onChangeText={e => handlePhoneNumber(e)}
-            value={phone}
-            keyboardType={'number-pad'}
-            placeholder="Phone"
-            style={styles.textInput}
-            maxLength={11}
-          />
-          <TextInput
-            onChangeText={e => setEmail(e)}
-            value={email}
-            placeholder="Email"
-            style={styles.textInput}
-          />
-          <View style={styles.passwordWrapper}>
-            <TextInput
-              onChangeText={e => setPassword(e)}
-              value={password}
-              secureTextEntry={eyePassword ? false : true}
-              placeholder="Password"
-              style={styles.textInputPassword}
-            />
-            {eyePassword ? (
-              <Feather
-                name="eye"
-                size={24}
-                color={'green'}
-                style={styles.eyeIcon}
-                onPress={() => setEyePassword(!eyePassword)}
-              />
-            ) : (
-              <Feather
-                name="eye-off"
-                size={24}
-                color={colors.textLight}
-                style={styles.eyeIcon}
-                onPress={() => setEyePassword(!eyePassword)}
-              />
-            )}
-          </View>
-          <View style={styles.passwordWrapper}>
-            <TextInput
-              onChangeText={e => setPasswordAgain(e)}
-              value={password_again}
-              secureTextEntry={eyePasswordAgain ? false : true}
-              placeholder="Re-type Password"
-              style={styles.textInputPassword}
-            />
-            {eyePasswordAgain ? (
-              <Feather
-                name="eye"
-                size={24}
-                color={'green'}
-                onPress={() => setEyePasswordAgain(!eyePasswordAgain)}
-                style={styles.eyeIcon}
-              />
-            ) : (
-              <Feather
-                name="eye-off"
-                size={24}
-                onPress={() => setEyePasswordAgain(!eyePasswordAgain)}
-                color={colors.textLight}
-                style={styles.eyeIcon}
-              />
-            )}
-          </View>
-        </View>
+
+        <Formik
+          validationSchema={validation.signUpValidationSchema}
+          initialValues={registerInitialValue}
+          onSubmit={form => handleRegister(form)}>
+          {({
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+            setFieldValue
+          }) => (
+            <VStack px={'4'} space={'2'}>
+              <FormControl>
+                <FormControl.Label>Full name</FormControl.Label>
+                <Input
+                  placeholder="Full name"
+                  value={values.full_name}
+                  onBlur={handleBlur('full_name')}
+                  onChangeText={handleChange('full_name')}
+                />
+                {errors.full_name && touched.full_name && (
+                  <Text style={{color: 'red'}}>{errors.full_name}</Text>
+                )}
+              </FormControl>
+              <FormControl>
+                <FormControl.Label>Phone number</FormControl.Label>
+                <Input
+                  placeholder="Phone"
+                  value={values.phone}
+                  onBlur={handleBlur('phone')}
+                  onChangeText={text => {
+                    if(text.length > 11 ) {
+                      return;
+                    }
+                    setFieldValue("phone", text)}
+                  }
+                  keyboardType={'decimal-pad'}
+                />
+                {errors.phone && touched.phone && (
+                  <Text style={{color: 'red'}}>{errors.phone}</Text>
+                )}
+              </FormControl>
+              <FormControl>
+                <FormControl.Label>Email address</FormControl.Label>
+                <Input
+                  placeholder="Email address"
+                  value={values.email}
+                  onBlur={handleBlur('email')}
+                  onChangeText={handleChange('email')}
+                  autoCapitalize={'none'}
+                />
+                {errors.email && touched.email && (
+                  <Text style={{color: 'red'}}>{errors.email}</Text>
+                )}
+              </FormControl>
+              <FormControl>
+                <FormControl.Label>Password</FormControl.Label>
+                <Input
+                  placeholder="Password"
+                  value={values.password}
+                  onBlur={handleBlur('password')}
+                  onChangeText={handleChange('password')}
+                  autoCapitalize={'none'}
+                  secureTextEntry={!eyePassword}
+                  InputRightElement={
+                    <Pressable onPress={() => setEyePassword(!eyePassword)} pr={'2'}>
+                      <Feather
+                        name={eyePassword ? 'eye' : 'eye-off'}
+                        color={'gray'}
+                        size={hp(20)}
+                      />
+                    </Pressable>
+                  }
+                />
+                {errors.password && touched.password && (
+                  <Text style={{color: 'red'}}>{errors.password}</Text>
+                )}
+              </FormControl>
+              <FormControl>
+                <FormControl.Label>Retype password</FormControl.Label>
+                <Input
+                  placeholder="Retype password"
+                  value={values.password_again}
+                  onBlur={handleBlur('password_again')}
+                  onChangeText={handleChange('password_again')}
+                  secureTextEntry={!eyePasswordAgain}
+                  autoCapitalize={'none'}
+                  InputRightElement={
+                    <Pressable onPress={() => setEyePasswordAgain(!eyePasswordAgain)} pr={'2'}>
+                      <Feather
+                        name={eyePasswordAgain ? 'eye' : 'eye-off'}
+                        color={'gray'}
+                        size={hp(20)}
+                      />
+                    </Pressable>
+                  }
+                />
+                {errors.password_again && touched.password_again && (
+                  <Text style={{color: 'red'}}>{errors.password_again}</Text>
+                )}
+              </FormControl>
+              <Button isLoading={isLoading} onPress={handleSubmit}>Register</Button>
+            </VStack>
+          )}
+        </Formik>
 
         <View style={styles.buttonsWrapper}>
-          <TouchableOpacity
-            style={[
-              styles.registerButton,
-              buttonStatus
-                ? {
-                    backgroundColor: 'white',
-                    borderWidth: 2,
-                    borderColor: colors.primary,
-                  }
-                : '',
-            ]}
-            onPress={handleRegister}>
-            {buttonStatus ? (
-              <ActivityIndicator size={'large'} color={colors.primary} />
-            ) : (
-              <Text style={styles.registerText}>Register</Text>
-            )}
-          </TouchableOpacity>
           <Text style={styles.textLogin}>
             Already have an account?{' '}
             <Text
@@ -270,14 +231,14 @@ const styles = StyleSheet.create({
   },
 
   introTitle: {
-    marginTop: hp(45),
+    marginTop: hp(25),
     color: colors.textBlack,
     fontFamily: 'Poppins-SemiBold',
     fontSize: hp(20),
     textAlign: 'center',
   },
   introSubtitle: {
-    marginTop: hp(19),
+    marginTop: hp(10),
     color: colors.textBlack,
     fontFamily: 'Poppins-Regular',
     fontSize: hp(13),

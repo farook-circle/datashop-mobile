@@ -5,11 +5,7 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Image,
   TouchableOpacity,
-  SafeAreaView,
-  FlatList,
-  TextInput,
   ActivityIndicator,
   Vibration,
   Alert,
@@ -22,23 +18,38 @@ import {hp, wp} from '../config/dpTopx';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  createVirtualAccount,
-  depositMoneyToWallet,
-  getVirtualAccount,
-  getWalletBalance,
-} from '../redux/actions/wallet';
-import CompleteCardPayment from '../components/CompleteCardPayment';
-import AccountNumber from '../components/AccountNumber';
-import MomoAgent from '../components/MomoAgent';
-import AlternatePayment from '../components/AlternatePayment';
-import AirtimePaymentFunding from '../components/AirtimePaymentFunding';
 import OverLayModel from '../components/OverLayModel';
 import {StackActions} from '@react-navigation/native';
 import {USER_LOGOUT} from '../redux/constants/auth';
+import { Box, FlatList, HStack, Pressable, ScrollView, VStack } from 'native-base';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
+import AlertCard from '../components/AlertCard';
+
+
+const alerts = [
+  {
+    id: 1,
+    title: 'System Maintenance',
+    body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
+    priority: 'medium'
+  },
+  {
+    id: 2,
+    title: 'System Maintenance',
+    body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
+    priority: 'low'
+  },
+  {
+    id: 3,
+    title: 'System Maintenance',
+    body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
+    priority: 'high'
+  },
+];
 
 export default function AddTypePin({navigation}) {
-  useEffect(() => {}, []);
+ 
 
   const dispatch = useDispatch();
   const [amount, setAmount] = useState('');
@@ -46,11 +57,12 @@ export default function AddTypePin({navigation}) {
   const [isLoading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
   const [wrongPin, setWrongPin] = useState(false);
-
+  const [overlay, setOverlay] = React.useState(false);
+  const [selectedAlert, setSelectedAlert] = React.useState({});
+ 
   const payment_status = useSelector(state => state.wallet.payment_status);
 
   useEffect(() => {
-    setLoading(true);
     getUserPin();
   }, []);
 
@@ -59,7 +71,7 @@ export default function AddTypePin({navigation}) {
       handleCreatePin();
     }
     if (amount.length === 4 && pin.length > 1) {
-      setLoading(true);
+      
       authenticatePin();
     }
   }, [amount]);
@@ -142,9 +154,8 @@ export default function AddTypePin({navigation}) {
   };
 
   const authenticatePin = async () => {
-    await getUserPin();
+
     if (amount === pin) {
-      setLoading(false);
       navigation.dispatch(StackActions.replace('Home'));
       return;
     }
@@ -152,7 +163,7 @@ export default function AddTypePin({navigation}) {
     Vibration.vibrate(200);
     setAmount('');
     setWrongPin(true);
-    setLoading(false);
+  
   };
 
   const handleNumericInput = value => {
@@ -177,6 +188,36 @@ export default function AddTypePin({navigation}) {
     setAmount(newAmount);
   };
 
+
+  const checkBiometric = async () => {
+    const rnBiometrics = new ReactNativeBiometrics();
+
+    const {biometryType} = await rnBiometrics.isSensorAvailable();
+
+    if (biometryType === BiometryTypes.Biometrics) {
+      //do something fingerprint specific
+      rnBiometrics
+        .simplePrompt({promptMessage: 'Confirm fingerprint'})
+        .then(resultObject => {
+          const {success} = resultObject;
+
+          if (success) {
+            navigation.dispatch(StackActions.replace('Dashboard'));
+          } else {
+            console.log('user cancelled biometric prompt');
+          }
+        })
+        .catch(() => {
+          console.log('biometrics failed');
+        });
+    }
+  };
+
+
+  const biometricAuthenticate = () => {
+    checkBiometric();
+  }
+
   return (
     <View style={styles.container}>
       <>
@@ -185,14 +226,73 @@ export default function AddTypePin({navigation}) {
             <ActivityIndicator color={colors.textWhite} size={'large'} />
           </OverLayModel>
         )}
+
+        {overlay && (
+          <Box
+            w="100%"
+            h="100%"
+            p={'6'}
+            bgColor="rgba(0,0,0,0.9)"
+            position="absolute"
+            zIndex={100}>
+            <HStack alignItems={'center'} justifyContent={'space-between'}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontFamily: 'Poppins-Medium',
+                  fontSize: hp(20),
+                }}>
+                {selectedAlert.title}
+              </Text>
+              <Pressable onPress={() => setOverlay(false)}>
+                <Feather name="x" size={hp(30)} color={'white'} />
+              </Pressable>
+            </HStack>
+            <Text
+              style={{
+                color: 'white',
+                fontFamily: 'Poppins-Regular',
+                fontSize: hp(18),
+              }}>
+              {selectedAlert.body}
+            </Text>
+          </Box>
+        )}
+
+        <Box safeArea flex={1} bgColor={'primary.400'} mb={'2'}>
+          <Box flex={1} px={'4'} pt={'6'} overflow={'hidden'}>
+            <Text
+              style={{
+                fontFamily: 'Poppins-SemiBold',
+                fontSize: hp(20),
+                textAlign: 'center',
+              }}>
+              Important alert 🔔
+            </Text>
+            <Box>
+              <FlatList
+                data={alerts}
+                renderItem={({item}) => (
+                  <AlertCard title={item.title} body={item.body} priority={item.priority} onExpand={() => {
+                    setSelectedAlert(item);
+                    setOverlay(true);
+                  }} />
+                )}
+                keyExtractor={item => item.id}
+              />
+            </Box>
+          </Box>
+          {/* <Box flex={1} justifyContent={'center'} alignItems={'center'}>
+            <Text style={{fontFamily: 'Poppins-Medium', fontSize: hp(22)}}>Welcome Back 👋</Text>
+          </Box> */}
+        </Box>
         <Text
           style={{
             width: '100%',
             textAlign: 'center',
             fontFamily: 'Poppins-Regular',
             fontSize: hp(16),
-            marginTop: hp(280),
-            marginBottom: hp(20),
+            // marginBottom: hp(20),
           }}>
           {pin !== '' ? 'Enter your PIN' : 'Create your PIN'}
         </Text>
@@ -230,7 +330,7 @@ export default function AddTypePin({navigation}) {
             fontSize: hp(14),
             color: 'red',
             marginTop: hp(10),
-            marginBottom: hp(50),
+            marginBottom: hp(10),
           }}>
           {wrongPin ? 'Incorrect Pin please try again' : ''}
         </Text>
@@ -289,8 +389,8 @@ export default function AddTypePin({navigation}) {
         <View style={styles.numericInputWrapper}>
           <TouchableOpacity
             style={styles.numberContainer}
-            onPress={handleLogout}>
-            <Feather name="log-out" size={30} color={colors.primary} />
+            onPress={biometricAuthenticate}>
+            <MaterialIcon name="fingerprint" size={30} color={colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.numberContainer}
@@ -300,14 +400,25 @@ export default function AddTypePin({navigation}) {
           <TouchableOpacity
             style={styles.numberContainer}
             onPress={handleDeletButton}>
-            <Feather name="delete" size={hp(30)} color={colors.primary} />
+            <Feather name="arrow-left" size={hp(30)} color={colors.primary} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={[styles.shareReceiptButton]}
-          onPress={() => handleForgotPin()}>
-          <Text style={styles.shareReceiptText}>Forgot PIN?</Text>
-        </TouchableOpacity>
+        <HStack alignItems={'center'} alignSelf={'center'} py={'3'} space={'1'}>
+          <Text style={styles.shareReceiptText}>Forgot PIN Code?</Text>
+          <Pressable onPress={() => handleForgotPin()}>
+            <Text
+              style={[
+                styles.shareReceiptText,
+                {
+                  fontFamily: 'Poppins-Bold',
+                  color: colors.primary,
+                  textDecorationLine: 'underline',
+                },
+              ]}>
+              Logout
+            </Text>
+          </Pressable>
+        </HStack>
       </>
     </View>
   );
@@ -316,7 +427,7 @@ export default function AddTypePin({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.background,
   },
   headerWrapper: {
@@ -429,6 +540,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   textInput: {
     fontFamily: 'Poppins-Medium',
@@ -469,7 +581,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
   },
   numberText: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Poppins-Regular',
     color: colors.primary,
     fontSize: hp(30),
   },
@@ -486,9 +598,9 @@ const styles = StyleSheet.create({
 
   shareReceiptText: {
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-    color: colors.secondary,
-    fontSize: hp(18),
+    fontFamily: 'Poppins-Medium',
+    color: 'black',
+    fontSize: hp(14),
   },
 
   dotInput: {

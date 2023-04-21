@@ -1,0 +1,48 @@
+import { Avatar, Badge, Box, HStack, Pressable, VStack } from "native-base";
+import React from "react";
+import { Text, StyleSheet } from "react-native";
+import colors from "../../../assets/colors/colors";
+import { hp } from "../../config/dpTopx";
+
+export default function HistoryItemList ({avatar, name, time, amount, status, onPress}) {
+    return (
+      <Pressable onPress={onPress}>
+        {({isPressed, isHovered, isFocused}) => (
+          <HStack
+          px={'4'}
+            bgColor={isPressed ? 'gray.200' : 'transparent'}
+            space={'2'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+            p={'2'}>
+            <Avatar size={'sm'} source={{uri: avatar}}>KB</Avatar>
+            <VStack flex={1}>
+              <Text style={styles.nameStyle}>{name}</Text>
+              <Text>{time}</Text>
+            </VStack>
+            <VStack>
+              <Text style={styles.amountStyle}>{amount}</Text>
+              {/* <Badge bgColor={'green.500'} /> */}
+              <Text style={{color: status === 'pending' ? 'orange' : 'green', fontSize: hp(12)}}>{status.toUpperCase()}</Text>
+            </VStack>
+          </HStack>
+        )}
+      </Pressable>
+    );
+}
+
+const styles = StyleSheet.create({
+  nameStyle: {
+    fontFamily: 'Poppins-Medium',
+    color: 'black'
+  },
+  timeStyle: {
+    fontFamily: 'Poppins-Regular',
+    color: colors.textLight,
+  },
+  amountStyle: {
+    fontFamily: 'Poppins-Medium',
+    color: 'black',
+  
+  }
+})

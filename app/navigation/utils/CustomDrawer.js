@@ -91,10 +91,6 @@ const CustomSidebarMenu = (props) => {
             icon={<Feather name="send" size={hp(25)} />}
           />
           <MenuItem
-            title={'Pricing'}
-            icon={<FontAwesome5Icon name="chart-pie" size={hp(25)} />}
-          />
-          <MenuItem
             title={'API Doc'}
             icon={<FontAwesome5Icon name="book" size={hp(25)} />}
           />

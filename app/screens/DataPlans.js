@@ -12,10 +12,15 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { selectContactPhone } from 'react-native-select-contact';
+
+
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
@@ -30,6 +35,8 @@ import {
 } from '../redux/actions/collaborator';
 import {useRef} from 'react';
 import {Modalize} from 'react-native-modalize';
+import { IconButton, Input } from 'native-base';
+import Contacts from 'react-native-contacts';
 
 function DataPlan({route, navigation}) {
   const dispatch = useDispatch();
@@ -42,6 +49,7 @@ function DataPlan({route, navigation}) {
   const [editedAmount, setEditedAmount] = useState('');
   const [updateDataLoading, setUpdateDataLoading] = useState(false);
   const [checkout, setCheckOut] = useState(false);
+  const [isFirstTimeFill, setIsFirstTimeFill] = useState(true);
 
   const [error, setError] = useState(null);
 
@@ -51,6 +59,7 @@ function DataPlan({route, navigation}) {
   const [customer, setCustomer] = useState('');
   const [remark, setRemark] = useState('I love this Service');
   const [payment_method, setPaymentMethod] = useState('wallet');
+  const phoneInputRef = useRef();
 
   const [phoneInputFocus, setPhoneInputFocus] = useState(false);
 
@@ -154,6 +163,16 @@ function DataPlan({route, navigation}) {
     handleCloseModal();
     setEditedAmount('');
   };
+
+
+  const handleSetCustomer = (phoneNumber) => {
+    if(phoneNumber.length == 11 && isFirstTimeFill) {
+      phoneInputRef.current.blur();
+      setIsFirstTimeFill(false);
+    }
+
+    setCustomer(phoneNumber);
+  }
 
   const phoneNumberCheckUp = () => {
     if (customer.length > 1 && customer.length < 11) {
@@ -286,6 +305,73 @@ function DataPlan({route, navigation}) {
       </TouchableOpacity>
     );
   };
+
+
+  const handleAddContact = async () => {
+
+      // check permission
+      const granted = await getContactPermission();
+
+      if(!granted) return alert('Please grant permission for reading contact');
+
+      const phoneNumber = await selectContactPhone()
+          .then(selection => {
+              if (!selection) {
+                  return null;
+              }
+              
+              let { contact, selectedPhone } = selection;
+              return selectedPhone.number;
+          });
+
+      if(!phoneNumber) return alert('Please select valid phone number');
+
+      
+    
+      if(phoneNumber.startsWith('0')) {
+        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '');
+        setCustomer(contact);
+        return;
+      }
+
+      if(phoneNumber.startsWith('234')) {
+        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '').replace('234', '0')
+        setCustomer(contact);
+        return;
+      }
+
+
+      if(phoneNumber.startsWith('+234')) {
+        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '').replace('+234', '0')
+        setCustomer(contact);
+        return;
+      }
+
+
+      alert(`Invalid phone number: ${phoneNumber}`);
+  }
+
+
+
+
+  const getContactPermission = async () => {
+
+    if (Platform.OS === 'android') {
+      const request = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      );
+
+      // denied permission
+      if (request === PermissionsAndroid.RESULTS.DENIED) return false
+      
+      // user chose 'deny, don't ask again'
+      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) return false
+    }
+
+
+    return true;
+  }
+      
 
   return (
     <>
@@ -460,7 +546,7 @@ function DataPlan({route, navigation}) {
                   {error}
                 </Text>
               )}
-              <TextInput
+              {/* <TextInput
                 placeholder="PHONE"
                 keyboardType="numeric"
                 maxLength={11}
@@ -476,6 +562,27 @@ function DataPlan({route, navigation}) {
                   fontFamily: 'Poppins-Medium',
                   fontSize: hp(16),
                 }}
+              /> */}
+              <Input
+                ref={phoneInputRef}
+                placeholder="PHONE"
+                onChangeText={text => handleSetCustomer(text)}
+                // onFocus={() => setPhoneInputFocus(true)}
+                // onBlur={() => setPhoneInputFocus(false)}
+                autoFocus={true}
+                keyboardType={'numeric'}
+                maxLength={11}
+                value={customer}
+                size={'lg'}
+                InputRightElement={
+                  <IconButton
+                  onPress={handleAddContact}
+                  rounded={'full'}
+                    icon={
+                      <AntDesign name="contacts" size={hp(25)} color={'gray'} />
+                    }
+                  />
+                }
               />
             </View>
             {itemClicked.service.toLowerCase() === 'mtn' && (

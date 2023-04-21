@@ -21,6 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import colors from '../../assets/colors/colors';
 import {hp, wp} from '../config/dpTopx';
 import {useSelector} from 'react-redux';
+import { Avatar, Button, HStack, IconButton, Pressable, VStack } from 'native-base';
 
 const url = 'https://awesome.contents.com/';
 const title = 'Awesome Contents';
@@ -197,7 +198,7 @@ export default function Receipt({navigation, route}) {
         <View style={styles.container}>
           <SafeAreaView>
             {/* Header */}
-            <View style={styles.headerWrapper}>
+            {/* <View style={styles.headerWrapper}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Feather
                   name="chevron-left"
@@ -206,11 +207,59 @@ export default function Receipt({navigation, route}) {
                 />
               </TouchableOpacity>
               <Text style={styles.headerTitleText}>Receipt</Text>
-            </View>
+            </View> */}
+            <HStack
+              alignItems={'center'}
+              justifyContent={'space-between'}
+              pr={'4'}>
+              <IconButton
+                rounded={'full'}
+                icon={
+                  <Feather
+                    name="chevron-left"
+                    size={hp(30)}
+                    color={colors.textBlack}
+                  />
+                }
+              />
+              <VStack alignItems={'center'}>
+                <Text style={styles.headerTitleText}>Receipt</Text>
+                <Text style={styles.subTitle}>Detail of transaction</Text>
+              </VStack>
+              <Button size={'sm'}>Share</Button>
+            </HStack>
           </SafeAreaView>
 
-          <Text style={styles.subTitle}>Detail of transaction</Text>
+          {/* <Text style={styles.subTitle}>Detail of transaction</Text> */}
 
+          <VStack
+            space={'2'}
+            alignItems={'center'}
+            bgColor={'white'}
+            roundedTop={'2xl'}
+            pt={'10'}>
+            <Avatar size={'xl'} bgColor={'primary.100'}>
+              <Avatar size={'md'} source={{uri: image}} />
+            </Avatar>
+            <VStack space={'2'} alignItems={'center'}>
+              <Text style={{fontFamily: 'Poppins-Medium', color: 'black'}}>
+                {customer}
+              </Text>
+              <Text style={{fontFamily: 'Poppins-Light', fontSize: hp(15)}}>
+                Received
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Medium',
+                  color: colors.primary,
+                  fontSize: hp(28),
+                }}>
+                {quantity !== 'None' ? quantity : amount}
+              </Text>
+            </VStack>
+          </VStack>
+
+          {/* 
           <View style={styles.sectionGroup}>
             <View style={styles.dataBundleItemsWrapper}>
               <Image
@@ -236,40 +285,50 @@ export default function Receipt({navigation, route}) {
                 {customer !== 'None' ? customer : type}
               </Text>
             </View>
-          </View>
-          <Text style={styles.detailOfTransaction}>Detail of Transaction</Text>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>Date</Text>
-            <Text style={styles.textRight}>
-              {date.slice(8, 10)} {monthToString[Number(date.slice(5, 7))]}{' '}
-              {date.slice(0, 4)} - {time.slice(0, 5)}
+          </View> */}
+          <View style={{paddingHorizontal: hp(10), backgroundColor: 'white'}}>
+            <Text style={styles.detailOfTransaction}>
+              Detail of Transaction
             </Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Date</Text>
+              <Text style={styles.textRight}>
+                {date.slice(8, 10)} {monthToString[Number(date.slice(5, 7))]}{' '}
+                {date.slice(0, 4)} - {time.slice(0, 5)}
+              </Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>To</Text>
+              <Text style={styles.textRight}>
+                {customer !== 'None' ? customer : 'Wallet'}
+              </Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Status</Text>
+              <Text style={styles.textRight}>{status}</Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Transaction ID</Text>
+              <Text style={styles.textRight}>#{transaction_ref}</Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Payment Method</Text>
+              <Text style={styles.textRight}>{payment_method}</Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>remark</Text>
+              <Text style={[styles.textRight, {textAlign: 'left'}]}>
+                {remark}
+              </Text>
+            </View>
           </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>To</Text>
-            <Text style={styles.textRight}>
-              {customer !== 'None' ? customer : 'Wallet'}
-            </Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>Status</Text>
-            <Text style={styles.textRight}>{status}</Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>Transaction ID</Text>
-            <Text style={styles.textRight}>#{transaction_ref}</Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>Payment Method</Text>
-            <Text style={styles.textRight}>{payment_method}</Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLeft}>remark</Text>
-            <Text style={[styles.textRight, {textAlign: 'left'}]}>
-              {remark}
-            </Text>
-          </View>
-          <View
+          <VStack px={'6'} space={'2'} pt={'3'} bgColor={'white'}>
+            <Button rounded={'lg'} colorScheme={'red'}>
+              Report issue
+            </Button>
+            <Button rounded={'lg'}>Save Contact</Button>
+          </VStack>
+          {/* <View
             style={[styles.buttonGroup, {position: 'absolute', bottom: 20}]}>
             {status !== 'delivered' && (
               <TouchableOpacity
@@ -311,7 +370,7 @@ export default function Receipt({navigation, route}) {
               style={styles.shareReceiptButton}>
               <Text style={styles.shareReceiptText}>Share Receipt</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       }
     </>
@@ -322,7 +381,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.background,
+    backgroundColor: 'rgb(250,250,250)',
   },
   headerWrapper: {
     marginTop: hp(3),
@@ -336,7 +395,7 @@ const styles = StyleSheet.create({
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
     fontSize: hp(16),
-    marginLeft: wp(93),
+   
   },
   subTitle: {
     textAlign: 'center',
@@ -392,13 +451,14 @@ const styles = StyleSheet.create({
   },
   detailOfTransaction: {
     marginTop: hp(10),
-    paddingHorizontal: 30,
-    fontFamily: 'Poppins-Bold',
+    paddingHorizontal: 25,
+    fontFamily: 'Poppins-Medium',
     fontSize: hp(16),
     color: colors.textBlack,
   },
   textContainer: {
     marginTop: 10,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -407,15 +467,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
-    fontSize: hp(15),
+    fontSize: hp(13),
     color: colors.textLight,
   },
   textRight: {
     paddingHorizontal: 30,
     textAlign: 'right',
     fontFamily: 'Poppins-Regular',
-    fontSize: hp(15),
-    color: colors.textLight,
+    fontSize: hp(13),
+    color: colors.textBlack,
   },
   shareReceiptButton: {
     marginTop: hp(19),

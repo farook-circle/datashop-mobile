@@ -25,7 +25,7 @@ import {getContactInfo} from '../redux/actions/config';
 import DataCategoryScreen from '../screens/DataCategoryScreen';
 import Airtime from '../screens/Airtime';
 import ElectricityPayment from '../screens/ElectricityPayment';
-import BillPaymentCategory from '../screens/BillPaymentCategory';
+import OtherScreen from '../screens/OtherScreen';
 import ComplainScreen from '../screens/ComplainScreen';
 import CollaboratorHome from '../screens/CollaboratorHome';
 import Withdraw from '../screens/WithDrawScreen';
@@ -167,8 +167,8 @@ const RootNavigator = () => {
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="BillPaymentCategory"
-              component={BillPaymentCategory}
+              name="Other"
+              component={OtherScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

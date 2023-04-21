@@ -9,14 +9,17 @@ import {
   SafeAreaView,
   FlatList,
   TextInput,
+  ScrollView
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import { VStack, Box } from 'native-base';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
+import HistoryItemList from '../components/History/HistoryItemList';
 
 export default function History({navigation}) {
   const dispatch = useDispatch();
@@ -97,7 +100,7 @@ export default function History({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <SafeAreaView>
         {/* Header */}
         <View style={styles.headerWrapper}>
@@ -131,7 +134,39 @@ export default function History({navigation}) {
       </SafeAreaView>
 
       {/* History Items */}
-      <View style={styles.historyDataWrapper}>
+
+      {Object.entries(data_purchase_history.groupBy('date')).map(
+        ([key, value]) => (
+          <VStack space={'3'} key={key}>
+            <Box px={'6'} bgColor={'primary.200'} py={'2'}>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Medium',
+                  color: 'black',
+                  fontSize: hp(18),
+                }}>
+                {new Date(key).toDateString()}
+              </Text>
+            </Box>
+            <VStack space={'3'}>
+              {value.map((item, index) => (
+                <HistoryItemList
+                  avatar={item.image}
+                  name={item.customer}
+                  time={item.time.slice(0, 5)}
+                  amount={item.quantity}
+                  key={item.id}
+                  status={item.status}
+                  onPress={() =>
+                    navigation.navigate('Receipt', {transaction: item})
+                  }
+                />
+              ))}
+            </VStack>
+          </VStack>
+        ),
+      )}
+      {/* <View style={styles.historyDataWrapper}>
         <FlatList
           data={searchItem !== null ? searchItem : data_purchase_history}
           renderItem={renderHistoryItem}
@@ -139,8 +174,9 @@ export default function History({navigation}) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 100}}
         />
-      </View>
-    </View>
+      </View> */}
+      <Box mt={'20'} />
+    </ScrollView>
   );
 }
 

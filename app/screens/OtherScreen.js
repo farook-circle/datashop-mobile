@@ -19,8 +19,10 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
+import { Divider, HStack, Pressable, VStack } from 'native-base';
+import CategoryItem from '../components/other/CategoryItem';
 
-export default function BillPaymentCategory({navigation}) {
+export default function OtherScreen({navigation}) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,7 +40,7 @@ export default function BillPaymentCategory({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Bill Payment</Text>
+          <Text style={styles.headerTitleText}>Other services</Text>
           <Text>{'  '}</Text>
         </View>
 
@@ -46,20 +48,28 @@ export default function BillPaymentCategory({navigation}) {
       </SafeAreaView>
 
       {/* Body */}
-      <View style={styles.bodyWrapper}>
-        <TouchableOpacity
-          style={styles.itemWrapper}
-          activeOpacity={0.5}
-          onPress={() => navigation.navigate('ElectricityPayment')}>
-          <FontAwesome name="bolt" size={hp(20)} color={colors.textBlack} />
-          <Text style={styles.itemTitle}>Electricity</Text>
-          <Feather
-            name="chevron-right"
-            size={hp(30)}
-            color={colors.textBlack}
-          />
-        </TouchableOpacity>
-      </View>
+      <VStack p={'2'} mt={'2'} space={'2'} divider={<Divider />}>
+        <CategoryItem
+          title={'Electricity'}
+          icon={'bolt'}
+          onPress={() => navigation.navigate('ElectricityPayment')}
+        />
+         <CategoryItem
+          title={'Airtime to cash'}
+          icon={'money-bill'}
+          onPress={() => navigation.navigate('ElectricityPayment')}
+        />
+         <CategoryItem
+          title={'TV Subscription'}
+          icon={'tv'}
+          onPress={() => navigation.navigate('ElectricityPayment')}
+        />
+         <CategoryItem
+          title={'Wallet Transfer'}
+          icon={'paper-plane'}
+          onPress={() => navigation.navigate('ElectricityPayment')}
+        />
+      </VStack>
     </View>
   );
 }

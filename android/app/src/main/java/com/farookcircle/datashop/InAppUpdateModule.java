@@ -1,4 +1,4 @@
-package com.datashop;
+package com.farookcircle.datashop;
 
 import android.app.Activity;
 import android.content.Intent;

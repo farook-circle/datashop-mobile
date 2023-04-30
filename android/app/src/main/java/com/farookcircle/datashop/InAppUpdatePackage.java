@@ -1,4 +1,4 @@
-package com.datashop;
+package com.farookcircle.datashop;
 
 import androidx.annotation.NonNull;
 

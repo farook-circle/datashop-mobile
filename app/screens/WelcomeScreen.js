@@ -21,6 +21,7 @@ export default function WelcomeScreen({navigation}) {
   const whatsapp = useSelector(state => state.config.contact_info);
 
   const openWhatsapp = () => {
+    console.log('whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,);
     Linking.openURL(
       'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );

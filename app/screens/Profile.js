@@ -18,11 +18,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import colors from '../../assets/colors/colors';
 import {USER_LOGOUT} from '../redux/constants/auth';
 import {changeUserPassword} from '../redux/actions/auth';
+import {Button} from 'native-base';
 
 export default function Profile({navigation}) {
   const dispatch = useDispatch();
 
-  const [changePassword, setChangePassoword] = useState(false);
+  const [changePassword, setChangePassoword] = useState(true);
   const [current_password, setCurrentPassword] = useState('');
   const [new_password, setNewPassword] = useState('');
   const [new_password_again, setNewPasswordAgain] = useState('');
@@ -57,8 +58,9 @@ export default function Profile({navigation}) {
   };
 
   const requestStatus = () => {
-    alert('change password succeed');
-    setChangePassoword(!changePassword);
+    Alert.alert('Information', 'You have successfully change your password', [
+      {text: 'OK', onPress: () => navigation.goBack()},
+    ]);
   };
 
   const handleChangePassword = () => {
@@ -84,15 +86,22 @@ export default function Profile({navigation}) {
         {changePassword && (
           <>
             <TouchableOpacity
-              onPress={() => setChangePassoword(!changePassword)}
+              onPress={() => navigation.goBack()}
               style={{
                 alignSelf: 'baseline',
                 marginLeft: wp(30),
                 marginTop: hp(40),
               }}>
-              <Feather name={'x'} size={hp(45)} color="black" />
+              <Feather name={'x'} size={hp(35)} color="black" />
             </TouchableOpacity>
             <Text style={styles.changePasswordText}>Change Your Password</Text>
+            <Text
+              style={[
+                styles.changePasswordText,
+                {fontSize: hp(16), marginTop: 0, fontFamily: 'Poppins-Regular'},
+              ]}>
+              To change your password please fill in the form below
+            </Text>
             <TextInput
               placeholder="Your current password"
               style={styles.textInputStyle}
@@ -114,22 +123,15 @@ export default function Profile({navigation}) {
               value={new_password_again}
               onChangeText={input => setNewPasswordAgain(input)}
             />
-            <TouchableOpacity
-              disabled={isLoading ? true : false}
-              style={[
-                styles.buttonWrapper,
-                {justifyContent: 'center'},
-                isLoading && {backgroundColor: colors.textLight},
-              ]}
-              onPress={handleChangePassword}>
-              {isLoading ? (
-                <ActivityIndicator color={colors.secondary} size={'large'} />
-              ) : (
-                <Text style={[styles.buttonText, {marginLeft: 0}]}>
-                  Change Password
-                </Text>
-              )}
-            </TouchableOpacity>
+            <Button
+              onPress={handleChangePassword}
+              width={'80%'}
+              isLoading={isLoading}>
+              Change Password
+            </Button>
+            <Button variant={'ghost'} width={'80%'} mt={'2'}>
+              Cancel
+            </Button>
           </>
         )}
         {!changePassword && (
@@ -245,16 +247,16 @@ const styles = StyleSheet.create({
   changePasswordText: {
     marginTop: hp(70),
     fontFamily: 'Poppins-Bold',
-    fontSize: hp(30),
+    fontSize: hp(20),
     alignSelf: 'baseline',
     paddingLeft: wp(40),
   },
   textInputStyle: {
     fontFamily: 'Poppins-Regular',
     fontSize: hp(16),
-    padding: hp(16),
+    borderColor: 'gray',
     width: '80%',
-    borderWidth: 2,
+    borderWidth: 1,
     margin: 10,
     paddingHorizontal: 20,
   },

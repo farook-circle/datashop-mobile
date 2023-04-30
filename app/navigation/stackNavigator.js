@@ -39,6 +39,18 @@ import ResetPassword from '../screens/ResetPassword';
 import InAppUpdate from '../utils/InAppUpdate';
 import DrawerNavigator from './drawerNavigator';
 import VerifyEmailScreen from '../screens/VerifyEmail';
+import ConfirmPasswordReset from '../screens/ConfirmPasswordReset';
+import CompletePasswordReset from '../screens/CompletePasswordReset';
+import NetworkScreen from '../screens/DrawerScreens/NetworkScreen';
+import ApiDocScreen from '../screens/DrawerScreens/ApiDocScreen';
+import TalkToUsScreen from '../screens/DrawerScreens/TalkToUsScreen';
+import DevelopersInfoScreen from '../screens/DrawerScreens/DevelopersInfoScreen';
+import AboutUsScreen from '../screens/DrawerScreens/AboutUsScreen';
+import ActivityDetails from '../screens/DrawerScreens/ActivityDetails';
+import ElectricityPaymentScreen from '../screens/OtherServiceScreens/ElectricityPaymentScreen';
+import AirtimeToCashScreen from '../screens/OtherServiceScreens/AirtimeToCashScreen';
+import TvSubscriptionScreen from '../screens/OtherServiceScreens/TvSubscriptionScreen';
+import WalletTransferScreen from '../screens/OtherServiceScreens/WalletTransferScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -88,13 +100,20 @@ const RootNavigator = () => {
               component={LoginScreen}
               options={{headerShown: false}}
             />
-            <Stack.Screen
-              name="VerifyEmail"
-              component={VerifyEmailScreen}
-            />
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
             <Stack.Screen
               name="ForgotPasswordRequest"
               component={ForgotPasswordRequest}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ForgotPasswordConfirm"
+              component={ConfirmPasswordReset}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ForgotPasswordComplete"
+              component={CompletePasswordReset}
               options={{headerShown: false}}
             />
             <Stack.Screen
@@ -195,6 +214,60 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Messages"
               component={Messages}
+              options={{headerShown: false}}
+            />
+
+            {/* other services screen  */}
+            <Stack.Screen
+              name="ElectricityPaymentScreen"
+              component={ElectricityPaymentScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AirtimeToCashScreen"
+              component={AirtimeToCashScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="TvSubscriptionScreen"
+              component={TvSubscriptionScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="WalletTransferScreen"
+              component={WalletTransferScreen}
+              options={{headerShown: false}}
+            />
+
+            {/* drawer navigations screens  */}
+            <Stack.Screen
+              name="NetworkScreen"
+              component={NetworkScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ActivityDetails"
+              component={ActivityDetails}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ApiDocScreen"
+              component={ApiDocScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="TalkToUsScreen"
+              component={TalkToUsScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="DevelopersInfoScreen"
+              component={DevelopersInfoScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AboutUsScreen"
+              component={AboutUsScreen}
               options={{headerShown: false}}
             />
           </>

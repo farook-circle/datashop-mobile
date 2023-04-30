@@ -1,4 +1,4 @@
-import { Avatar, Box, HStack, Pressable } from "native-base";
+import { Avatar, Box, HStack, Pressable, VStack } from "native-base";
 import {StyleSheet, Text} from 'react-native';
 import React from "react";
 import Feather from 'react-native-vector-icons/Feather';
@@ -9,7 +9,7 @@ export default function AlertCard({title, body, priority, onRemove, onExpand}) {
 
     return (
       <Pressable onPress={onExpand}>
-        <Box
+        <VStack
           bgColor={
             priority === 'medium'
               ? 'yellow.500'
@@ -17,12 +17,13 @@ export default function AlertCard({title, body, priority, onRemove, onExpand}) {
               ? 'green.500'
               : 'black'
           }
-          p={'2'}
+          p={'6'}
+          space={'4'}
           rounded={'xl'}
           my={2}>
           <HStack justifyContent={'space-between'}>
             <HStack space={'2'} alignItems={'center'}>
-              <Avatar size={'sm'}>DT</Avatar>
+              <Avatar size={'sm'}><Feather name="user" size={hp(20)} /></Avatar>
               <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
@@ -39,12 +40,12 @@ export default function AlertCard({title, body, priority, onRemove, onExpand}) {
           <Text
             style={{
               fontFamily: 'Poppins-Regular',
-              fontSize: hp(11),
+              fontSize: hp(14),
               color: 'white',
             }}>
             {body}
           </Text>
-        </Box>
+        </VStack>
       </Pressable>
     );
 }

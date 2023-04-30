@@ -52,22 +52,22 @@ export default function OtherScreen({navigation}) {
         <CategoryItem
           title={'Electricity'}
           icon={'bolt'}
-          onPress={() => navigation.navigate('ElectricityPayment')}
+          onPress={() => navigation.navigate('ElectricityPaymentScreen')}
         />
          <CategoryItem
           title={'Airtime to cash'}
           icon={'money-bill'}
-          onPress={() => navigation.navigate('ElectricityPayment')}
+          onPress={() => navigation.navigate('AirtimeToCashScreen')}
         />
          <CategoryItem
           title={'TV Subscription'}
           icon={'tv'}
-          onPress={() => navigation.navigate('ElectricityPayment')}
+          onPress={() => navigation.navigate('TvSubscriptionScreen')}
         />
          <CategoryItem
           title={'Wallet Transfer'}
           icon={'paper-plane'}
-          onPress={() => navigation.navigate('ElectricityPayment')}
+          onPress={() => navigation.navigate('WalletTransferScreen')}
         />
       </VStack>
     </View>

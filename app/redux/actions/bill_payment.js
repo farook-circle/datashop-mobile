@@ -39,7 +39,7 @@ export const getElectricProviders = () => (dispatch, getState) => {
 export const verifyMeter = (data, callBackFunc) => (dispatch, getState) => {
   //Get Token from the state
 
-  // const token = getState().auth.token;
+  const token = getState().auth.token;
   // Header
   const config = {
     headers: {
@@ -48,18 +48,13 @@ export const verifyMeter = (data, callBackFunc) => (dispatch, getState) => {
   };
 
   //Check to see if there is an token and to header
-  //   if (token) {
-  //     config.headers['Authorization'] = `Token ${token}`;
-  //   }
+    if (token) {
+      config.headers['Authorization'] = `Token ${token}`;
+    }
 
-  // destruct data object
-  const {electricityCompany, meterType, meterNumber} = data;
 
-  defaultAxios
-    .get(
-      `https://utility-farookcircle.herokuapp.com/verifyMeter/${electricityCompany}/${meterType}/${meterNumber}`,
-      config,
-    )
+  
+  axios.post('/bill/validate/electricity', data, config)
     .then(res => {
       callBackFunc(res.data, res.status);
     })

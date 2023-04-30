@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   FlatList,
 } from 'react-native';
+import {VStack} from 'native-base';
 import React, {useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
@@ -17,6 +18,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
+
 import {hp, wp} from '../config/dpTopx';
 
 export default function DataCategoryScreen({navigation}) {
@@ -29,17 +31,21 @@ export default function DataCategoryScreen({navigation}) {
   const renderDataCategory = ({item}) => {
     return (
       <TouchableOpacity
-        style={styles.dataCategory}
+        disabled={!item.available}
+        style={[styles.dataCategory, {}]}
         onPress={() =>
           navigation.navigate('DataPlan', {
             data_bundles: item.data_plan_items,
           })
         }>
-        <View style={styles.iconBox}>
+        <View style={[styles.iconBox, !item.available && {backgroundColor: 'gray'}]}>
           <FontAwesome name="globe" size={20} color={'white'} />
         </View>
-        <Text style={styles.categoryTitle}>{item.title}</Text>
-        <Feather name="chevron-right" color={'black'} size={30} />
+        <VStack flex={1} justifyContent={'center'}>
+          <Text style={[styles.categoryTitle, !item.available && {color: 'gray'}]}>{item.title}</Text>
+          {!item.available && <Text style={[styles.categoryTitle, {fontFamily: 'Poppins-Regular', fontSize: hp(16), color: 'gray'}]}>{'service not available'}</Text>}
+        </VStack>
+        <Feather name="chevron-right" color={item.available ? 'black' : 'gray'} size={30} />
       </TouchableOpacity>
     );
   };
@@ -129,8 +135,9 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     flex: 1,
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
+    fontFamily: 'Poppins-Bold',
+    color: colors.textBlack,
+    fontSize: hp(18),
     paddingLeft: wp(10),
   },
 });

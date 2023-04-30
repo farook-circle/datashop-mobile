@@ -19,41 +19,45 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import { requestUserPasswordReset } from '../api/auth.api';
 import { Button } from 'native-base';
+import { completeUserPasswordReset } from '../api/auth.api';
 
-export default function ForgotPasswordRequest({navigation}) {
+export default function CompletePasswordReset({navigation, route}) {
   const dispatch = useDispatch();
 
-  const [phone_number, setPhoneNumber] = React.useState("");
+  const [new_password, setNewPassword] = React.useState("");
+  const [confirm_new_password, setConfirmNewPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+
+  const data = route.params.data;
+  console.log(data);
 
 
   const handleResetUserPassword = async () => {
     // validate phone phone number
-    if( !phone_number || phone_number.length < 11) {
-      alert("Please type a valid account phone number")
+    if(!new_password || !confirm_new_password || new_password !== confirm_new_password) {
+      alert("Password are not the same")
       return
     }
 
-    setLoading(true)
-    // send user password reset
-    const request = await requestUserPasswordReset({phone_number});
+    setLoading(true);
+    const payload = {
+      ...data,
+      new_password
+    }
+    const request = await completeUserPasswordReset(payload);
     if(request.ok) {
-      navigation.navigate("ForgotPasswordConfirm", {
-        data: request.data
-      })
+      alert('You have successfully change your password you can now login with your new password');
+      navigation.navigate('Login');
       setLoading(false);
       return;
     }
 
-    console.log(request.data)
-    alert(request.data ? request.data.reason : 'Unable to complete your request');
+    alert(request.data ? request.data.message : 'Unable to complete your request');
     setLoading(false)
   }
 
   return (
-    <>
     <View style={styles.container}>
       <SafeAreaView>
         {/* Header */}
@@ -65,25 +69,26 @@ export default function ForgotPasswordRequest({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Forgot Password</Text>
+          <Text style={styles.headerTitleText}>Reset Password</Text>
           <Text>{'  '}</Text>
         </View>
       </SafeAreaView>
       <View style={{flex: 1, justifyContent: 'center'}}>
-        <Text style={styles.titleText}>{`Forgot\nPassword?`}</Text>
+        <Text style={styles.titleText}>{`Create New\nPassword`}</Text>
         <Text style={styles.subTitleText}>
-          Fill in your phone Number below to get the password reset code
+          Create a new strong password for your account
         </Text>
         <Text style={styles.emailLabel}>Your Account phone number:</Text>
-        <TextInput value={phone_number} placeholder="Phone number" style={styles.emailInput} onChangeText={text => setPhoneNumber(text)} keyboardType='decimal-pad' />
+        <TextInput value={new_password} placeholder="New Password" style={styles.emailInput} onChangeText={text => setNewPassword(text)} secureTextEntry={true} />
+        <TextInput value={confirm_new_password} placeholder="Confirm New Password" style={styles.emailInput} onChangeText={text => setConfirmNewPassword(text)} secureTextEntry={true} />
       </View>
-
-      <Button mb={'4'} onPress={handleResetUserPassword} isLoading={loading}>Reset Password</Button>
+      <Button mb='4' onPress={handleResetUserPassword} isLoading={loading}>
+        Change password
+      </Button>
       {/* <TouchableOpacity style={styles.buttonStyle}>
         <Text style={styles.buttonText} onPress={handleResetUserPassword}>Reset Password</Text>
       </TouchableOpacity> */}
     </View>
-    </>
   );
 }
 
@@ -129,6 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: colors.primary,
+    marginTop: hp(15),
   },
   buttonStyle: {
     paddingVertical: hp(7),

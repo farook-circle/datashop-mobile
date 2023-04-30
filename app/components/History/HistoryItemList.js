@@ -3,6 +3,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import colors from "../../../assets/colors/colors";
 import { hp } from "../../config/dpTopx";
+import Feather from 'react-native-vector-icons/Feather'
 
 export default function HistoryItemList ({avatar, name, time, amount, status, onPress}) {
     return (
@@ -15,12 +16,14 @@ export default function HistoryItemList ({avatar, name, time, amount, status, on
             alignItems={'center'}
             justifyContent={'space-between'}
             p={'2'}>
-            <Avatar size={'sm'} source={{uri: avatar}}>KB</Avatar>
+            <Avatar bgColor={'primary.500'} size={'sm'} source={{uri: avatar}}>
+              <Feather name="box" color={'white'} size={hp(20)} />
+            </Avatar>
             <VStack flex={1}>
               <Text style={styles.nameStyle}>{name}</Text>
               <Text>{time}</Text>
             </VStack>
-            <VStack>
+            <VStack alignItems={'flex-end'}>
               <Text style={styles.amountStyle}>{amount}</Text>
               {/* <Badge bgColor={'green.500'} /> */}
               <Text style={{color: status === 'pending' ? 'orange' : 'green', fontSize: hp(12)}}>{status.toUpperCase()}</Text>

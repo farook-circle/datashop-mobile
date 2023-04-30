@@ -19,41 +19,47 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import { requestUserPasswordReset } from '../api/auth.api';
-import { Button } from 'native-base';
+import { confirmUserPasswordReset } from '../api/auth.api';
 
-export default function ForgotPasswordRequest({navigation}) {
+export default function ConfirmPasswordReset({navigation, route}) {
   const dispatch = useDispatch();
-
-  const [phone_number, setPhoneNumber] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
+  const data = route.params.data;
+  
+  const [otp, setOtp] = React.useState("");
 
-  const handleResetUserPassword = async () => {
+
+  const handleConfirmUserPassword = async () => {
     // validate phone phone number
-    if( !phone_number || phone_number.length < 11) {
-      alert("Please type a valid account phone number")
+    if( !otp || otp.length < 5) {
+      alert("A Valid OTP length is around 5 please check and try again")
       return
     }
 
     setLoading(true)
-    // send user password reset
-    const request = await requestUserPasswordReset({phone_number});
-    if(request.ok) {
-      navigation.navigate("ForgotPasswordConfirm", {
-        data: request.data
-      })
-      setLoading(false);
-      return;
+
+    const payload = {
+      token: data && data.token,
+      code: otp
     }
 
-    console.log(request.data)
-    alert(request.data ? request.data.reason : 'Unable to complete your request');
+    // send user password reset
+    const request = await confirmUserPasswordReset(payload)
+    if(request.ok) {
+      navigation.navigate("ForgotPasswordComplete", {
+        data: payload
+      })
+      setLoading(false)
+      return;
+    }
+    
+
+    alert(request.data ? request.data.message : "Unable to complete your request");
     setLoading(false)
   }
 
   return (
-    <>
     <View style={styles.container}>
       <SafeAreaView>
         {/* Header */}
@@ -65,25 +71,22 @@ export default function ForgotPasswordRequest({navigation}) {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Forgot Password</Text>
+          <Text style={styles.headerTitleText}>Forgot Password Confirm</Text>
           <Text>{'  '}</Text>
         </View>
       </SafeAreaView>
       <View style={{flex: 1, justifyContent: 'center'}}>
-        <Text style={styles.titleText}>{`Forgot\nPassword?`}</Text>
+        <Text style={styles.titleText}>{`OTP\nCODE?`}</Text>
         <Text style={styles.subTitleText}>
-          Fill in your phone Number below to get the password reset code
+          We have sent you an email with your otp reset code
         </Text>
-        <Text style={styles.emailLabel}>Your Account phone number:</Text>
-        <TextInput value={phone_number} placeholder="Phone number" style={styles.emailInput} onChangeText={text => setPhoneNumber(text)} keyboardType='decimal-pad' />
+        <Text style={styles.emailLabel}>Your OTP Code:</Text>
+        <TextInput value={otp} placeholder="OTP Code" style={styles.emailInput} onChangeText={text => setOtp(text)} keyboardType='decimal-pad' />
       </View>
-
-      <Button mb={'4'} onPress={handleResetUserPassword} isLoading={loading}>Reset Password</Button>
-      {/* <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText} onPress={handleResetUserPassword}>Reset Password</Text>
-      </TouchableOpacity> */}
+      <TouchableOpacity style={styles.buttonStyle}>
+        <Text style={styles.buttonText} onPress={handleConfirmUserPassword}>Continue</Text>
+      </TouchableOpacity>
     </View>
-    </>
   );
 }
 

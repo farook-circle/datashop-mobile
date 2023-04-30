@@ -25,6 +25,7 @@ import { Box, FlatList, HStack, Pressable, ScrollView, VStack } from 'native-bas
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 import AlertCard from '../components/AlertCard';
+import { getMessages, getNotifications } from '../redux/actions/messages';
 
 
 const alerts = [
@@ -33,19 +34,7 @@ const alerts = [
     title: 'System Maintenance',
     body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
     priority: 'medium'
-  },
-  {
-    id: 2,
-    title: 'System Maintenance',
-    body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
-    priority: 'low'
-  },
-  {
-    id: 3,
-    title: 'System Maintenance',
-    body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
-    priority: 'high'
-  },
+  }
 ];
 
 export default function AddTypePin({navigation}) {
@@ -62,8 +51,19 @@ export default function AddTypePin({navigation}) {
  
   const payment_status = useSelector(state => state.wallet.payment_status);
 
+
+
+  const notifications = useSelector(state => state.messages.notifications);
+  
+  const priority_message = notifications.filter(
+    item => item.priority === true,
+  )[0];
+
+
   useEffect(() => {
     getUserPin();
+    dispatch(getMessages());
+    dispatch(getNotifications());
   }, []);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function AddTypePin({navigation}) {
 
     dispatch({type: USER_LOGOUT});
   }
-
+ 
   async function getUserPin() {
     try {
       const userPin = await EncryptedStorage.getItem('userPin');
@@ -254,7 +254,7 @@ export default function AddTypePin({navigation}) {
                 fontFamily: 'Poppins-Regular',
                 fontSize: hp(18),
               }}>
-              {selectedAlert.body}
+              {selectedAlert.notification}
             </Text>
           </Box>
         )}
@@ -271,9 +271,9 @@ export default function AddTypePin({navigation}) {
             </Text>
             <Box>
               <FlatList
-                data={alerts}
+                data={priority_message ? [priority_message] : []}
                 renderItem={({item}) => (
-                  <AlertCard title={item.title} body={item.body} priority={item.priority} onExpand={() => {
+                  <AlertCard title={item.title} body={item.notification} priority={'High'} onExpand={() => {
                     setSelectedAlert(item);
                     setOverlay(true);
                   }} />

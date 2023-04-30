@@ -21,7 +21,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import colors from '../../assets/colors/colors';
 import {hp, wp} from '../config/dpTopx';
 import {useSelector} from 'react-redux';
-import { Avatar, Button, HStack, IconButton, Pressable, VStack } from 'native-base';
+import {
+  Avatar,
+  Button,
+  HStack,
+  IconButton,
+  Pressable,
+  VStack,
+} from 'native-base';
 
 const url = 'https://awesome.contents.com/';
 const title = 'Awesome Contents';
@@ -213,6 +220,7 @@ export default function Receipt({navigation, route}) {
               justifyContent={'space-between'}
               pr={'4'}>
               <IconButton
+                onPress={() => navigation.goBack()}
                 rounded={'full'}
                 icon={
                   <Feather
@@ -226,7 +234,16 @@ export default function Receipt({navigation, route}) {
                 <Text style={styles.headerTitleText}>Receipt</Text>
                 <Text style={styles.subTitle}>Detail of transaction</Text>
               </VStack>
-              <Button size={'sm'}>Share</Button>
+              <Button
+                size={'sm'}
+                onPress={async () => {
+                  await share({
+                    title: 'Share receipt',
+                    url: screenShotImage,
+                  });
+                }}>
+                Share
+              </Button>
             </HStack>
           </SafeAreaView>
 
@@ -323,7 +340,24 @@ export default function Receipt({navigation, route}) {
             </View>
           </View>
           <VStack px={'6'} space={'2'} pt={'3'} bgColor={'white'}>
-            <Button rounded={'lg'} colorScheme={'red'}>
+            <Button
+              onPress={() =>
+                navigation.navigate('Complain', {
+                  amount,
+                  type,
+                  quantity,
+                  price,
+                  customer,
+                  date,
+                  time,
+                  transaction_ref,
+                  payment_method,
+                  remark,
+                  status,
+                })
+              }
+              rounded={'lg'}
+              colorScheme={'red'}>
               Report issue
             </Button>
             <Button rounded={'lg'}>Save Contact</Button>
@@ -395,7 +429,6 @@ const styles = StyleSheet.create({
   headerTitleText: {
     fontFamily: 'Poppins-Medium',
     fontSize: hp(16),
-   
   },
   subTitle: {
     textAlign: 'center',

@@ -60,7 +60,7 @@ export default function NetworkScreen({navigation, route}) {
 
   return (
     <Box flex={1} safeArea px={'4'} pt={'4'}>
-      <HeaderBackButton onBackButtonPress={() => navigation.goBack()} title={'Service network status'} />
+      <HeaderBackButton onBackButtonPress={() => navigation.goBack()} title={'Success Rate (%)'} />
       {success_rate.length < 1 ? (
         <Box flex={1} justifyContent={'center'} alignItems={'center'}>
           <Text>Not Available at the moment check back later</Text>

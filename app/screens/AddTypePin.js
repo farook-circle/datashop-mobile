@@ -21,25 +21,29 @@ import {useDispatch, useSelector} from 'react-redux';
 import OverLayModel from '../components/OverLayModel';
 import {StackActions} from '@react-navigation/native';
 import {USER_LOGOUT} from '../redux/constants/auth';
-import { Box, FlatList, HStack, Pressable, ScrollView, VStack } from 'native-base';
+import {
+  Box,
+  FlatList,
+  HStack,
+  Pressable,
+  ScrollView,
+  VStack,
+} from 'native-base';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 import AlertCard from '../components/AlertCard';
-import { getMessages, getNotifications } from '../redux/actions/messages';
-
+import {getMessages, getNotifications} from '../redux/actions/messages';
 
 const alerts = [
   {
     id: 1,
     title: 'System Maintenance',
     body: 'Lorem ipsum dolor sit amet consectetur. Nec consectetur a diam sapien semper sagittis cursus. Tempus amet morbi lectus mauris faucibus convallis morbi sem. Feugiat at diam.',
-    priority: 'medium'
-  }
+    priority: 'medium',
+  },
 ];
 
 export default function AddTypePin({navigation}) {
- 
-
   const dispatch = useDispatch();
   const [amount, setAmount] = useState('');
   const [init, setInit] = useState(true);
@@ -48,17 +52,14 @@ export default function AddTypePin({navigation}) {
   const [wrongPin, setWrongPin] = useState(false);
   const [overlay, setOverlay] = React.useState(false);
   const [selectedAlert, setSelectedAlert] = React.useState({});
- 
+
   const payment_status = useSelector(state => state.wallet.payment_status);
 
-
-
   const notifications = useSelector(state => state.messages.notifications);
-  
+
   const priority_message = notifications.filter(
     item => item.priority === true,
   )[0];
-
 
   useEffect(() => {
     getUserPin();
@@ -71,7 +72,6 @@ export default function AddTypePin({navigation}) {
       handleCreatePin();
     }
     if (amount.length === 4 && pin.length > 1) {
-      
       authenticatePin();
     }
   }, [amount]);
@@ -87,7 +87,7 @@ export default function AddTypePin({navigation}) {
 
     dispatch({type: USER_LOGOUT});
   }
- 
+
   async function getUserPin() {
     try {
       const userPin = await EncryptedStorage.getItem('userPin');
@@ -144,17 +144,20 @@ export default function AddTypePin({navigation}) {
     const result = await setUserPin(amount);
     if (result) {
       setLoading(false);
-      Alert.alert('Success', `You have successfully set ${amount} as your PIN`, [
-        {
-          text: 'OK',
-          onPress: () => navigation.dispatch(StackActions.replace('Home')),
-        },
-      ]);
+      Alert.alert(
+        'Success',
+        `You have successfully set ${amount} as your PIN`,
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.dispatch(StackActions.replace('Home')),
+          },
+        ],
+      );
     }
   };
 
   const authenticatePin = async () => {
-
     if (amount === pin) {
       navigation.dispatch(StackActions.replace('Home'));
       return;
@@ -163,7 +166,6 @@ export default function AddTypePin({navigation}) {
     Vibration.vibrate(200);
     setAmount('');
     setWrongPin(true);
-  
   };
 
   const handleNumericInput = value => {
@@ -188,7 +190,6 @@ export default function AddTypePin({navigation}) {
     setAmount(newAmount);
   };
 
-
   const checkBiometric = async () => {
     const rnBiometrics = new ReactNativeBiometrics();
 
@@ -202,7 +203,7 @@ export default function AddTypePin({navigation}) {
           const {success} = resultObject;
 
           if (success) {
-            navigation.dispatch(StackActions.replace('Dashboard'));
+            navigation.dispatch(StackActions.replace('Home'));
           } else {
             console.log('user cancelled biometric prompt');
           }
@@ -213,10 +214,9 @@ export default function AddTypePin({navigation}) {
     }
   };
 
-
   const biometricAuthenticate = () => {
     checkBiometric();
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -273,10 +273,15 @@ export default function AddTypePin({navigation}) {
               <FlatList
                 data={priority_message ? [priority_message] : []}
                 renderItem={({item}) => (
-                  <AlertCard title={item.title} body={item.notification} priority={'High'} onExpand={() => {
-                    setSelectedAlert(item);
-                    setOverlay(true);
-                  }} />
+                  <AlertCard
+                    title={item.title}
+                    body={item.notification}
+                    priority={'High'}
+                    onExpand={() => {
+                      setSelectedAlert(item);
+                      setOverlay(true);
+                    }}
+                  />
                 )}
                 keyExtractor={item => item.id}
               />
@@ -387,11 +392,19 @@ export default function AddTypePin({navigation}) {
           </TouchableOpacity>
         </View>
         <View style={styles.numericInputWrapper}>
-          <TouchableOpacity
-            style={styles.numberContainer}
-            onPress={biometricAuthenticate}>
-            <MaterialIcon name="fingerprint" size={30} color={colors.primary} />
-          </TouchableOpacity>
+          {pin === '' ? (
+            <Box style={styles.numberContainer}>{``}</Box>
+          ) : (
+            <TouchableOpacity
+              style={styles.numberContainer}
+              onPress={biometricAuthenticate}>
+              <MaterialIcon
+                name="fingerprint"
+                size={30}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
             style={styles.numberContainer}
             onPress={() => handleNumericInput('0')}>
@@ -403,22 +416,29 @@ export default function AddTypePin({navigation}) {
             <Feather name="arrow-left" size={hp(30)} color={colors.primary} />
           </TouchableOpacity>
         </View>
-        <HStack alignItems={'center'} alignSelf={'center'} py={'3'} space={'1'}>
-          <Text style={styles.shareReceiptText}>Forgot PIN Code?</Text>
-          <Pressable onPress={() => handleForgotPin()}>
-            <Text
-              style={[
-                styles.shareReceiptText,
-                {
-                  fontFamily: 'Poppins-Bold',
-                  color: colors.primary,
-                  textDecorationLine: 'underline',
-                },
-              ]}>
-              Logout
-            </Text>
-          </Pressable>
-        </HStack>
+        {pin === '' && <Box my={'3'} />}
+        {pin !== '' && (
+          <HStack
+            alignItems={'center'}
+            alignSelf={'center'}
+            py={'3'}
+            space={'1'}>
+            <Text style={styles.shareReceiptText}>Forgot PIN Code?</Text>
+            <Pressable onPress={() => handleForgotPin()}>
+              <Text
+                style={[
+                  styles.shareReceiptText,
+                  {
+                    fontFamily: 'Poppins-Bold',
+                    color: colors.primary,
+                    textDecorationLine: 'underline',
+                  },
+                ]}>
+                Logout
+              </Text>
+            </Pressable>
+          </HStack>
+        )}
       </>
     </View>
   );
@@ -540,7 +560,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   textInput: {
     fontFamily: 'Poppins-Medium',

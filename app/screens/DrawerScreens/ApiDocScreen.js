@@ -7,7 +7,7 @@ export default function ApiDocScreen({navigation, route}) {
   return (
     <Box flex={1} justifyContent={'center'} alignItems={'center'}>
       <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-        Our engineer probably working on that come back later.
+       not available at the moment
       </Text>
     </Box>
   );

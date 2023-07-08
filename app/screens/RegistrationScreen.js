@@ -43,8 +43,8 @@ export default function RegistrationScreen({navigation}) {
   
   const handleRegister = (data) => {
     
-    navigation.navigate('VerifyEmail', {email: data.email});
-    return;
+    // navigation.navigate('VerifyEmail', {email: data.email});
+    // return;
 
     const [first_name, last_name ] = data.full_name.split(' ');
 

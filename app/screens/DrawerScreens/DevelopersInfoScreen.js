@@ -7,7 +7,7 @@ export default function DevelopersInfoScreen({navigation, route}) {
   return (
     <Box flex={1} justifyContent={'center'} alignItems={'center'}>
       <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-        I will ask the dev guyz their names when they wake up from sleep come back later
+       Not available at the moment
       </Text>
     </Box>
   );

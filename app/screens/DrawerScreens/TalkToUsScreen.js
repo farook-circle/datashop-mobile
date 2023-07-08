@@ -7,7 +7,7 @@ export default function TalkToUsScreen({navigation, route}) {
   return (
     <Box flex={1} justifyContent={'center'} alignItems={'center'}>
     <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-      Communication channel will be here soon just hang on
+      Communication channel not available at the moment, but you can contact us via whatsapp
     </Text>
   </Box>
   );

@@ -57,6 +57,17 @@ const CustomSidebarMenu = props => {
   const {user} = useSelector(state => state.auth);
   const {wallet_balance} = useSelector(state => state.wallet);
 
+  const whatsapp = useSelector(state => state.config.contact_info);
+
+  const openWhatsapp = () => {
+    console.log(
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
+    );
+    Linking.openURL(
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
+    );
+  };
+
   async function removeUserToken() {
     try {
       await EncryptedStorage.removeItem('user_session');
@@ -84,59 +95,73 @@ const CustomSidebarMenu = props => {
   };
 
   const navigateToDrawerScreen = screen => {
+    if (screen === 'TalkToUsScreen') {
+      openWhatsapp();
+      props.navigation.closeDrawer();
+      return;
+    }
     props.navigation.navigate(screen);
     props.navigation.closeDrawer();
   };
 
   return (
     <Box safeArea flex={1} bgColor={'white'}>
-      <Box bgColor={'primary.500'} px={'2'} py={'4'}>
+      <Box bgColor={'primary.500'} px={'4'} py={'4'}>
         <VStack space={'2'}>
           <HStack space={'3'}>
-            <Avatar bgColor={'white'}>
+            <Avatar
+              bgColor={'white'}
+              borderColor={'amber.700'}
+              borderWidth={'2'}>
               <Feather name={'user'} color={'blue'} size={hp(25)} />
             </Avatar>
             <VStack>
               <Text
                 style={{
                   color: 'white',
-                  fontSize: hp(16),
+                  fontSize: hp(14),
                   fontFamily: 'Poppins-SemiBold',
                 }}>
                 {user && `${user.first_name} ${user.last_name}`}
               </Text>
-              <Text style={{color: 'white'}}>{user && user.username}</Text>
+              <Text style={{color: 'white', fontFamily: 'Poppins-Regular'}}>
+                {user && user.username}
+              </Text>
             </VStack>
           </HStack>
-
-          <Text style={{color: 'white'}}>{user && user.email}</Text>
-          <Text style={{color: 'white'}}>Date Joined:</Text>
+          <VStack>
+            <Text
+              style={{
+                color: 'white',
+                fontFamily: 'Poppins-Regular',
+                fontSize: hp(13),
+              }}>
+              Email: {user && user.email}
+            </Text>
+            <Text
+              style={{
+                color: 'white',
+                fontFamily: 'Poppins-Regular',
+                fontSize: hp(13),
+              }}>
+              Date Joined:{' '}
+              {user &&
+                user.date_joined &&
+                new Date(user.date_joined).toDateString()}
+            </Text>
+          </VStack>
         </VStack>
-        <Divider bgColor={'white'} mt={'2'} />
-        <VStack>
-          <Text style={{color: 'white'}}>BALANCE:</Text>
-          <Text style={{color: 'white', fontSize: hp(20)}}>
+
+        <VStack bgColor={'primary.800'} shadow={'4'} p={'2'} rounded={'4'}>
+          <Text style={{color: 'white', fontFamily: 'Poppins-Medium', fontSize: hp(13)}}>BALANCE:</Text>
+          <Text style={{color: 'white', fontSize: hp(20), fontFamily: 'Poppins-SemiBold'}}>
             ₦ {wallet_balance}
           </Text>
         </VStack>
       </Box>
       <Box px={2} py={2}>
-        {/* <Box w={'100%'} bgColor={'yellow.400'} p={'3'}>
-          <VStack space={'1'}>
-            <Text style={{fontFamily: 'Poppins-SemiBold'}}>
-              Upgrade to super agent
-            </Text>
-            <Text style={{fontFamily: 'Poppins-Regular'}}>
-              Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet
-              consectetur.
-            </Text>
-            <Button size={'sm'} w={'40%'}>
-              Learn more
-            </Button>
-          </VStack>
-        </Box> */}
         <VStack mt={'4'} px={'2'}>
-        <MenuItem
+          <MenuItem
             onPress={() => navigateToDrawerScreen('ActivityDetails')}
             title={'Activity Details'}
             icon={<Feather name="pie-chart" color={'white'} size={hp(20)} />}

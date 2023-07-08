@@ -102,8 +102,6 @@ export default function Receipt({navigation, route}) {
     status,
   } = transaction;
 
-  console.log(image);
-
   const getPaymentTypeLogo = type => {
     if (type === 'bank transfer deposit') {
       return require('../../assets/images/bank-building.png');

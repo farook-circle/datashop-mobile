@@ -53,6 +53,7 @@ import {
 import {Avatar, Box, Divider, HStack, Pressable, VStack} from 'native-base';
 import ServiceItemCard from '../components/Dashboard/ServiceItemCard';
 import HistoryItemList from '../components/History/HistoryItemList';
+import {getHomepageGallery} from '../api/service.api';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -65,6 +66,7 @@ export default function Home({navigation}) {
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
   // const [priority_message, setPriorityMessage] = useState(null);
+  const [dashPic, setDashPic] = React.useState([]);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
   const user = useSelector(state => state.auth.user);
@@ -108,8 +110,6 @@ export default function Home({navigation}) {
 
     handleSetMessageAvailable();
   }, [refreshing]);
-
-  console.log(data_purchase_history[0]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -193,6 +193,17 @@ export default function Home({navigation}) {
     );
   };
 
+  const handleGetHomeScreenPic = async () => {
+    const request = await getHomepageGallery();
+    if (request.ok) {
+      setDashPic(request.data);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetHomeScreenPic();
+  }, []);
+
   return (
     <>
       {/* {popUpMessage && (
@@ -240,19 +251,38 @@ export default function Home({navigation}) {
         // }
       >
         <View style={styles.secContainer}>
-          <Image
+          <View
             style={{
               marginTop: 0,
               position: 'absolute',
               width: '100%',
               height: hp(240),
               zIndex: 0,
-            }}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
-            }}
-            alt={'bgimage'}
-          />
+            }}>
+            <FlatList
+              data={[{id: '1'}]}
+              keyExtractor={item => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              renderItem={({item}) => (
+                <View
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'red',
+                  }}>
+                  <Image
+                    style={{width: '100%', height: '100%'}}
+                    source={{
+                      uri: 'https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
+                    }}
+                    alt={'bgimage'}
+                  />
+                </View>
+              )}
+            />
+          </View>
           <ScrollView
             style={{
               position: 'absolute',
@@ -337,7 +367,8 @@ export default function Home({navigation}) {
 
         {/* List of data Bundle */}
         <HStack
-          py={'3'}
+          pt={'6'}
+          pb={'3'}
           px={'4'}
           alignItems={'center'}
           justifyContent={'space-between'}>
@@ -354,7 +385,7 @@ export default function Home({navigation}) {
             onPress={() => navigation.navigate('Airtime')}
           />
           <ServiceItemCard
-            name={'Others'}
+            name={'More'}
             icon={'align-justify'}
             color={colors.primary}
             onPress={() => navigation.navigate('Other')}

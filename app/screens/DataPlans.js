@@ -18,16 +18,14 @@ import React, {useEffect, useState} from 'react';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { selectContactPhone } from 'react-native-select-contact';
-
-
+import {selectContactPhone} from 'react-native-select-contact';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {buyDataBundle, getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import OverLayModel from '../components/OverLayModel';
-import {entityId} from '../config/collConfig';
+
 import BottomModel from '../components/BottomModel';
 import {
   getCollaboratorData,
@@ -35,7 +33,7 @@ import {
 } from '../redux/actions/collaborator';
 import {useRef} from 'react';
 import {Modalize} from 'react-native-modalize';
-import { IconButton, Input } from 'native-base';
+import {IconButton, Input} from 'native-base';
 import Contacts from 'react-native-contacts';
 
 function DataPlan({route, navigation}) {
@@ -164,15 +162,14 @@ function DataPlan({route, navigation}) {
     setEditedAmount('');
   };
 
-
-  const handleSetCustomer = (phoneNumber) => {
-    if(phoneNumber.length == 11 && isFirstTimeFill) {
+  const handleSetCustomer = phoneNumber => {
+    if (phoneNumber.length == 11 && isFirstTimeFill) {
       phoneInputRef.current.blur();
       setIsFirstTimeFill(false);
     }
 
     setCustomer(phoneNumber);
-  }
+  };
 
   const phoneNumberCheckUp = () => {
     if (customer.length > 1 && customer.length < 11) {
@@ -297,81 +294,72 @@ function DataPlan({route, navigation}) {
           <Text style={styles.quantityText}>{item.quantity}</Text>
           <Text style={styles.priceText}>
             {'\u20A6'}
-            {entityId.cid
-              ? getCollaboratorPrice(item.id, item.price)
-              : item.price}
+            {item.price}
           </Text>
         </View>
       </TouchableOpacity>
     );
   };
 
-
   const handleAddContact = async () => {
+    // check permission
+    const granted = await getContactPermission();
 
-      // check permission
-      const granted = await getContactPermission();
+    if (!granted) return alert('Please grant permission for reading contact');
 
-      if(!granted) return alert('Please grant permission for reading contact');
-
-      const phoneNumber = await selectContactPhone()
-          .then(selection => {
-              if (!selection) {
-                  return null;
-              }
-              
-              let { contact, selectedPhone } = selection;
-              return selectedPhone.number;
-          });
-
-      if(!phoneNumber) return alert('Please select valid phone number');
-
-      
-    
-      if(phoneNumber.startsWith('0')) {
-        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '');
-        setCustomer(contact);
-        return;
+    const phoneNumber = await selectContactPhone().then(selection => {
+      if (!selection) {
+        return null;
       }
 
-      if(phoneNumber.startsWith('234')) {
-        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '').replace('234', '0')
-        setCustomer(contact);
-        return;
-      }
+      let {contact, selectedPhone} = selection;
+      return selectedPhone.number;
+    });
 
+    if (!phoneNumber) return alert('Please select valid phone number');
 
-      if(phoneNumber.startsWith('+234')) {
-        const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '').replace('+234', '0')
-        setCustomer(contact);
-        return;
-      }
+    if (phoneNumber.startsWith('0')) {
+      const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '');
+      setCustomer(contact);
+      return;
+    }
 
+    if (phoneNumber.startsWith('234')) {
+      const contact = phoneNumber
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replace('234', '0');
+      setCustomer(contact);
+      return;
+    }
 
-      alert(`Invalid phone number: ${phoneNumber}`);
-  }
+    if (phoneNumber.startsWith('+234')) {
+      const contact = phoneNumber
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replace('+234', '0');
+      setCustomer(contact);
+      return;
+    }
 
-
-
+    alert(`Invalid phone number: ${phoneNumber}`);
+  };
 
   const getContactPermission = async () => {
-
     if (Platform.OS === 'android') {
       const request = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
       );
 
       // denied permission
-      if (request === PermissionsAndroid.RESULTS.DENIED) return false
-      
+      if (request === PermissionsAndroid.RESULTS.DENIED) return false;
       // user chose 'deny, don't ask again'
-      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) return false
+      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN)
+        return false;
     }
 
-
     return true;
-  }
-      
+  };
 
   return (
     <>
@@ -576,8 +564,8 @@ function DataPlan({route, navigation}) {
                 size={'lg'}
                 InputRightElement={
                   <IconButton
-                  onPress={handleAddContact}
-                  rounded={'full'}
+                    onPress={handleAddContact}
+                    rounded={'full'}
                     icon={
                       <AntDesign name="contacts" size={hp(25)} color={'gray'} />
                     }

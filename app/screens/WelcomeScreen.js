@@ -11,17 +11,17 @@ import {
 } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {hp, dp, wp} from '../config/dpTopx';
+import {hp, dp, wp} from '../config/dpTopx.js';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
-import {entityId} from '../config/collConfig';
-import { Button, VStack } from 'native-base';
 
 export default function WelcomeScreen({navigation}) {
   const whatsapp = useSelector(state => state.config.contact_info);
 
   const openWhatsapp = () => {
-    console.log('whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,);
+    console.log(
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
+    );
     Linking.openURL(
       'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );
@@ -64,16 +64,11 @@ export default function WelcomeScreen({navigation}) {
         <Text style={styles.textInfoLink}>terms of service</Text>and
         <Text style={styles.textInfoLink}>privacy policy</Text>
       </Text>
-      {!entityId.cid && (
-        <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
-          <MaterialCommunityIcons
-            name="whatsapp"
-            size={hp(25)}
-            color={'green'}
-          />
-          <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
-        </TouchableOpacity>
-      )}
+
+      <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
+        <MaterialCommunityIcons name="whatsapp" size={hp(25)} color={'green'} />
+        <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

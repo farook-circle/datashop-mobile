@@ -5,84 +5,83 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Image,
   TouchableOpacity,
   SafeAreaView,
-  FlatList,
   TextInput,
+  Alert,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import colors from '../../assets/colors/colors';
-import {useDispatch, useSelector} from 'react-redux';
-import {getDataBundle} from '../redux/actions/data_plans';
-import {hp, wp} from '../config/dpTopx';
-import { requestUserPasswordReset } from '../api/auth.api';
-import { Button } from 'native-base';
+import {hp} from '../config/dpTopx';
+import {requestUserPasswordReset} from '../api/auth.api';
+import {Button} from 'native-base';
 
 export default function ForgotPasswordRequest({navigation}) {
-  const dispatch = useDispatch();
-
-  const [phone_number, setPhoneNumber] = React.useState("");
+  const [phone_number, setPhoneNumber] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-
 
   const handleResetUserPassword = async () => {
     // validate phone phone number
-    if( !phone_number || phone_number.length < 11) {
-      alert("Please type a valid account phone number")
-      return
+    if (!phone_number || phone_number.length < 11) {
+      Alert.alert('Warning', 'Please type a valid account phone number');
+      return;
     }
 
-    setLoading(true)
-    // send user password reset
+    setLoading(true);
+
     const request = await requestUserPasswordReset({phone_number});
-    if(request.ok) {
-      navigation.navigate("ForgotPasswordConfirm", {
-        data: request.data
-      })
+    if (request.ok) {
+      navigation.navigate('ForgotPasswordConfirm', {
+        data: request.data,
+      });
       setLoading(false);
       return;
     }
 
-    console.log(request.data)
-    alert(request.data ? request.data.reason : 'Unable to complete your request');
-    setLoading(false)
-  }
+    Alert.alert(
+      request.data ? request.data.reason : 'Unable to complete your request',
+    );
+    setLoading(false);
+  };
 
   return (
     <>
-    <View style={styles.container}>
-      <SafeAreaView>
-        {/* Header */}
-        <View style={styles.headerWrapper}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather
-              name="chevron-left"
-              size={hp(25)}
-              color={colors.textBlack}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Forgot Password</Text>
-          <Text>{'  '}</Text>
+      <View style={styles.container}>
+        <SafeAreaView>
+          {/* Header */}
+          <View style={styles.headerWrapper}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather
+                name="chevron-left"
+                size={hp(25)}
+                color={colors.textBlack}
+              />
+            </TouchableOpacity>
+            <Text style={styles.headerTitleText}>Forgot Password</Text>
+            <Text>{'  '}</Text>
+          </View>
+        </SafeAreaView>
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <Text style={styles.titleText}>{`Forgot\nPassword?`}</Text>
+          <Text style={styles.subTitleText}>
+            Fill in your phone Number below to get the password reset code
+          </Text>
+          <Text style={styles.emailLabel}>Your Account phone number:</Text>
+          <TextInput
+            value={phone_number}
+            placeholder="Phone number"
+            style={styles.emailInput}
+            onChangeText={text => setPhoneNumber(text)}
+            keyboardType="decimal-pad"
+          />
         </View>
-      </SafeAreaView>
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <Text style={styles.titleText}>{`Forgot\nPassword?`}</Text>
-        <Text style={styles.subTitleText}>
-          Fill in your phone Number below to get the password reset code
-        </Text>
-        <Text style={styles.emailLabel}>Your Account phone number:</Text>
-        <TextInput value={phone_number} placeholder="Phone number" style={styles.emailInput} onChangeText={text => setPhoneNumber(text)} keyboardType='decimal-pad' />
-      </View>
 
-      <Button mb={'4'} onPress={handleResetUserPassword} isLoading={loading}>Reset Password</Button>
-      {/* <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText} onPress={handleResetUserPassword}>Reset Password</Text>
-      </TouchableOpacity> */}
-    </View>
+        <Button mb={'4'} onPress={handleResetUserPassword} isLoading={loading}>
+          Reset Password
+        </Button>
+      </View>
     </>
   );
 }

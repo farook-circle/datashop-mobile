@@ -19,43 +19,49 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import { Button } from 'native-base';
-import { completeUserPasswordReset } from '../api/auth.api';
+import {Button} from 'native-base';
+import {completeUserPasswordReset} from '../api/auth.api';
 
 export default function CompletePasswordReset({navigation, route}) {
   const dispatch = useDispatch();
 
-  const [new_password, setNewPassword] = React.useState("");
-  const [confirm_new_password, setConfirmNewPassword] = React.useState("");
+  const [new_password, setNewPassword] = React.useState('');
+  const [confirm_new_password, setConfirmNewPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
   const data = route.params.data;
-  console.log(data);
-
 
   const handleResetUserPassword = async () => {
     // validate phone phone number
-    if(!new_password || !confirm_new_password || new_password !== confirm_new_password) {
-      alert("Password are not the same")
-      return
+    if (
+      !new_password ||
+      !confirm_new_password ||
+      new_password !== confirm_new_password
+    ) {
+      alert('Password are not the same');
+      return;
     }
 
     setLoading(true);
     const payload = {
       ...data,
-      new_password
-    }
+      new_password,
+    };
     const request = await completeUserPasswordReset(payload);
-    if(request.ok) {
-      alert('You have successfully change your password you can now login with your new password');
+    if (request.ok) {
+      alert(
+        'You have successfully change your password you can now login with your new password',
+      );
       navigation.navigate('Login');
       setLoading(false);
       return;
     }
 
-    alert(request.data ? request.data.message : 'Unable to complete your request');
-    setLoading(false)
-  }
+    alert(
+      request.data ? request.data.message : 'Unable to complete your request',
+    );
+    setLoading(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -79,15 +85,24 @@ export default function CompletePasswordReset({navigation, route}) {
           Create a new strong password for your account
         </Text>
         <Text style={styles.emailLabel}>Your Account phone number:</Text>
-        <TextInput value={new_password} placeholder="New Password" style={styles.emailInput} onChangeText={text => setNewPassword(text)} secureTextEntry={true} />
-        <TextInput value={confirm_new_password} placeholder="Confirm New Password" style={styles.emailInput} onChangeText={text => setConfirmNewPassword(text)} secureTextEntry={true} />
+        <TextInput
+          value={new_password}
+          placeholder="New Password"
+          style={styles.emailInput}
+          onChangeText={text => setNewPassword(text)}
+          secureTextEntry={true}
+        />
+        <TextInput
+          value={confirm_new_password}
+          placeholder="Confirm New Password"
+          style={styles.emailInput}
+          onChangeText={text => setConfirmNewPassword(text)}
+          secureTextEntry={true}
+        />
       </View>
-      <Button mb='4' onPress={handleResetUserPassword} isLoading={loading}>
+      <Button mb="4" onPress={handleResetUserPassword} isLoading={loading}>
         Change password
       </Button>
-      {/* <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText} onPress={handleResetUserPassword}>Reset Password</Text>
-      </TouchableOpacity> */}
     </View>
   );
 }

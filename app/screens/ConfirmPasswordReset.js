@@ -10,54 +10,59 @@ import {
   SafeAreaView,
   FlatList,
   TextInput,
+  Alert,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import {Button} from 'native-base';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import { confirmUserPasswordReset } from '../api/auth.api';
+import {confirmUserPasswordReset} from '../api/auth.api';
 
 export default function ConfirmPasswordReset({navigation, route}) {
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
 
   const data = route.params.data;
-  
-  const [otp, setOtp] = React.useState("");
 
+  const [otp, setOtp] = React.useState('');
 
   const handleConfirmUserPassword = async () => {
     // validate phone phone number
-    if( !otp || otp.length < 5) {
-      alert("A Valid OTP length is around 5 please check and try again")
-      return
+    if (!otp || otp.length < 5) {
+      Alert.alert(
+        'Warning',
+        'A Valid OTP length is around 5 please check and try again',
+      );
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     const payload = {
       token: data && data.token,
-      code: otp
-    }
+      code: otp,
+    };
 
     // send user password reset
-    const request = await confirmUserPasswordReset(payload)
-    if(request.ok) {
-      navigation.navigate("ForgotPasswordComplete", {
-        data: payload
-      })
-      setLoading(false)
+    const request = await confirmUserPasswordReset(payload);
+    if (request.ok) {
+      navigation.navigate('ForgotPasswordComplete', {
+        data: payload,
+      });
+      setLoading(false);
       return;
     }
-    
 
-    alert(request.data ? request.data.message : "Unable to complete your request");
-    setLoading(false)
-  }
+    alert(
+      request.data ? request.data.message : 'Unable to complete your request',
+    );
+    setLoading(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -81,11 +86,17 @@ export default function ConfirmPasswordReset({navigation, route}) {
           We have sent you an email with your otp reset code
         </Text>
         <Text style={styles.emailLabel}>Your OTP Code:</Text>
-        <TextInput value={otp} placeholder="OTP Code" style={styles.emailInput} onChangeText={text => setOtp(text)} keyboardType='decimal-pad' />
+        <TextInput
+          value={otp}
+          placeholder="OTP Code"
+          style={styles.emailInput}
+          onChangeText={text => setOtp(text)}
+          keyboardType="decimal-pad"
+        />
       </View>
-      <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText} onPress={handleConfirmUserPassword}>Continue</Text>
-      </TouchableOpacity>
+      <Button mb={'4'} onPress={handleConfirmUserPassword} isLoading={loading}>
+        Continue
+      </Button>
     </View>
   );
 }

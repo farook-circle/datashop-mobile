@@ -4,8 +4,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useSelector, useDispatch} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-import {entityId} from '../config/collConfig';
-
 // My Screens
 import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';

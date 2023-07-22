@@ -43,7 +43,6 @@ import {getMessages, getNotifications} from '../redux/actions/messages';
 import OverLayModel from '../components/OverLayModel';
 import Button from '../components/Button';
 import {getElectricProviders} from '../redux/actions/bill_payment';
-import {entityId} from '../config/collConfig';
 import {getAirtimeServices} from '../redux/actions/airtime';
 import {
   getCollaboratorBank,
@@ -101,15 +100,11 @@ export default function Home({navigation}) {
     dispatch(getDataCategory());
     dispatch(getElectricProviders());
     dispatch(getAirtimeServices());
-    if (entityId.cid) {
-      dispatch(getCollaboratorData());
-      dispatch(getCollaboratorWhatsapp());
-      dispatch(getCollaboratorBank());
-    }
+
     // checkIfPriorityMessage();
 
     handleSetMessageAvailable();
-  }, [refreshing]);
+  }, [dispatch, refreshing]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -134,31 +129,14 @@ export default function Home({navigation}) {
 
   const handleSetMessageAvailable = () => {};
 
-  const checkIfPriorityMessage = () => {
-    const priorityMessage = notifications.filter(
-      item => item.priority === true,
-    );
-    setPriorityMessage(priorityMessage[0]);
-  };
-
   const handleMessages = () => {
     navigation.navigate('Messages');
   };
 
   const openWhatsapp = () => {
-    entityId.cid
-      ? Linking.openURL(
-          'whatsapp://send?text=' +
-            collaborator_whatsapp.message +
-            '&phone=+234' +
-            collaborator_whatsapp.whatsapp_number,
-        )
-      : Linking.openURL(
-          'whatsapp://send?text=' +
-            whatsapp.message +
-            '&phone=' +
-            whatsapp.number,
-        );
+    Linking.openURL(
+      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
+    );
   };
 
   const handleSortByData = () => {

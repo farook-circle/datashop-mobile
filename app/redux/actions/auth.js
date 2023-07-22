@@ -1,7 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import axios from '../../axios';
-import {entityId} from '../../config/collConfig';
+
 import {
   USER_LOADED,
   USER_LOADING,
@@ -66,7 +66,7 @@ export const signUp = (userData, ErrorOccur) => dispatch => {
   };
 
   // get entity id
-  const cid = entityId.cid;
+  const cid = '';
 
   const body = JSON.stringify({
     ...userData,
@@ -105,7 +105,7 @@ export const signIn = (userData, ErrorOccur) => dispatch => {
   };
 
   // get entity id
-  const cid = entityId.cid;
+  const cid = '';
 
   const body = JSON.stringify({
     ...userData,

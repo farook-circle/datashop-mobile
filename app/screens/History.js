@@ -9,11 +9,11 @@ import {
   SafeAreaView,
   FlatList,
   TextInput,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import { VStack, Box } from 'native-base';
+import {VStack, Box} from 'native-base';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
@@ -33,7 +33,7 @@ export default function History({navigation}) {
 
   useEffect(() => {
     dispatch(getDataPurchaseHistory());
-  }, []);
+  }, [dispatch]);
 
   const handleSearch = text => {
     setSearchValue(text);
@@ -54,49 +54,6 @@ export default function History({navigation}) {
     setToggleSearch(!toggleSearch);
     setSearchItem(null);
     setSearchValue('');
-  };
-
-  const getPaymentTypeLogo = type => {
-    if (type === 'bank transfer deposit') {
-      return require('../../assets/images/bank-building.png');
-    } else if (type === 'data_purchase_history') {
-      return require('../../assets/images/mtn_logo.png');
-    } else if (type === 'card deposit') {
-      return require('../../assets/images/credit-card.png');
-    } else if (type === 'momo agent') {
-      return require('../../assets/images/momo_logo.png');
-    } else if (type === 'refund') {
-      return require('../../assets/images/money-back.png');
-    } else {
-      return require('../../assets/images/transfer.png');
-    }
-  };
-
-  const renderHistoryItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={styles.historyItemsWrapper}
-        onPress={() => navigation.navigate('Receipt', {transaction: item})}>
-        <Image
-          source={
-            item.image !== null
-              ? {uri: item.image}
-              : getPaymentTypeLogo(item.type)
-          }
-          style={styles.mtnLogoImageHistory}
-        />
-        <Text style={styles.receiverText}>
-          {item.customer !== 'None  ' ? item.customer : item.type}
-        </Text>
-        <Text style={styles.quantityText}>
-          {item.quantity !== 'None' ? item.quantity : item.amount}
-        </Text>
-        <View style={styles.timeAndPriceText}>
-          <Text style={styles.timeText}>{item.time.slice(0, 5)}</Text>
-          <Text style={styles.priceText}>{item.date}</Text>
-        </View>
-      </TouchableOpacity>
-    );
   };
 
   return (
@@ -166,15 +123,7 @@ export default function History({navigation}) {
           </VStack>
         ),
       )}
-      {/* <View style={styles.historyDataWrapper}>
-        <FlatList
-          data={searchItem !== null ? searchItem : data_purchase_history}
-          renderItem={renderHistoryItem}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 100}}
-        />
-      </View> */}
+
       <Box mt={'20'} />
     </ScrollView>
   );

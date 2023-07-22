@@ -49,7 +49,15 @@ import {
   getCollaboratorData,
   getCollaboratorWhatsapp,
 } from '../redux/actions/collaborator';
-import {Avatar, Box, Divider, HStack, Pressable, VStack} from 'native-base';
+import {
+  Avatar,
+  Box,
+  Divider,
+  HStack,
+  IconButton,
+  Pressable,
+  VStack,
+} from 'native-base';
 import ServiceItemCard from '../components/Dashboard/ServiceItemCard';
 import HistoryItemList from '../components/History/HistoryItemList';
 import {getHomepageGallery} from '../api/service.api';
@@ -66,6 +74,7 @@ export default function Home({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   // const [priority_message, setPriorityMessage] = useState(null);
   const [dashPic, setDashPic] = React.useState([]);
+  const [showBalance, setShowBalance] = useState(true);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
   const user = useSelector(state => state.auth.user);
@@ -139,38 +148,6 @@ export default function Home({navigation}) {
     );
   };
 
-  const handleSortByData = () => {
-    console.log('Hello world');
-  };
-
-  const renderHistoryItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={styles.historyItemsWrapper}
-        onPress={() => navigation.navigate('Receipt', {transaction: item})}>
-        <Image
-          source={
-            item.image !== null
-              ? {uri: item.image}
-              : getPaymentTypeLogo(item.type)
-          }
-          style={styles.mtnLogoImageHistory}
-        />
-        <Text style={styles.receiverText}>
-          {item.customer !== 'None' ? item.customer : item.type}
-        </Text>
-
-        <Text style={styles.quantityText}>
-          {item.quantity !== 'None' ? item.quantity : item.amount}
-        </Text>
-        <View style={styles.timeAndPriceText}>
-          <Text style={styles.timeText}>{item.time.slice(0, 5)}</Text>
-          <Text style={styles.priceText}>{item.date}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   const handleGetHomeScreenPic = async () => {
     const request = await getHomepageGallery();
     if (request.ok) {
@@ -184,50 +161,7 @@ export default function Home({navigation}) {
 
   return (
     <>
-      {/* {popUpMessage && (
-          <OverLayModel>
-            <View
-              style={{
-                width: wp(250),
-                height: wp(200),
-                padding: 20,
-                backgroundColor: colors.textWhite,
-                alignItems: 'center',
-                borderRadius: 20,
-                justifyContent: 'space-between',
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                }}>
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: 20,
-                    color: 'red',
-                  }}>
-                  {priority_message.title}
-                </Text>
-                <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(14)}}>
-                  {priority_message.notification}
-                </Text>
-              </View>
-              <Button
-                onPress={() => setPopUpMessage(null)}
-                text={'close'}
-                buttonStyle={{marginTop: 10, width: 100, height: 30}}
-              />
-            </View>
-          </OverLayModel>
-        )} */}
-
-      <View
-        style={styles.container}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
-      >
+      <View style={styles.container}>
         <View style={styles.secContainer}>
           <View
             style={{
@@ -305,21 +239,27 @@ export default function Home({navigation}) {
                 <Feather name="message-circle" size={hp(24)} color={'white'} />
                 {messageAvailable && <View style={styles.dotIcon} />}
               </Pressable>
-
-              {/* <Pressable onPress={() => navigation.navigate('Profile')}>
-                  <Avatar size={'sm'} bgColor={'white'}>
-                    <Feather name="user" size={hp(20)} color={colors.primary} />
-                  </Avatar>
-                </Pressable> */}
             </HStack>
           </View>
 
           {/* Wallet Balance Container */}
           <View style={styles.balanceContainerWrapper}>
             <Text style={styles.balanceTitle}>BALANCE:</Text>
-            <Text style={styles.balanceText}>
-              {'\u20A6'} {balance}
-            </Text>
+            <HStack alignItems={'center'}>
+              <Text style={styles.balanceText}>
+                {'\u20A6'} {showBalance ? balance : '******'}
+              </Text>
+              <IconButton
+                rounded={'full'}
+                onPress={() => setShowBalance(!showBalance)}
+                icon={
+                  <Feather
+                    name={showBalance ? 'eye-off' : 'eye'}
+                    color={'white'}
+                  />
+                }
+              />
+            </HStack>
             <View
               style={{
                 flexDirection: 'row',

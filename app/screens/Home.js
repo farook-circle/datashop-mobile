@@ -184,50 +184,7 @@ export default function Home({navigation}) {
 
   return (
     <>
-      {/* {popUpMessage && (
-          <OverLayModel>
-            <View
-              style={{
-                width: wp(250),
-                height: wp(200),
-                padding: 20,
-                backgroundColor: colors.textWhite,
-                alignItems: 'center',
-                borderRadius: 20,
-                justifyContent: 'space-between',
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                }}>
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: 20,
-                    color: 'red',
-                  }}>
-                  {priority_message.title}
-                </Text>
-                <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(14)}}>
-                  {priority_message.notification}
-                </Text>
-              </View>
-              <Button
-                onPress={() => setPopUpMessage(null)}
-                text={'close'}
-                buttonStyle={{marginTop: 10, width: 100, height: 30}}
-              />
-            </View>
-          </OverLayModel>
-        )} */}
-
-      <View
-        style={styles.container}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
-      >
+      <View style={styles.container}>
         <View style={styles.secContainer}>
           <View
             style={{

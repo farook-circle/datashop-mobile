@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   View,
   Text,
@@ -67,24 +68,6 @@ export default function Receipt({navigation, route}) {
     }
   };
 
-  const openWhatsapp = () => {
-    Linking.openURL(
-      'whatsapp://send?text=' +
-        `I am complaining about this transaction \n\nTransaction Details\nAgent:${
-          user.username
-        }\n\nDate:${date}, ${time.slice(
-          0,
-          5,
-        )}\nTransaction Id: ${transaction_ref}\nCustomer: ${customer}\n${
-          quantity === 'None' ? 'Amount' : 'Data Plan'
-        }: ${
-          quantity === 'None' ? amount : quantity
-        }\nPayment Method: ${payment_method}\nSome other information:\n\n` +
-        '&phone=' +
-        whatsapp.number,
-    );
-  };
-
   const {transaction} = route.params;
 
   const {
@@ -100,23 +83,9 @@ export default function Receipt({navigation, route}) {
     payment_method,
     remark,
     status,
+    balance_before,
+    balance_after,
   } = transaction;
-
-  const getPaymentTypeLogo = type => {
-    if (type === 'bank transfer deposit') {
-      return require('../../assets/images/bank-building.png');
-    } else if (type === 'data_purchase_history') {
-      return require('../../assets/images/mtn_logo.png');
-    } else if (type === 'card deposit') {
-      return require('../../assets/images/credit-card.png');
-    } else if (type === 'momo agent') {
-      return require('../../assets/images/momo_logo.png');
-    } else if (type === 'refund') {
-      return require('../../assets/images/money-back.png');
-    } else {
-      return require('../../assets/images/transfer.png');
-    }
-  };
 
   const monthToString = [
     '',
@@ -186,6 +155,15 @@ export default function Receipt({navigation, route}) {
               <Text style={styles.detailText}>{payment_method}</Text>
             </View>
 
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Balance Before</Text>
+              <Text style={styles.textRight}>{balance_before || 'None'}</Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Balance After</Text>
+              <Text style={styles.textRight}>{balance_after || 'None'}</Text>
+            </View>
+
             <View style={styles.underline} />
             <View style={styles.detailTextWrapper}>
               <Text style={styles.detailText}>Transaction ID: </Text>
@@ -202,17 +180,6 @@ export default function Receipt({navigation, route}) {
       {
         <View style={styles.container}>
           <SafeAreaView>
-            {/* Header */}
-            {/* <View style={styles.headerWrapper}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Feather
-                  name="chevron-left"
-                  size={hp(35)}
-                  color={colors.textBlack}
-                />
-              </TouchableOpacity>
-              <Text style={styles.headerTitleText}>Receipt</Text>
-            </View> */}
             <HStack
               alignItems={'center'}
               justifyContent={'space-between'}
@@ -245,8 +212,6 @@ export default function Receipt({navigation, route}) {
             </HStack>
           </SafeAreaView>
 
-          {/* <Text style={styles.subTitle}>Detail of transaction</Text> */}
-
           <VStack
             space={'2'}
             alignItems={'center'}
@@ -274,33 +239,6 @@ export default function Receipt({navigation, route}) {
             </VStack>
           </VStack>
 
-          {/* 
-          <View style={styles.sectionGroup}>
-            <View style={styles.dataBundleItemsWrapper}>
-              <Image
-                source={
-                  image !== null ? {uri: image} : getPaymentTypeLogo(type)
-                }
-                style={styles.mtnLogoImage}
-              />
-              <Text style={styles.quantityText}>
-                {quantity !== 'None' ? quantity : amount}
-              </Text>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <Text style={styles.priceTitle}>
-                {type === 'data_purchase_history'
-                  ? `Price ${price}`
-                  : `Deposited ${amount}`}
-              </Text>
-              <Text style={styles.toText}>
-                {type === 'data_purchase_history' ? 'To' : 'Using'}
-              </Text>
-              <Text style={styles.phoneNumberText}>
-                {customer !== 'None' ? customer : type}
-              </Text>
-            </View>
-          </View> */}
           <View style={{paddingHorizontal: hp(10), backgroundColor: 'white'}}>
             <Text style={styles.detailOfTransaction}>
               Detail of Transaction
@@ -331,8 +269,18 @@ export default function Receipt({navigation, route}) {
               <Text style={styles.textRight}>{payment_method}</Text>
             </View>
             <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Balance Before</Text>
+              <Text style={styles.textRight}>{balance_before || 'None'}</Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLeft}>Balance After</Text>
+              <Text style={styles.textRight}>{balance_after || 'None'}</Text>
+            </View>
+            <View style={styles.textContainer}>
               <Text style={styles.textLeft}>remark</Text>
-              <Text style={[styles.textRight, {textAlign: 'left'}]}>
+              <Text
+                style={[styles.textRight, {textAlign: 'left'}]}
+                numberOfLines={1}>
                 {remark}
               </Text>
             </View>
@@ -360,49 +308,6 @@ export default function Receipt({navigation, route}) {
             </Button>
             <Button rounded={'lg'}>Save Contact</Button>
           </VStack>
-          {/* <View
-            style={[styles.buttonGroup, {position: 'absolute', bottom: 20}]}>
-            {status !== 'delivered' && (
-              <TouchableOpacity
-                // onPress={openWhatsapp}
-                onPress={() =>
-                  navigation.navigate('Complain', {
-                    amount,
-                    type,
-                    quantity,
-                    price,
-                    customer,
-                    date,
-                    time,
-                    transaction_ref,
-                    payment_method,
-                    remark,
-                    status,
-                  })
-                }
-                style={[
-                  styles.shareReceiptButton,
-                  {
-                    borderColor: colors.secondary,
-                    marginRight: wp(15),
-                  },
-                ]}>
-                <Text style={[styles.shareReceiptText, {color: 'red'}]}>
-                  Report Issue
-                </Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={async () => {
-                await share({
-                  title: 'Share receipt',
-                  url: screenShotImage,
-                });
-              }}
-              style={styles.shareReceiptButton}>
-              <Text style={styles.shareReceiptText}>Share Receipt</Text>
-            </TouchableOpacity>
-          </View> */}
         </View>
       }
     </>
@@ -489,23 +394,22 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginTop: 10,
-
+    paddingHorizontal: wp(30),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   textLeft: {
-    paddingHorizontal: 30,
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
     fontSize: hp(13),
     color: colors.textLight,
   },
   textRight: {
-    paddingHorizontal: 30,
     textAlign: 'right',
     fontFamily: 'Poppins-Regular',
     fontSize: hp(13),
+    marginLeft: wp(10),
     color: colors.textBlack,
   },
   shareReceiptButton: {

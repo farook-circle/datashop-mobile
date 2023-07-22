@@ -21,17 +21,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
+import {Button as NBButton} from 'native-base';
 
 import {USER_LOGOUT} from '../redux/constants/auth';
-
-Array.prototype.groupBy = function (key) {
-  return this.reduce((hash, obj) => {
-    if (obj[key] === undefined) return hash;
-    return Object.assign(hash, {
-      [obj[key]]: (hash[obj[key]] || []).concat(obj),
-    });
-  }, {});
-};
 
 import {
   getDataBundle,
@@ -66,6 +58,15 @@ const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 
+Array.prototype.groupBy = function (key) {
+  return this.reduce((hash, obj) => {
+    if (obj[key] === undefined) return hash;
+    return Object.assign(hash, {
+      [obj[key]]: (hash[obj[key]] || []).concat(obj),
+    });
+  }, {});
+};
+
 export default function Home({navigation}) {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
@@ -77,21 +78,14 @@ export default function Home({navigation}) {
   const [showBalance, setShowBalance] = useState(true);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
-  const user = useSelector(state => state.auth.user);
 
   const collaborator = useSelector(state => state.auth.collaborator);
-  const data_bundles = useSelector(state => state.data_bundles.data_bundle);
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
 
   const balance = useSelector(state => state.wallet.wallet_balance);
-  const messages = useSelector(state => state.messages.messages);
   const notifications = useSelector(state => state.messages.notifications);
-
-  const collaborator_whatsapp = useSelector(
-    state => state.collaborator.collaborator_whatsapp,
-  );
 
   const priority_message = notifications.filter(
     item => item.priority === true,
@@ -119,22 +113,6 @@ export default function Home({navigation}) {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-
-  const getPaymentTypeLogo = type => {
-    if (type === 'bank transfer deposit') {
-      return require('../../assets/images/bank-building.png');
-    } else if (type === 'data_purchase_history') {
-      return require('../../assets/images/mtn_logo.png');
-    } else if (type === 'card deposit') {
-      return require('../../assets/images/credit-card.png');
-    } else if (type === 'momo agent') {
-      return require('../../assets/images/momo_logo.png');
-    } else if (type === 'refund') {
-      return require('../../assets/images/money-back.png');
-    } else {
-      return require('../../assets/images/transfer.png');
-    }
-  };
 
   const handleSetMessageAvailable = () => {};
 
@@ -177,7 +155,7 @@ export default function Home({navigation}) {
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               pagingEnabled
-              renderItem={({item}) => (
+              renderItem={() => (
                 <View
                   style={{
                     width: '100%',
@@ -323,9 +301,11 @@ export default function Home({navigation}) {
             }}>
             History
           </Text>
-          <Pressable onPress={() => navigation.navigate('History')}>
-            <Text>See all</Text>
-          </Pressable>
+          <NBButton
+            onPress={() => navigation.navigate('History')}
+            variant={'ghost'}>
+            See All
+          </NBButton>
         </HStack>
         <ScrollView>
           {Object.entries(
@@ -343,7 +323,7 @@ export default function Home({navigation}) {
                 </Text>
               </Box>
               <VStack space={'3'}>
-                {value.map((item, index) => (
+                {value.map(item => (
                   <HistoryItemList
                     avatar={item.image}
                     name={item.customer}

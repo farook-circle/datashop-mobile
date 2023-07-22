@@ -23,13 +23,14 @@ import HistoryItemList from '../components/History/HistoryItemList';
 
 export default function History({navigation}) {
   const dispatch = useDispatch();
-  const [searchItem, setSearchItem] = useState(null);
-  const [searchValue, setSearchValue] = useState('');
-  const [toggleSearch, setToggleSearch] = useState(false);
 
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
+
+  const [searchValue, setSearchValue] = useState('');
+  const [toggleSearch, setToggleSearch] = useState(false);
+  const [filteredData, setFilteredData] = useState(data_purchase_history);
 
   useEffect(() => {
     dispatch(getDataPurchaseHistory());
@@ -43,16 +44,16 @@ export default function History({navigation}) {
           return item;
         }
       });
-      setSearchItem(search);
+      setFilteredData(search);
       return;
     }
 
-    setSearchItem(null);
+    setFilteredData(data_purchase_history);
   };
 
   const handleToggleSearch = () => {
     setToggleSearch(!toggleSearch);
-    setSearchItem(null);
+    setFilteredData(data_purchase_history);
     setSearchValue('');
   };
 
@@ -92,37 +93,35 @@ export default function History({navigation}) {
 
       {/* History Items */}
 
-      {Object.entries(data_purchase_history.groupBy('date')).map(
-        ([key, value]) => (
-          <VStack space={'3'} key={key}>
-            <Box px={'6'} bgColor={'primary.200'} py={'2'}>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Medium',
-                  color: 'black',
-                  fontSize: hp(18),
-                }}>
-                {new Date(key).toDateString()}
-              </Text>
-            </Box>
-            <VStack space={'3'}>
-              {value.map((item, index) => (
-                <HistoryItemList
-                  avatar={item.image}
-                  name={item.customer}
-                  time={item.time.slice(0, 5)}
-                  amount={item.quantity}
-                  key={item.id}
-                  status={item.status}
-                  onPress={() =>
-                    navigation.navigate('Receipt', {transaction: item})
-                  }
-                />
-              ))}
-            </VStack>
+      {Object.entries(filteredData.groupBy('date')).map(([key, value]) => (
+        <VStack space={'3'} key={key}>
+          <Box px={'6'} bgColor={'primary.200'} py={'2'}>
+            <Text
+              style={{
+                fontFamily: 'Poppins-Medium',
+                color: 'black',
+                fontSize: hp(18),
+              }}>
+              {new Date(key).toDateString()}
+            </Text>
+          </Box>
+          <VStack space={'3'}>
+            {value.map((item, index) => (
+              <HistoryItemList
+                avatar={item.image}
+                name={item.customer}
+                time={item.time.slice(0, 5)}
+                amount={item.quantity}
+                key={item.id}
+                status={item.status}
+                onPress={() =>
+                  navigation.navigate('Receipt', {transaction: item})
+                }
+              />
+            ))}
           </VStack>
-        ),
-      )}
+        </VStack>
+      ))}
 
       <Box mt={'20'} />
     </ScrollView>

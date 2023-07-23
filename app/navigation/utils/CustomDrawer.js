@@ -57,17 +57,6 @@ const CustomSidebarMenu = props => {
   const {user} = useSelector(state => state.auth);
   const {wallet_balance} = useSelector(state => state.wallet);
 
-  const whatsapp = useSelector(state => state.config.contact_info);
-
-  const openWhatsapp = () => {
-    console.log(
-      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
-    );
-    Linking.openURL(
-      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
-    );
-  };
-
   async function removeUserToken() {
     try {
       await EncryptedStorage.removeItem('user_session');
@@ -96,7 +85,7 @@ const CustomSidebarMenu = props => {
 
   const navigateToDrawerScreen = screen => {
     if (screen === 'TalkToUsScreen') {
-      openWhatsapp();
+      props.navigation.navigate('TalkToUsScreen');
       props.navigation.closeDrawer();
       return;
     }
@@ -153,8 +142,20 @@ const CustomSidebarMenu = props => {
         </VStack>
 
         <VStack bgColor={'primary.800'} shadow={'4'} p={'2'} rounded={'4'}>
-          <Text style={{color: 'white', fontFamily: 'Poppins-Medium', fontSize: hp(13)}}>BALANCE:</Text>
-          <Text style={{color: 'white', fontSize: hp(20), fontFamily: 'Poppins-SemiBold'}}>
+          <Text
+            style={{
+              color: 'white',
+              fontFamily: 'Poppins-Medium',
+              fontSize: hp(13),
+            }}>
+            BALANCE:
+          </Text>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: hp(20),
+              fontFamily: 'Poppins-SemiBold',
+            }}>
             ₦ {wallet_balance}
           </Text>
         </VStack>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1035689734646",
+    "project_id": "datashop-mobile",
+    "storage_bucket": "datashop-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035689734646:android:17049d77033d030ff117d7",
+        "android_client_info": {
+          "package_name": "com.farookcircle.datashop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035689734646-sghgd0pu9ebi70t1jufpnadhovb23ef5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEwz_Xtn-ga5xpcHc9aMtXtQ3fZOHl_AI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035689734646-sghgd0pu9ebi70t1jufpnadhovb23ef5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

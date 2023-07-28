@@ -35,18 +35,20 @@ export default function CheckOut({route, navigation}) {
 
   const phoneNumberCheckUp = () => {
     if (customer.length > 1 && customer.length < 11) {
-      alert(
+      Alert.alert(
+        'Warning',
         'Invalid number! Please type out 11-digit phone number and avoid spaces between digits',
       );
       return false;
     }
     if (customer.length < 1) {
-      alert('customer phone number should not be empty');
+      Alert.alert('Warning', 'customer phone number should not be empty');
       return false;
     }
 
     if (customer.match(/0(9|8|7)(0|1)\d{8}/g) == null) {
-      alert(
+      Alert.alert(
+        'Warning',
         'Invalid number! Please type out 11-digit phone number and avoid spaces between digits',
       );
       return false;
@@ -60,14 +62,18 @@ export default function CheckOut({route, navigation}) {
       return;
     }
     if (Number(balance) < Number(price)) {
-      alert('You do not have sufficient balance. Please fund your wallet');
+      Alert.alert(
+        'Warning',
+        'You do not have sufficient balance. Please fund your wallet',
+      );
       return;
     }
     completeCheckOut();
   };
 
   const handleCheckoutSuccess = () => {
-    alert(
+    Alert.alert(
+      'Warning',
       'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
     );
     navigation.navigate('Home');

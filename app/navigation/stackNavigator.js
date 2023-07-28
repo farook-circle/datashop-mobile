@@ -49,6 +49,8 @@ import ElectricityPaymentScreen from '../screens/OtherServiceScreens/Electricity
 import AirtimeToCashScreen from '../screens/OtherServiceScreens/AirtimeToCashScreen';
 import TvSubscriptionScreen from '../screens/OtherServiceScreens/TvSubscriptionScreen';
 import WalletTransferScreen from '../screens/OtherServiceScreens/WalletTransferScreen';
+import AccountSetting from '../screens/AccountSetting';
+import AccountStatement from '../screens/AccountStatement';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,7 +74,7 @@ const RootNavigator = () => {
       dispatch(restoreUser());
     }
     getUserSession();
-  }, []);
+  }, [dispatch]);
 
   if (auth.isRestoringUser) {
     return <SplashScreen />;
@@ -136,6 +138,16 @@ const RootNavigator = () => {
             <Stack.Screen
               name="Profile"
               component={Profile}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AccountSetting"
+              component={AccountSetting}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AccountStatement"
+              component={AccountStatement}
               options={{headerShown: false}}
             />
             <Stack.Screen

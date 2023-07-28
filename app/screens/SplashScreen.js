@@ -1,16 +1,16 @@
 import {View, Image, Text, StyleSheet} from 'react-native';
 import React from 'react';
 import colors from '../../assets/colors/colors';
+import {hp} from '../config/dpTopx';
 
 export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerWrapper}>
         <Image
-          source={require('../../assets/images/logo.png')}
+          source={require('../../assets/images/logo_new.png')}
           style={styles.logoImage}
         />
-        <Text style={styles.logoTitle}>datashop.</Text>
       </View>
     </View>
   );
@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.primary,
   },
   headerWrapper: {
     width: '100%',
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 64,
   },
-  logoImage: {margin: 5},
+  logoImage: {margin: 5, width: hp(200), height: hp(200)},
   logoTitle: {
     color: colors.textBlack,
     fontFamily: 'Poppins-Bold',

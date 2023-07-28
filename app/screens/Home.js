@@ -90,7 +90,6 @@ export default function Home({navigation}) {
     item => item.priority === true,
   )[0];
 
-  const [popUpMessage, setPopUpMessage] = useState(priority_message);
   const [dashboardImage, setDashboardImages] = useState([]);
 
   const current_image =

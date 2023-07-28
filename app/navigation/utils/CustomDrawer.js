@@ -163,8 +163,13 @@ const CustomSidebarMenu = props => {
       <Box px={2} py={2}>
         <VStack mt={'4'} px={'2'}>
           <MenuItem
+            onPress={() => navigateToDrawerScreen('AccountSetting')}
+            title={'Account'}
+            icon={<Feather name="user" color={'white'} size={hp(20)} />}
+          />
+          <MenuItem
             onPress={() => navigateToDrawerScreen('ActivityDetails')}
-            title={'Activity Details'}
+            title={'Statistics'}
             icon={<Feather name="pie-chart" color={'white'} size={hp(20)} />}
           />
 

@@ -25,7 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {buyDataBundle, getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import OverLayModel from '../components/OverLayModel';
-
+import uuid from 'react-native-uuid';
 import BottomModel from '../components/BottomModel';
 import {
   getCollaboratorData,
@@ -58,6 +58,7 @@ function DataPlan({route, navigation}) {
   const [remark, setRemark] = useState('I love this Service');
   const [payment_method, setPaymentMethod] = useState('wallet');
   const phoneInputRef = useRef();
+  const [customReference, setCustomReference] = useState(null);
 
   const [phoneInputFocus, setPhoneInputFocus] = useState(false);
 
@@ -76,6 +77,7 @@ function DataPlan({route, navigation}) {
 
   const onOpen = () => {
     modalizeRef.current?.open();
+    setCustomReference(uuid.v4());
   };
 
   const onClose = () => {
@@ -99,14 +101,6 @@ function DataPlan({route, navigation}) {
       return;
     }
 
-    // not a collaborator app
-    // navigation.navigate('CheckOut', {
-    //   id: item.id,
-    //   image: item.image,
-    //   price: item.price,
-    //   quantity: item.quantity,
-    // });
-
     setItemClicked(item);
     setCustomer('');
     setError(null);
@@ -122,12 +116,6 @@ function DataPlan({route, navigation}) {
     setCustomer('');
     setError(null);
     onOpen();
-    // navigation.navigate('CheckOut', {
-    //   id: itemValue.id,
-    //   image: itemValue.image,
-    //   price: getCollaboratorPrice(itemValue.id, itemValue.price),
-    //   quantity: itemValue.quantity,
-    // });
   };
 
   const handleEditPrice = () => {
@@ -156,7 +144,7 @@ function DataPlan({route, navigation}) {
     dispatch(getDataBundle());
     dispatch(getCollaboratorData());
 
-    alert('you have successfully update the data plan price');
+    Alert.alert('Success', 'you have successfully update the data plan price');
 
     handleCloseModal();
     setEditedAmount('');
@@ -233,6 +221,7 @@ function DataPlan({route, navigation}) {
                   customer,
                   payment_method,
                   remark,
+                  customer_reference: customReference,
                 },
                 handleCheckoutSuccess,
               ),
@@ -243,7 +232,8 @@ function DataPlan({route, navigation}) {
   };
 
   const handleCheckoutSuccess = () => {
-    alert(
+    Alert.alert(
+      'Success Message',
       'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
     );
     navigation.navigate('Home');
@@ -271,9 +261,7 @@ function DataPlan({route, navigation}) {
     return (
       <TouchableOpacity
         style={styles.dataBundleItemsWrapper}
-        onPress={() => handleDataItemClick(item)}
-        // onPress={onOpen}
-      >
+        onPress={() => handleDataItemClick(item)}>
         <Image
           source={
             item.image !== null
@@ -305,7 +293,12 @@ function DataPlan({route, navigation}) {
     // check permission
     const granted = await getContactPermission();
 
-    if (!granted) return alert('Please grant permission for reading contact');
+    if (!granted) {
+      return Alert.alert(
+        'Warning',
+        'Please grant permission for reading contact',
+      );
+    }
 
     const phoneNumber = await selectContactPhone().then(selection => {
       if (!selection) {
@@ -316,7 +309,9 @@ function DataPlan({route, navigation}) {
       return selectedPhone.number;
     });
 
-    if (!phoneNumber) return alert('Please select valid phone number');
+    if (!phoneNumber) {
+      return Alert.alert('Warning', 'Please select valid phone number');
+    }
 
     if (phoneNumber.startsWith('0')) {
       const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '');
@@ -534,23 +529,7 @@ function DataPlan({route, navigation}) {
                   {error}
                 </Text>
               )}
-              {/* <TextInput
-                placeholder="PHONE"
-                keyboardType="numeric"
-                maxLength={11}
-                value={customer}
-                onChangeText={text => setCustomer(text)}
-                onFocus={() => setPhoneInputFocus(true)}
-                onBlur={() => setPhoneInputFocus(false)}
-                style={{
-                  textAlign: 'center',
-                  paddingHorizontal: 10,
-                  borderWidth: 1,
-                  borderColor: colors.primary,
-                  fontFamily: 'Poppins-Medium',
-                  fontSize: hp(16),
-                }}
-              /> */}
+
               <Input
                 ref={phoneInputRef}
                 placeholder="PHONE"

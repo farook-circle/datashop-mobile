@@ -33,10 +33,7 @@ export default function AccountStatement({navigation, router}) {
     setLoading(true);
     const request = await requestForStatement({startDate, endDate, email});
     if (request.ok) {
-      Alert.alert(
-        'Success',
-        'You have successfully request for statement, please check your email',
-      );
+      Alert.alert('Success', request.data.message);
       navigation.goBack();
       return;
     }

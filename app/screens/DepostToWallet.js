@@ -249,12 +249,6 @@ export default function DepositToWallet({navigation, route}) {
           <Text>{'  '}</Text>
         </View>
       </SafeAreaView>
-      {/* <View style={styles.balanceContainerWrapper}>
-        <View style={styles.balanceTextWrapper}>
-          <Text style={styles.balanceTitle}>BALANCE:</Text>
-          <Text style={styles.balanceText}>{'\u20A6'}0.00</Text>
-        </View>
-      </View> */}
 
       {initWithCard && <CompleteCardPayment link={paymentLink} />}
 

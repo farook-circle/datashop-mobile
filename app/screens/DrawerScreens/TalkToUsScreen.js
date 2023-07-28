@@ -11,20 +11,20 @@ const SocialMedias = [
     label: 'Chat',
     type: 'whatsapp',
     color: 'green',
-    description: 'Contact us',
+    description: 'WhatsApp',
   },
   {
     label: 'Follow',
     type: 'facebook',
     color: 'blue',
-    description: 'Follow us',
+    description: 'Facebook',
   },
 
   {
     label: 'Chat',
     type: 'messenger',
     color: 'blue',
-    description: 'Chat with us',
+    description: 'Messenger',
   },
 ];
 

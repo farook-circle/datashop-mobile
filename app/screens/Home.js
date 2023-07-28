@@ -94,7 +94,6 @@ export default function Home({navigation}) {
 
   const current_image =
     dashboardImage[Math.floor(Math.random() * (dashboardImage.length - 0)) + 0];
-  console.log(current_image);
 
   useEffect(() => {
     dispatch(getDataBundle());
@@ -150,7 +149,7 @@ export default function Home({navigation}) {
               position: 'absolute',
               width: '100%',
               height: hp(240),
-              zIndex: 10,
+              zIndex: 0,
             }}>
             <Image
               style={{width: '100%', height: '100%'}}

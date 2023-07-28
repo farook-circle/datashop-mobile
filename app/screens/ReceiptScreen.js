@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
-  Text,
+  Text as NText,
   StyleSheet,
   StatusBar,
   Platform,
@@ -40,6 +40,12 @@ const options = {
   url,
   message,
 };
+
+const Text = props => (
+  <NText {...props} selectable={true}>
+    {props.children}
+  </NText>
+);
 
 export default function Receipt({navigation, route}) {
   const viewShotRef = useRef();
@@ -244,7 +250,9 @@ export default function Receipt({navigation, route}) {
               Detail of Transaction
             </Text>
             <View style={styles.textContainer}>
-              <Text style={styles.textLeft}>Date</Text>
+              <Text style={styles.textLeft} selectable={true}>
+                Date
+              </Text>
               <Text style={styles.textRight}>
                 {date.slice(8, 10)} {monthToString[Number(date.slice(5, 7))]}{' '}
                 {date.slice(0, 4)} - {time.slice(0, 5)}

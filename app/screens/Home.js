@@ -73,8 +73,7 @@ export default function Home({navigation}) {
 
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
-  // const [priority_message, setPriorityMessage] = useState(null);
-  const [dashPic, setDashPic] = React.useState([]);
+
   const [showBalance, setShowBalance] = useState(true);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
@@ -92,6 +91,11 @@ export default function Home({navigation}) {
   )[0];
 
   const [popUpMessage, setPopUpMessage] = useState(priority_message);
+  const [dashboardImage, setDashboardImages] = useState([]);
+
+  const current_image =
+    dashboardImage[Math.floor(Math.random() * (dashboardImage.length - 0)) + 0];
+  console.log(current_image);
 
   useEffect(() => {
     dispatch(getDataBundle());
@@ -129,7 +133,7 @@ export default function Home({navigation}) {
   const handleGetHomeScreenPic = async () => {
     const request = await getHomepageGallery();
     if (request.ok) {
-      setDashPic(request.data);
+      setDashboardImages(request.data);
     }
   };
 
@@ -147,30 +151,14 @@ export default function Home({navigation}) {
               position: 'absolute',
               width: '100%',
               height: hp(240),
-              zIndex: 0,
+              zIndex: 10,
             }}>
-            <FlatList
-              data={[{id: '1'}]}
-              keyExtractor={item => item.id}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled
-              renderItem={() => (
-                <View
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'red',
-                  }}>
-                  <Image
-                    style={{width: '100%', height: '100%'}}
-                    source={{
-                      uri: 'https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
-                    }}
-                    alt={'bgimage'}
-                  />
-                </View>
-              )}
+            <Image
+              style={{width: '100%', height: '100%'}}
+              source={{
+                uri: current_image,
+              }}
+              alt={'bgimage'}
             />
           </View>
           <ScrollView

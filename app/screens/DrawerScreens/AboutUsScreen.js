@@ -5,9 +5,21 @@ import {hp} from '../../config/dpTopx';
 
 export default function AboutUsScreen({navigation, route}) {
   return (
-    <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-      <Text style={{textAlign: 'center', fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-        Information not available at the moment
+    <Box
+      flex={1}
+      justifyContent={'center'}
+      bgColor={'primary.500'}
+      alignItems={'center'}>
+      <Text
+        selectable={true}
+        style={{
+          paddingHorizontal: 20,
+          fontFamily: 'Poppins-Regular',
+          fontSize: hp(16),
+          color: 'white',
+        }}>
+        DATASHOP is a digital VTU Platform owned and managed by FarookCircle.
+        Contact us to learn more
       </Text>
     </Box>
   );

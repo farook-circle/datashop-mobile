@@ -32,6 +32,7 @@ export default function AccountStatement({navigation, router}) {
   const handleDownloadStatement = async () => {
     setLoading(true);
     const request = await requestForStatement({startDate, endDate, email});
+
     if (request.ok) {
       Alert.alert('Success', request.data.message);
       navigation.goBack();
@@ -89,7 +90,7 @@ export default function AccountStatement({navigation, router}) {
           <FormControl.Label>Email</FormControl.Label>
           <Input
             value={email}
-            onChangeText={text => setEmail(email)}
+            onChangeText={text => setEmail(text)}
             placeholder="Email"
           />
         </FormControl>

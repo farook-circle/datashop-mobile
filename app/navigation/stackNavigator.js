@@ -51,6 +51,7 @@ import TvSubscriptionScreen from '../screens/OtherServiceScreens/TvSubscriptionS
 import WalletTransferScreen from '../screens/OtherServiceScreens/WalletTransferScreen';
 import AccountSetting from '../screens/AccountSetting';
 import AccountStatement from '../screens/AccountStatement';
+import {Platform} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,7 +60,9 @@ const RootNavigator = () => {
   const auth = useSelector(state => state.auth);
 
   useEffect(() => {
-    InAppUpdate.checkUpdate();
+    if (Platform.OS === 'android') {
+      InAppUpdate.checkUpdate();
+    }
 
     dispatch(getContactInfo());
     async function getUserSession() {

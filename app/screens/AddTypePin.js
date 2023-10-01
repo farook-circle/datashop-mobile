@@ -68,10 +68,10 @@ export default function AddTypePin({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (amount.length === 4 && pin.length < 1) {
+    if (amount.length === 4 && pin && pin.length < 1) {
       handleCreatePin();
     }
-    if (amount.length === 4 && pin.length > 1) {
+    if (amount.length === 4 && pin && pin.length > 1) {
       authenticatePin();
     }
   }, [amount]);
@@ -181,7 +181,7 @@ export default function AddTypePin({navigation}) {
     setAmount(newAmount);
   };
 
-  const handleDeletButton = () => {
+  const handleDeleteButton = () => {
     if (amount.length === 1) {
       setAmount('');
       return;
@@ -412,7 +412,7 @@ export default function AddTypePin({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.numberContainer}
-            onPress={handleDeletButton}>
+            onPress={handleDeleteButton}>
             <Feather name="arrow-left" size={hp(30)} color={colors.primary} />
           </TouchableOpacity>
         </View>
@@ -421,7 +421,8 @@ export default function AddTypePin({navigation}) {
           <HStack
             alignItems={'center'}
             alignSelf={'center'}
-            py={'3'}
+            pt={'4'}
+            pb={'8'}
             space={'1'}>
             <Text style={styles.shareReceiptText}>Forgot PIN Code?</Text>
             <Pressable onPress={() => handleForgotPin()}>

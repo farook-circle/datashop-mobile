@@ -143,12 +143,13 @@ export default function Home({navigation}) {
     <>
       <View style={styles.container}>
         <View style={styles.secContainer}>
+          <SafeAreaView />
           <View
             style={{
               marginTop: 0,
               position: 'absolute',
               width: '100%',
-              height: hp(240),
+              height: hp(260),
               zIndex: 0,
             }}>
             <Image
@@ -335,6 +336,7 @@ const styles = StyleSheet.create({
   secContainer: {
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.primary,
+    height: hp(260),
   },
   container: {
     flex: 1,

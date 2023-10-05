@@ -1,22 +1,7 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  StyleSheet,
-  Image,
-  Linking,
-  Text,
-  Alert,
-} from 'react-native';
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Pressable,
-  VStack,
-} from 'native-base';
+import {View, Text, Alert} from 'react-native';
+import {Avatar, Box, Divider, HStack, Pressable, VStack} from 'native-base';
 
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -25,15 +10,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import {USER_LOGOUT} from '../../redux/constants/auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import colors from '../../../assets/colors/colors';
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from '@react-navigation/drawer';
 
 const MenuItem = ({icon, title, onPress}) => (
   <Pressable onPress={onPress}>
-    {({isPressed, isHovered, isFocused}) => (
+    {({isPressed}) => (
       <HStack
         alignItems={'center'}
         space={'2'}
@@ -94,8 +74,8 @@ const CustomSidebarMenu = props => {
   };
 
   return (
-    <Box safeArea flex={1} bgColor={'white'}>
-      <Box bgColor={'primary.500'} px={'4'} py={'4'}>
+    <Box flex={1} bgColor={'white'}>
+      <Box bgColor={'primary.500'} px={'4'} pb={'4'} pt={'16'}>
         <VStack space={'2'}>
           <HStack space={'3'}>
             <Avatar

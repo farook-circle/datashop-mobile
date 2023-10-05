@@ -118,8 +118,8 @@ export default function ElectricityPaymentScreen({navigation}) {
       verifyMeter(
         {
           disco_name: electricityCompany.title,
-            meter_type: meterType.title,
-            meter_number: meterNumber,
+          meter_type: meterType.title,
+          meter_number: meterNumber,
         },
         handleVerifyAndBuy,
       ),
@@ -226,107 +226,7 @@ export default function ElectricityPaymentScreen({navigation}) {
 
           <View style={styles.headerUnderLine} />
         </SafeAreaView>
-
-        {/* Body */}
-        <ScrollView style={styles.bodyWrapper}>
-          {/* electricityCompany */}
-          <TouchableOpacity
-            style={styles.pickerButton}
-            onPress={() =>
-              setToggleElectricityProviderSelect(
-                !toggleElectricityProviderSelect,
-              )
-            }>
-            <Text
-              style={[
-                styles.pickerItemTitle,
-                electricityCompany && {color: colors.textBlack},
-              ]}>
-              {electricityCompany
-                ? electricityCompany.title
-                : 'Select Electricity Company...'}
-            </Text>
-            <Feather name="chevron-down" color={colors.textBlack} size={20} />
-          </TouchableOpacity>
-
-          {/* meterType */}
-          {electricityCompany && (
-            <TouchableOpacity
-              style={styles.pickerButton}
-              onPress={() => setToggleMeterTypeSelect(!toggleMeterTypeSelect)}>
-              <Text
-                style={[
-                  styles.pickerItemTitle,
-                  meterType && {color: colors.textBlack},
-                ]}>
-                {meterType ? meterType.title : 'Select Meter Type...'}
-              </Text>
-              <Feather name="chevron-down" color={colors.textBlack} size={20} />
-            </TouchableOpacity>
-          )}
-          {/* meterType end */}
-
-          <Text style={styles.inputLabel}>Meter Number:</Text>
-          <TextInput
-            placeholder="Meter Number"
-            style={styles.input}
-            keyboardType={'numeric'}
-            value={meterNumber}
-            onBlur={() => handleVerifyMeterDetails()}
-            onChangeText={text => setMeterNumber(text)}
-          />
-          {meterName !== '' && (
-            <Text style={[styles.meterNameText, error && {color: 'red'}]}>
-              {meterName}
-            </Text>
-          )}
-          <Text style={styles.inputLabel}>Amount</Text>
-          <TextInput
-            placeholder="Amount"
-            style={styles.input}
-            keyboardType={'numeric'}
-            value={amount}
-            onChangeText={text => setAmount(text)}
-          />
-          <Text style={styles.inputLabel}>
-            Customer Phone Number(optional):
-          </Text>
-          <TextInput
-            placeholder="Phone Number"
-            style={styles.input}
-            keyboardType={'numeric'}
-            value={phoneNumber}
-            onChangeText={text => setPhoneNumber(text)}
-          />
-          <Text style={styles.inputLabel}>
-            Customer Email address(optional):
-          </Text>
-          <TextInput
-            placeholder="Email Address"
-            style={styles.input}
-            value={emailAddress}
-            onChangeText={text => setEmailAddress(text)}
-          />
-        </ScrollView>
-        <TouchableOpacity
-          disabled={disableContinue}
-          style={[
-            styles.buttonContinue,
-            disableContinue && {backgroundColor: colors.textLight},
-          ]}
-          onPress={handleContinueBuying}>
-          {buttonLoading ? (
-            <ActivityIndicator color={colors.primary} size={hp(25)} />
-          ) : (
-            <Text
-              style={[
-                styles.buttonTitle,
-                disableContinue && {color: colors.textWhite},
-              ]}>
-              Continue
-            </Text>
-          )}
-        </TouchableOpacity>
+        <Text style={{textAlign: 'center', marginTop: 40}}>Coming soon</Text>
       </View>
 
       {/* meterType selector */}

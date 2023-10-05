@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --simulator 'iPhone 14 Pro'",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint ."
@@ -23,7 +23,6 @@
     "react": "17.0.2",
     "react-native": "0.67.2",
     "react-native-action-sheet": "^2.2.0",
-    "react-native-biometrics": "^3.0.1",
     "react-native-config": "^1.5.1",
     "react-native-contacts": "^7.0.5",
     "react-native-device-info": "^10.0.0",
@@ -40,8 +39,9 @@
     "react-native-select-contact": "^1.6.3",
     "react-native-share": "^7.3.7",
     "react-native-svg": "^13.9.0",
+    "react-native-touch-id": "^4.4.1",
     "react-native-uuid": "^2.0.1",
-    "react-native-vector-icons": "^9.0.0",
+    "react-native-vector-icons": "^10.0.0",
     "react-native-view-shot": "^3.1.2",
     "react-native-webview": "^11.17.2",
     "react-redux": "^7.2.6",

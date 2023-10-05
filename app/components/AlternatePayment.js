@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text as NText, StyleSheet} from 'react-native';
 import React, {useEffect} from 'react';
 import {
   heightPercentageToDP as hp,
@@ -7,6 +7,12 @@ import {
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {paymentAccountDetails} from '../redux/actions/wallet';
+
+const Text = props => (
+  <NText {...props} selectable={true}>
+    {props.children}
+  </NText>
+);
 
 export default function AlternatePayment() {
   useEffect(() => {

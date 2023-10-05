@@ -151,7 +151,7 @@ function DataPlan({route, navigation}) {
   };
 
   const handleSetCustomer = phoneNumber => {
-    if (phoneNumber.length == 11 && isFirstTimeFill) {
+    if (phoneNumber.length === 11 && isFirstTimeFill) {
       phoneInputRef.current.blur();
       setIsFirstTimeFill(false);
     }
@@ -260,7 +260,7 @@ function DataPlan({route, navigation}) {
   const renderDataBundleItem = ({item}) => {
     return (
       <TouchableOpacity
-        style={styles.dataBundleItemsWrapper}
+        style={[styles.dataBundleItemsWrapper]}
         onPress={() => handleDataItemClick(item)}>
         <Image
           source={
@@ -268,7 +268,7 @@ function DataPlan({route, navigation}) {
               ? {uri: item.image}
               : getDataPlanImage(item.service)
           }
-          style={styles.mtnLogoImage}
+          style={[styles.mtnLogoImage]}
         />
         <View
           style={{

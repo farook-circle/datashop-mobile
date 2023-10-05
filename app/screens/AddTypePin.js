@@ -30,9 +30,9 @@ import {
   VStack,
 } from 'native-base';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
 import AlertCard from '../components/AlertCard';
 import {getMessages, getNotifications} from '../redux/actions/messages';
+import TouchID from 'react-native-touch-id';
 
 const alerts = [
   {
@@ -68,13 +68,13 @@ export default function AddTypePin({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (amount.length === 4 && pin.length < 1) {
+    if (amount.length === 4 && !pin) {
       handleCreatePin();
     }
-    if (amount.length === 4 && pin.length > 1) {
+    if (amount.length === 4 && pin) {
       authenticatePin();
     }
-  }, [amount]);
+  }, [amount, pin]);
 
   async function removeUserToken() {
     try {
@@ -91,6 +91,7 @@ export default function AddTypePin({navigation}) {
   async function getUserPin() {
     try {
       const userPin = await EncryptedStorage.getItem('userPin');
+
       if (userPin !== null) {
         setPin(userPin);
         setLoading(false);
@@ -115,16 +116,6 @@ export default function AddTypePin({navigation}) {
       // There was an error on the native side
     }
   }
-
-  const handleLogout = () => {
-    Alert.alert('Alert', 'Are you sure you want to log-out', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => removeUserToken()},
-    ]);
-  };
 
   const handleForgotPin = () => {
     Alert.alert(
@@ -181,7 +172,7 @@ export default function AddTypePin({navigation}) {
     setAmount(newAmount);
   };
 
-  const handleDeletButton = () => {
+  const handleDeleteButton = () => {
     if (amount.length === 1) {
       setAmount('');
       return;
@@ -190,32 +181,42 @@ export default function AddTypePin({navigation}) {
     setAmount(newAmount);
   };
 
-  const checkBiometric = async () => {
-    const rnBiometrics = new ReactNativeBiometrics();
+  const handleAuth = () => {
+    const optionalConfigObject = {
+      title: 'Please Authenticate', // Android
+      imageColor: '#000', // Android
+      imageErrorColor: '#ff0000', // Android
+      sensorDescription: 'Slightly Touch sensor', // Android
+      sensorErrorDescription: 'Failed', // Android
+      cancelText: 'Cancel', // Android
+      fallbackLabel: 'Show Passcode', // iOS (if empty, then label is hidden)
+      unifiedErrors: false, // use unified error messages (default false)
+      passcodeFallback: true, // iOS
+    };
 
-    const {biometryType} = await rnBiometrics.isSensorAvailable();
-
-    if (biometryType === BiometryTypes.Biometrics) {
-      //do something fingerprint specific
-      rnBiometrics
-        .simplePrompt({promptMessage: 'Confirm fingerprint'})
-        .then(resultObject => {
-          const {success} = resultObject;
-
-          if (success) {
-            navigation.dispatch(StackActions.replace('Home'));
-          } else {
-            console.log('user cancelled biometric prompt');
-          }
-        })
-        .catch(() => {
-          console.log('biometrics failed');
-        });
-    }
+    TouchID.isSupported().then(biometryType => {
+      if (biometryType === 'FaceID') {
+        TouchID.authenticate('', optionalConfigObject)
+          .then(success => {
+            navigation.replace('Home');
+          })
+          .catch(error => {
+            Alert.alert('Authentication Failed', error.message);
+          });
+      } else {
+        TouchID.authenticate('', optionalConfigObject)
+          .then(success => {
+            navigation.replace('Home');
+          })
+          .catch(error => {
+            Alert.alert('Authentication Failed', error.message);
+          });
+      }
+    });
   };
 
   const biometricAuthenticate = () => {
-    checkBiometric();
+    handleAuth();
   };
 
   return (
@@ -266,6 +267,7 @@ export default function AddTypePin({navigation}) {
                 fontFamily: 'Poppins-SemiBold',
                 fontSize: hp(20),
                 textAlign: 'center',
+                color: 'white',
               }}>
               Important alert 🔔
             </Text>
@@ -287,9 +289,6 @@ export default function AddTypePin({navigation}) {
               />
             </Box>
           </Box>
-          {/* <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-            <Text style={{fontFamily: 'Poppins-Medium', fontSize: hp(22)}}>Welcome Back 👋</Text>
-          </Box> */}
         </Box>
         <Text
           style={{
@@ -299,7 +298,7 @@ export default function AddTypePin({navigation}) {
             fontSize: hp(16),
             // marginBottom: hp(20),
           }}>
-          {pin !== '' ? 'Enter your PIN' : 'Create your PIN'}
+          {pin ? 'Enter your PIN' : 'Create your PIN'}
         </Text>
         <View style={styles.textInputWrapper}>
           <View
@@ -392,7 +391,7 @@ export default function AddTypePin({navigation}) {
           </TouchableOpacity>
         </View>
         <View style={styles.numericInputWrapper}>
-          {pin === '' ? (
+          {!pin ? (
             <Box style={styles.numberContainer}>{``}</Box>
           ) : (
             <TouchableOpacity
@@ -412,16 +411,17 @@ export default function AddTypePin({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.numberContainer}
-            onPress={handleDeletButton}>
+            onPress={handleDeleteButton}>
             <Feather name="arrow-left" size={hp(30)} color={colors.primary} />
           </TouchableOpacity>
         </View>
-        {pin === '' && <Box my={'3'} />}
-        {pin !== '' && (
+        {!pin ? <Box my={'3'} /> : <></>}
+        {pin ? (
           <HStack
             alignItems={'center'}
             alignSelf={'center'}
-            py={'3'}
+            pt={'4'}
+            pb={'8'}
             space={'1'}>
             <Text style={styles.shareReceiptText}>Forgot PIN Code?</Text>
             <Pressable onPress={() => handleForgotPin()}>
@@ -438,6 +438,8 @@ export default function AddTypePin({navigation}) {
               </Text>
             </Pressable>
           </HStack>
+        ) : (
+          <></>
         )}
       </>
     </View>

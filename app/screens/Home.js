@@ -73,8 +73,7 @@ export default function Home({navigation}) {
 
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
-  // const [priority_message, setPriorityMessage] = useState(null);
-  const [dashPic, setDashPic] = React.useState([]);
+
   const [showBalance, setShowBalance] = useState(true);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
@@ -91,7 +90,10 @@ export default function Home({navigation}) {
     item => item.priority === true,
   )[0];
 
-  const [popUpMessage, setPopUpMessage] = useState(priority_message);
+  const [dashboardImage, setDashboardImages] = useState([]);
+
+  const current_image =
+    dashboardImage[Math.floor(Math.random() * (dashboardImage.length - 0)) + 0];
 
   useEffect(() => {
     dispatch(getDataBundle());
@@ -129,7 +131,7 @@ export default function Home({navigation}) {
   const handleGetHomeScreenPic = async () => {
     const request = await getHomepageGallery();
     if (request.ok) {
-      setDashPic(request.data);
+      setDashboardImages(request.data);
     }
   };
 
@@ -141,36 +143,21 @@ export default function Home({navigation}) {
     <>
       <View style={styles.container}>
         <View style={styles.secContainer}>
+          <SafeAreaView />
           <View
             style={{
               marginTop: 0,
               position: 'absolute',
               width: '100%',
-              height: hp(240),
+              height: hp(260),
               zIndex: 0,
             }}>
-            <FlatList
-              data={[{id: '1'}]}
-              keyExtractor={item => item.id}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled
-              renderItem={() => (
-                <View
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'red',
-                  }}>
-                  <Image
-                    style={{width: '100%', height: '100%'}}
-                    source={{
-                      uri: 'https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
-                    }}
-                    alt={'bgimage'}
-                  />
-                </View>
-              )}
+            <Image
+              style={{width: '100%', height: '100%'}}
+              source={{
+                uri: current_image,
+              }}
+              alt={'bgimage'}
             />
           </View>
           <ScrollView
@@ -349,6 +336,7 @@ const styles = StyleSheet.create({
   secContainer: {
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.primary,
+    height: hp(260),
   },
   container: {
     flex: 1,

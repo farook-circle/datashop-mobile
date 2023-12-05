@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import axios from '../../axios';

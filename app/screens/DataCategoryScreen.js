@@ -21,8 +21,6 @@ import {hp, wp} from '../config/dpTopx';
 export default function DataCategoryScreen({navigation}) {
   const data_category = useSelector(state => state.data_bundles.data_category);
 
-  useEffect(() => {}, []);
-
   const renderDataCategory = ({item}) => {
     return (
       <TouchableOpacity

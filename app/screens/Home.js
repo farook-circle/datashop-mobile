@@ -53,6 +53,9 @@ import {
 import ServiceItemCard from '../components/Dashboard/ServiceItemCard';
 import HistoryItemList from '../components/History/HistoryItemList';
 import {getHomepageGallery} from '../api/service.api';
+import {formatCurrency} from '../utils';
+import {getDataRecentContacts} from '../redux/actions/user';
+import {deviceNotificationToken, displayNotification} from '../lib';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -105,9 +108,8 @@ export default function Home({navigation}) {
     dispatch(getDataCategory());
     dispatch(getElectricProviders());
     dispatch(getAirtimeServices());
-
+    dispatch(getDataRecentContacts());
     // checkIfPriorityMessage();
-
     handleSetMessageAvailable();
   }, [dispatch, refreshing]);
 
@@ -137,6 +139,11 @@ export default function Home({navigation}) {
 
   React.useEffect(() => {
     handleGetHomeScreenPic();
+    displayNotification({
+      title: 'Welcome back',
+      body: 'Welcome back to datashop',
+    });
+    deviceNotificationToken();
   }, []);
 
   return (
@@ -212,7 +219,7 @@ export default function Home({navigation}) {
             <Text style={styles.balanceTitle}>BALANCE:</Text>
             <HStack alignItems={'center'}>
               <Text style={styles.balanceText}>
-                {'\u20A6'} {showBalance ? balance : '******'}
+                {showBalance ? formatCurrency(balance) : '******'}
               </Text>
               <IconButton
                 rounded={'full'}

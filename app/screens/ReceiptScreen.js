@@ -30,6 +30,7 @@ import {
   Pressable,
   VStack,
 } from 'native-base';
+import {formatCurrency} from '../utils';
 
 const url = 'https://awesome.contents.com/';
 const title = 'Awesome Contents';
@@ -160,16 +161,6 @@ export default function Receipt({navigation, route}) {
               <Text style={styles.detailText}>Payment Method: </Text>
               <Text style={styles.detailText}>{payment_method}</Text>
             </View>
-
-            <View style={styles.textContainer}>
-              <Text style={styles.textLeft}>Balance Before</Text>
-              <Text style={styles.textRight}>{balance_before || 'None'}</Text>
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.textLeft}>Balance After</Text>
-              <Text style={styles.textRight}>{balance_after || 'None'}</Text>
-            </View>
-
             <View style={styles.underline} />
             <View style={styles.detailTextWrapper}>
               <Text style={styles.detailText}>Transaction ID: </Text>
@@ -278,11 +269,15 @@ export default function Receipt({navigation, route}) {
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.textLeft}>Balance Before</Text>
-              <Text style={styles.textRight}>{balance_before || 'None'}</Text>
+              <Text style={styles.textRight}>
+                {formatCurrency(balance_before) || 'None'}
+              </Text>
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.textLeft}>Balance After</Text>
-              <Text style={styles.textRight}>{balance_after || 'None'}</Text>
+              <Text style={styles.textRight}>
+                {formatCurrency(balance_after) || 'None'}
+              </Text>
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.textLeft}>remark</Text>

@@ -1,5 +1,4 @@
 import axios from '../../axios';
-import * as defaultAxios from 'axios';
 
 import {GET_AIRTIME_SERVICES} from '../constants/airtime';
 

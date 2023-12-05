@@ -33,8 +33,10 @@ import {
 } from '../redux/actions/collaborator';
 import {useRef} from 'react';
 import {Modalize} from 'react-native-modalize';
-import {IconButton, Input} from 'native-base';
+import {Avatar, HStack, IconButton, Input} from 'native-base';
 import Contacts from 'react-native-contacts';
+import RecentContactCard from '../components/contact/RecentContactCard';
+import {getDataRecentContacts} from '../redux/actions/user';
 
 function DataPlan({route, navigation}) {
   const dispatch = useDispatch();
@@ -59,8 +61,9 @@ function DataPlan({route, navigation}) {
   const [payment_method, setPaymentMethod] = useState('wallet');
   const phoneInputRef = useRef();
   const [customReference, setCustomReference] = useState(null);
-
   const [phoneInputFocus, setPhoneInputFocus] = useState(false);
+
+  const {dataContact} = useSelector(state => state.user);
 
   const collaborator_data = useSelector(
     state => state.collaborator.collaborator_data,
@@ -72,8 +75,6 @@ function DataPlan({route, navigation}) {
   const balance = useSelector(state => state.wallet.wallet_balance);
 
   const isLoading = useSelector(state => state.data_bundles.isLoading);
-
-  useEffect(() => {}, []);
 
   const onOpen = () => {
     modalizeRef.current?.open();
@@ -232,11 +233,13 @@ function DataPlan({route, navigation}) {
   };
 
   const handleCheckoutSuccess = () => {
+    dispatch(getDataRecentContacts());
+
     Alert.alert(
       'Success Message',
       'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
+      [{text: 'OK', onPress: () => navigation.navigate('Home')}],
     );
-    navigation.navigate('Home');
   };
 
   const getDataPlanImage = service => {
@@ -456,7 +459,7 @@ function DataPlan({route, navigation}) {
 
       {/* test overlay */}
       <Modalize
-        modalHeight={phoneInputFocus ? 700 : 500}
+        modalHeight={phoneInputFocus ? 600 : 600}
         keyboardAvoidingBehavior={false}
         closeSnapPointStraightEnabled={true}
         panGestureEnabled={true}
@@ -515,13 +518,13 @@ function DataPlan({route, navigation}) {
                 {itemClicked && itemClicked.quantity}
               </Text>
             </View>
-            <View style={{flex: 1, marginTop: hp(20)}}>
+            <View style={{flex: 1, marginTop: hp(15)}}>
               {error && (
                 <Text
                   style={{
                     fontFamily: 'Poppins-Medium',
                     color: 'red',
-                    fontSize: hp(14),
+                    fontSize: hp(13),
                     width: '100%',
                     textAlign: 'center',
                     marginBottom: hp(10),
@@ -534,8 +537,8 @@ function DataPlan({route, navigation}) {
                 ref={phoneInputRef}
                 placeholder="PHONE"
                 onChangeText={text => handleSetCustomer(text)}
-                // onFocus={() => setPhoneInputFocus(true)}
-                // onBlur={() => setPhoneInputFocus(false)}
+                onFocus={() => setPhoneInputFocus(true)}
+                onBlur={() => setPhoneInputFocus(false)}
                 autoFocus={true}
                 keyboardType={'numeric'}
                 maxLength={11}
@@ -612,6 +615,20 @@ function DataPlan({route, navigation}) {
                 </Text>
               )}
             </TouchableOpacity>
+            <HStack pt={'2'}>
+              <FlatList
+                horizontal
+                data={dataContact}
+                renderItem={({item}) => (
+                  <RecentContactCard
+                    contact={item}
+                    onRecentClick={recentNumber => setCustomer(recentNumber)}
+                  />
+                )}
+                keyExtractor={item => item.id}
+                showsHorizontalScrollIndicator={false}
+              />
+            </HStack>
           </View>
         )}
       </Modalize>

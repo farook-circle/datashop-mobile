@@ -8,6 +8,7 @@ import config from './config';
 import airtime from './airtime';
 import collaborator from './collaborator';
 import service from './service';
+import user from './user';
 
 export default combineReducers({
   auth,
@@ -18,5 +19,6 @@ export default combineReducers({
   bill_payment,
   airtime,
   collaborator,
-  service
+  service,
+  user,
 });

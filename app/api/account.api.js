@@ -1,5 +1,4 @@
 import {api} from './config.api';
-
 import {store} from '../redux/store';
 
 export const requestForStatement = async payload => {

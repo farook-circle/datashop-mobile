@@ -1,9 +1,10 @@
+/* eslint-disable react-native/no-inline-styles */
 import {Box} from 'native-base';
 import React from 'react';
 import {Text} from 'react-native';
 import {hp} from '../../config/dpTopx';
 
-export default function AboutUsScreen({navigation, route}) {
+export const AboutUsScreen = ({navigation, route}) => {
   return (
     <Box
       flex={1}
@@ -23,4 +24,4 @@ export default function AboutUsScreen({navigation, route}) {
       </Text>
     </Box>
   );
-}
+};

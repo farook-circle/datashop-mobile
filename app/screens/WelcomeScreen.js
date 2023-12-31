@@ -15,13 +15,12 @@ import {hp, dp, wp} from '../config/dpTopx.js';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
 
-export default function WelcomeScreen({navigation}) {
+import {Button, VStack} from 'native-base';
+
+export const WelcomeScreen = ({navigation}) => {
   const whatsapp = useSelector(state => state.config.contact_info);
 
   const openWhatsapp = () => {
-    console.log(
-      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
-    );
     Linking.openURL(
       'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );
@@ -45,18 +44,23 @@ export default function WelcomeScreen({navigation}) {
       <Text style={styles.introTitle}>your number one datashop</Text>
 
       {/* Register and Login Button */}
-      <View style={styles.buttonsWrapper}>
-        <TouchableOpacity
-          style={styles.registerButton}
-          onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.registerText}>Register</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-      </View>
+      <VStack px={'6'} space={'4'} mt={'20'}>
+        <Button
+          onPress={() => navigation.navigate('Register')}
+          rounded={'xl'}
+          size={'lg'}
+          py={'3'}>
+          Create account
+        </Button>
+        <Button
+          onPress={() => navigation.navigate('Login')}
+          variant={'outline'}
+          rounded={'xl'}
+          size={'lg'}
+          py={'3'}>
+          Login
+        </Button>
+      </VStack>
 
       {/*Information text */}
       <Text style={styles.infoText}>
@@ -71,7 +75,7 @@ export default function WelcomeScreen({navigation}) {
       </TouchableOpacity>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

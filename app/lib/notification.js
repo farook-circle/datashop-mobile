@@ -1,5 +1,7 @@
 import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
+import {Platform} from 'react-native';
+import {sendDeviceToken} from '../api/system.api';
 
 export const displayNotification = async ({title, body}) => {
   // Request permissions (required for iOS)
@@ -51,14 +53,20 @@ export const displayRemoteNotification = async ({title, body}) => {
   });
 };
 
+
 export const deviceNotificationToken = async () => {
-  // Register the device with FCM
-  await messaging().registerDeviceForRemoteMessages();
+  let token = null;
 
-  // Get the token
-  const token = await messaging().getToken();
+  await messaging()
+    .registerDeviceForRemoteMessages()
+    .then(async () => {
+      token = await messaging().getToken();
+      const payload = {
+        name: 'datashop-mobile',
+        registration_id: token,
+        type: Platform.OS,
+      };
 
-  console.log(token);
-
-  return token;
+      await sendDeviceToken(payload);
+    });
 };

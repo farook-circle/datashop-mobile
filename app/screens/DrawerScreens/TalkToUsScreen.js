@@ -28,7 +28,7 @@ const SocialMedias = [
   },
 ];
 
-export default function TalkToUsScreen({navigation, route}) {
+export const TalkToUsScreen = ({navigation, route}) => {
   const whatsapp = useSelector(state => state.config.contact_info);
 
   const openFacebook = () => {
@@ -110,7 +110,7 @@ export default function TalkToUsScreen({navigation, route}) {
       </VStack>
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create({
   headerText: {

@@ -3,7 +3,7 @@ import React from 'react';
 import {Text} from 'react-native';
 import {hp} from '../../config/dpTopx';
 
-export default function DevelopersInfoScreen({navigation, route}) {
+export const DevelopersInfoScreen = ({navigation, route}) => {
   return (
     <Box flex={1} justifyContent={'center'} bgColor={'primary.500'}>
       <Text
@@ -29,4 +29,4 @@ export default function DevelopersInfoScreen({navigation, route}) {
       </Text>
     </Box>
   );
-}
+};

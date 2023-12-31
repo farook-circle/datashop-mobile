@@ -8,5 +8,3 @@ export const BeneficiaryScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({});

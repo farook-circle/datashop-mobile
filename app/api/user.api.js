@@ -32,3 +32,19 @@ export const getAirtimeRecentContact = async () => {
 
   return api.get('/contacts/recent-airtime/', {}, config);
 };
+
+export const getPaymentOptionWalletBalance = async () => {
+  const token = store.getState().auth.token;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+
+  return api.get('/api/payment-option', {}, config);
+};

@@ -20,7 +20,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {buyDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 
-export default function CheckOut({route, navigation}) {
+export const CheckOut = ({route, navigation}) => {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.data_bundles.isLoading);
   const balance = useSelector(state => state.wallet.wallet_balance);
@@ -201,7 +201,7 @@ export default function CheckOut({route, navigation}) {
       </KeyboardAwareScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

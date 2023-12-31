@@ -21,7 +21,7 @@ import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import HistoryItemList from '../components/History/HistoryItemList';
 
-export default function History({navigation}) {
+export const History = ({navigation}) => {
   const dispatch = useDispatch();
 
   const data_purchase_history = useSelector(
@@ -126,7 +126,7 @@ export default function History({navigation}) {
       <Box mt={'20'} />
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -20,7 +20,7 @@ import RNDateTimePicker, {
 import {requestForStatement} from '../api/account.api';
 import {useSelector} from 'react-redux';
 
-export default function AccountStatement({navigation, router}) {
+export const AccountStatement = ({navigation, router}) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
@@ -100,7 +100,7 @@ export default function AccountStatement({navigation, router}) {
       </VStack>
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -1,7 +1,11 @@
 import axios from '../../axios';
 import * as defaultAxios from 'axios';
 
-import {GET_ELECTRIC_PROVIDERS} from '../constants/bill_payment';
+import {
+  GET_ELECTRIC_PROVIDERS,
+  GET_CABLE_PROVIDERS,
+  GET_EXAM_PROVIDERS,
+} from '../constants/bill_payment';
 
 export const getElectricProviders = () => (dispatch, getState) => {
   //Get Token from the state
@@ -36,6 +40,72 @@ export const getElectricProviders = () => (dispatch, getState) => {
     });
 };
 
+export const getCableProviders = () => (dispatch, getState) => {
+  //Get Token from the state
+
+  const token = getState().auth.token;
+  // Header
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  //Check to see if there is an token and to header
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  axios
+    .get('/bill/cable', config)
+    .then(res => {
+      dispatch({
+        type: GET_CABLE_PROVIDERS,
+        payload: res.data,
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        // do nothing
+      } else {
+        // do nothing
+      }
+    });
+};
+
+export const getExamProviders = () => (dispatch, getState) => {
+  //Get Token from the state
+
+  const token = getState().auth.token;
+  // Header
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  //Check to see if there is an token and to header
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  axios
+    .get('/bill/exam', config)
+    .then(res => {
+      dispatch({
+        type: GET_EXAM_PROVIDERS,
+        payload: res.data,
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        // do nothing
+      } else {
+        // do nothing
+      }
+    });
+};
+
 export const verifyMeter = (data, callBackFunc) => (dispatch, getState) => {
   //Get Token from the state
 
@@ -48,13 +118,12 @@ export const verifyMeter = (data, callBackFunc) => (dispatch, getState) => {
   };
 
   //Check to see if there is an token and to header
-    if (token) {
-      config.headers['Authorization'] = `Token ${token}`;
-    }
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
 
-
-  
-  axios.post('/bill/validate/electricity', data, config)
+  axios
+    .post('/bill/validate/electricity', data, config)
     .then(res => {
       callBackFunc(res.data, res.status);
     })

@@ -1,420 +1,314 @@
 /* eslint-disable react-native/no-inline-styles */
+import {Alert, StyleSheet, Text, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {MainLayout} from '../../components';
 import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Platform,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  FlatList,
-  TextInput,
-  ActivityIndicator,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
+  Input,
+  FormControl,
+  Button,
+  HStack,
+  VStack,
+  Pressable,
+  Box,
+  Avatar,
+  Select,
+  Actionsheet,
+} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
-
-import colors from '../../../assets/colors/colors';
+import {Formik} from 'formik';
+import * as yup from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
+import {
+  electricityBillPayment,
+  validateMeterNumber,
+} from '../../api/service.api';
 import {getDataPurchaseHistory} from '../../redux/actions/data_plans';
-import {hp, wp} from '../../config/dpTopx';
-import BottomModel from '../../components/BottomModel';
-import {buyElectricity, verifyMeter} from '../../redux/actions/bill_payment';
-import KeyboardAvoidingView from 'react-native-keyboard-aware-scroll-view';
-import GetElectricityToken from '../../components/GetElectricityToken';
+import {getWalletBalance} from '../../redux/actions/wallet';
 
-const meterTypeData = [
-  {id: 1, code: '01', title: 'Prepaid'},
-  {id: 2, code: '02', title: 'Postpaid'},
-];
-export default function ElectricityPaymentScreen({navigation}) {
+const defaultValues = {
+  amount: '',
+  provider: '',
+  meter_number: '',
+  meter_type: '',
+};
+
+const electricityPaymentValidation = yup.object().shape({
+  provider: yup.string().required('Please select electricity provider'),
+  meter_type: yup.string().required('Please select your meter type'),
+  meter_number: yup.number().required('Please provider your meter number'),
+  amount: yup
+    .number()
+    .min(500, 'Minimum amount to top up is 500')
+    .required('Please provider amount to top up'),
+});
+
+const meterValidationInitial = {
+  error: false,
+  validate: false,
+  message: '',
+};
+
+export const ElectricityPaymentScreen = ({navigation}) => {
+  const {electricity} = useSelector(state => state.bill_payment);
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
-  const [electricityCompany, setElectricityCompany] = useState(null);
-  const [meterType, setMeterType] = useState(null);
-  const [meterNumber, setMeterNumber] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [emailAddress, setEmailAddress] = useState('');
-  const [amount, setAmount] = useState('');
-  const [meterName, setMeterName] = useState('');
-  const [error, setError] = useState(false);
-  const [disableContinue, setDisableContinue] = useState(true);
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const [electricityOrderData, setElectricityOrderData] = useState(null);
-  const [buyingElectricityOnprogress, setBuyingElectricityOnprogress] =
-    useState(false);
-  const [toggleElectricityProviderSelect, setToggleElectricityProviderSelect] =
-    useState(false);
 
-  const [toggleMeterTypeSelect, setToggleMeterTypeSelect] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState();
+  const [toggleSelectNetwork, setToggleSelectNetwork] = useState(false);
 
-  const electric_providers = useSelector(
-    state => state.bill_payment.electric_providers,
+  const [loading, setLoading] = useState(false);
+  const [meterValidation, setMeterValidation] = useState(
+    meterValidationInitial,
   );
-  const balance = useSelector(state => state.wallet.wallet_balance);
+  const formRef = useRef();
 
-  useEffect(() => {}, []);
+  const handleSetProvider = provider => {
+    setSelectedProvider(provider);
+    formRef.current?.setFieldValue('provider', provider.id);
+    setToggleSelectNetwork(false);
+    setMeterValidation(meterValidationInitial);
+  };
 
-  useEffect(() => {
-    if (
-      meterType &&
-      electricityCompany &&
-      meterNumber.length > 4 &&
-      amount !== ''
-    ) {
-      setDisableContinue(false);
-    } else {
-      setDisableContinue(true);
+  const handlePurchaseElectricityBill = async form => {
+    if (!meterValidation.validate) {
+      return handleValidateMeterNumber(form);
     }
-  }, [meterType, meterNumber, electricityCompany, amount]);
 
-  const handleSetElectricityCompany = item => {
-    setElectricityCompany(item);
-    setToggleElectricityProviderSelect(!toggleElectricityProviderSelect);
-  };
-
-  const handleSetMeterType = item => {
-    setMeterType(item);
-    setToggleMeterTypeSelect(!toggleMeterTypeSelect);
-  };
-
-  const handleVerifyMeterDetails = () => {
-    // verify meter number
-    if (meterType && electricityCompany && meterNumber !== '') {
-      dispatch(
-        verifyMeter(
+    setLoading(true);
+    const request = await electricityBillPayment(form);
+    if (request.ok) {
+      dispatch(getDataPurchaseHistory());
+      dispatch(getWalletBalance());
+      Alert.alert(
+        'Payment Success',
+        request.data
+          ? request.data?.message
+          : 'Electricity Bill payment success',
+        [
           {
-            disco_name: electricityCompany.title,
-            meter_type: meterType.title,
-            meter_number: meterNumber,
+            text: 'OK',
+            onPress: () => navigation.navigate('Home'),
           },
-          handleVerifyMeterDetailsResponse,
-        ),
+        ],
       );
-    }
-  };
-
-  const handleVerifyMeterDetailsResponse = (res_data, res_status) => {
-    // assume success if status code is less than 300
-    if (res_status < 300) {
-      setMeterName(res_data.meter_name);
-      setError(false);
+      setLoading(false);
       return;
     }
 
-    setMeterName('Unable to verify meter');
-    setError(true);
-  };
-
-  const handleContinueBuying = () => {
-    // buy if meter is verified
-    setButtonLoading(true);
-    setDisableContinue(true);
-    dispatch(
-      verifyMeter(
-        {
-          disco_name: electricityCompany.title,
-          meter_type: meterType.title,
-          meter_number: meterNumber,
-        },
-        handleVerifyAndBuy,
-      ),
-    );
-  };
-
-  const handleVerifyAndBuy = (res_data, res_status) => {
-    setButtonLoading(false);
-    setDisableContinue(false);
-    if (res_status > 300) {
-      setMeterName('unable to fetch meter detail');
-      setError(true);
-      return;
-    }
+    setLoading(false);
 
     Alert.alert(
-      'Information',
-      `You are about to buy meter token worth of ₦${amount} to ${res_data.meter_name}`,
-      [
-        {text: 'CANCEL', onPress: () => console.log('CANCEL')},
-        {text: 'OK', onPress: () => finishBuyNow()},
-      ],
+      'Payment Error',
+      request.data ? request.data?.failed : 'Unable to complete your request',
     );
   };
 
-  const finishBuyNow = () => {
-    if (balance < Number(amount)) {
-      alert('You do not have sufficient balance. Please fund your wallet');
-      return;
-    }
-    setBuyingElectricityOnprogress(true);
+  const handleValidateMeterNumber = async form => {
+    setLoading(true);
+    const request = await validateMeterNumber({
+      meter_number: form.meter_number,
+      meter_type: form.meter_type,
+      disco_name: selectedProvider?.validation_code,
+    });
 
-    dispatch(
-      buyElectricity(
-        {
-          providers: electricityCompany.id,
-          meterType: meterType.code,
-          meterNumber: meterNumber,
-          amount: amount,
-          customerPhone: phoneNumber,
-          customerEmail: emailAddress,
-          customer: meterNumber,
-        },
-        handleBuyResponse,
-      ),
-    );
-  };
+    if (request.ok) {
+      setMeterValidation({
+        ...meterValidation,
+        validate: true,
+        error: false,
+        message: request.data?.meter_name,
+      });
 
-  const handleBuyResponse = (res_data, res_status) => {
-    if (res_status < 300) {
-      // order success handle
-      setBuyingElectricityOnprogress(false);
-      setElectricityOrderData(res_data);
+      setLoading(false);
       return;
     }
 
-    if (res_status > 800) {
-      alert('Network error please check your service');
-      setBuyingElectricityOnprogress(false);
-    }
-
-    alert('Something went wrong please try again');
-    setBuyingElectricityOnprogress(false);
+    setLoading(false);
+    setMeterValidation({
+      ...meterValidation,
+      validate: false,
+      error: true,
+      message: request.data ? request.data.message : 'Invalid meter number',
+    });
   };
 
   return (
-    <>
-      {electricityOrderData && (
-        <GetElectricityToken data={electricityOrderData} />
-      )}
-      {buyingElectricityOnprogress && (
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            zIndex: 100,
-            backgroundColor: 'white',
-          }}>
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <ActivityIndicator size={hp(30)} color={colors.primary} />
-            <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-              Please Wait...
-            </Text>
-          </View>
-        </View>
-      )}
-
-      <View style={styles.container}>
-        <SafeAreaView>
-          {/* Header */}
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather
-                name="chevron-left"
-                size={hp(35)}
-                color={colors.textBlack}
-              />
-            </TouchableOpacity>
-            <Text style={styles.headerTitleText}>Electricity Payment</Text>
-            <Text>{'  '}</Text>
-          </View>
-
-          <View style={styles.headerUnderLine} />
-        </SafeAreaView>
-        <Text style={{textAlign: 'center', marginTop: 40}}>Coming soon</Text>
-      </View>
-
-      {/* meterType selector */}
-
-      {toggleMeterTypeSelect && (
-        <BottomModel
-          onBlankPress={() => setToggleMeterTypeSelect(!toggleMeterTypeSelect)}>
-          <View style={styles.electProviderWrapper}>
-            <TouchableOpacity
-              onPress={() => setToggleMeterTypeSelect(!toggleMeterTypeSelect)}>
-              <Feather name="x" color={colors.textBlack} size={30} />
-            </TouchableOpacity>
-            <FlatList
-              data={meterTypeData}
-              keyExtractor={item => item.id}
-              renderItem={({item}) => (
-                // items
-                <TouchableOpacity
-                  style={styles.itemWrapper}
-                  onPress={() => handleSetMeterType(item)}>
-                  <FontAwesome
-                    name="lightbulb"
-                    color={colors.primary}
-                    size={20}
+    <MainLayout headerTitle={'Electricity'} showHeader={true}>
+      <Box flex={1} px={'4'}>
+        {!electricity.available ? (
+          <Box flex={'1'} alignItems={'center'} justifyContent={'center'}>
+            <Text>{electricity.message}</Text>
+          </Box>
+        ) : (
+          <Formik
+            innerRef={formRef}
+            initialValues={defaultValues}
+            validationSchema={electricityPaymentValidation}
+            onSubmit={data => handlePurchaseElectricityBill(data)}>
+            {({
+              errors,
+              touched,
+              values,
+              handleBlur,
+              handleSubmit,
+              handleChange,
+              setFieldValue,
+            }) => (
+              <>
+                <FormControl
+                  isRequired
+                  isInvalid={errors.provider && touched.provider}>
+                  <FormControl.Label>
+                    Select Electricity Provider
+                  </FormControl.Label>
+                  <Pressable onPress={() => setToggleSelectNetwork(true)}>
+                    <HStack
+                      px={2}
+                      rounded={'4'}
+                      py={'3'}
+                      borderWidth={1}
+                      borderColor={'gray.200'}
+                      alignItems={'center'}
+                      justifyContent={'space-between'}>
+                      {selectedProvider ? (
+                        <HStack alignItems={'center'} space={'2'}>
+                          <Avatar
+                            size={'xs'}
+                            alt={'network image'}
+                            source={{
+                              uri: selectedProvider?.image?.image_url,
+                            }}
+                          />
+                          <Text>{selectedProvider?.title}</Text>
+                        </HStack>
+                      ) : (
+                        <Text style={styles.placeholderText}>Choose one</Text>
+                      )}
+                      <Feather
+                        name={'chevron-down'}
+                        size={20}
+                        color={'black'}
+                      />
+                    </HStack>
+                  </Pressable>
+                  <FormControl.ErrorMessage
+                    leftIcon={<Feather name="info" size={10} />}>
+                    {errors.provider}
+                  </FormControl.ErrorMessage>
+                </FormControl>
+                <FormControl
+                  isRequired
+                  isInvalid={errors.meter_type && touched.meter_number}>
+                  <FormControl.Label>Meter Type</FormControl.Label>
+                  <Select
+                    size={'lg'}
+                    py={'3'}
+                    onValueChange={value => {
+                      setMeterValidation(meterValidationInitial);
+                      setFieldValue('meter_type', value);
+                    }}
+                    accessibilityLabel="Meter Type"
+                    placeholder="Meter Type"
+                    _selectedItem={{
+                      bg: 'teal.600',
+                      endIcon: <Feather name={'chevron-down'} size={5} />,
+                    }}
+                    mt="1">
+                    <Select.Item label="Prepaid" value="Prepaid" />
+                    <Select.Item label="Postpaid" value="Postpaid" />
+                  </Select>
+                  <FormControl.ErrorMessage
+                    leftIcon={<Feather name="info" size={10} />}>
+                    {errors.meter_type}
+                  </FormControl.ErrorMessage>
+                </FormControl>
+                <FormControl
+                  isRequired
+                  isInvalid={errors.meter_number && touched.meter_number}>
+                  <FormControl.Label>Meter Number</FormControl.Label>
+                  <Input
+                    value={values.meter_number}
+                    onChangeText={handleChange('meter_number')}
+                    onBlur={handleBlur('meter_number')}
+                    keyboardType="number-pad"
+                    onFocus={() => setMeterValidation(meterValidationInitial)}
+                    placeholder="Meter Number"
+                    size={'lg'}
+                    py={'3'}
                   />
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Feather
-                    name="chevron-right"
-                    size={25}
-                    color={colors.textLight}
+                  {(meterValidation.error || meterValidation.validate) && (
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        textAlign: 'right',
+                        color: meterValidation.validate ? 'green' : 'red',
+                      }}>
+                      {meterValidation.message}
+                    </Text>
+                  )}
+                  <FormControl.ErrorMessage
+                    leftIcon={<Feather name="info" size={10} />}>
+                    {errors.meter_number}
+                  </FormControl.ErrorMessage>
+                </FormControl>
+                <FormControl
+                  isRequired
+                  isInvalid={errors.amount && touched.amount}>
+                  <FormControl.Label>Amount</FormControl.Label>
+                  <Input
+                    keyboardType="number-pad"
+                    value={values.amount}
+                    onChangeText={handleChange('amount')}
+                    onBlur={handleBlur('amount')}
+                    placeholder="Amount"
+                    size={'lg'}
+                    py={'3'}
                   />
-                </TouchableOpacity>
-
-                // items
-              )}
-            />
-          </View>
-        </BottomModel>
-      )}
-
-      {toggleElectricityProviderSelect && (
-        <BottomModel
-          onBlankPress={() =>
-            setToggleElectricityProviderSelect(!toggleElectricityProviderSelect)
-          }>
-          <View style={styles.electProviderWrapper}>
-            <TouchableOpacity
-              onPress={() =>
-                setToggleElectricityProviderSelect(
-                  !toggleElectricityProviderSelect,
-                )
-              }>
-              <Feather name="x" color={colors.textBlack} size={30} />
-            </TouchableOpacity>
-            <FlatList
-              data={electric_providers}
-              keyExtractor={item => item.id}
-              renderItem={({item}) => (
-                // items
-                <TouchableOpacity
-                  style={styles.itemWrapper}
-                  onPress={() => handleSetElectricityCompany(item)}>
-                  <FontAwesome
-                    name="lightbulb"
-                    color={colors.primary}
-                    size={20}
-                  />
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Feather
-                    name="chevron-right"
-                    size={25}
-                    color={colors.textLight}
-                  />
-                </TouchableOpacity>
-
-                // items
-              )}
-            />
-          </View>
-        </BottomModel>
-      )}
-    </>
+                  <FormControl.ErrorMessage
+                    leftIcon={<Feather name="info" size={10} />}>
+                    {errors.amount}
+                  </FormControl.ErrorMessage>
+                </FormControl>
+              </>
+            )}
+          </Formik>
+        )}
+      </Box>
+      <Box px={'4'} pb={'2'}>
+        {meterValidation.validate ? (
+          <Button onPress={formRef.current?.handleSubmit} isLoading={loading}>
+            Continue
+          </Button>
+        ) : (
+          <Button onPress={formRef.current?.handleSubmit} isLoading={loading}>
+            Validate
+          </Button>
+        )}
+      </Box>
+      <Actionsheet
+        isOpen={toggleSelectNetwork}
+        onClose={() => setToggleSelectNetwork(false)}>
+        <Actionsheet.Content>
+          {electricity?.providers?.map((provider, index) => (
+            <Actionsheet.Item
+              key={index}
+              onPress={() => handleSetProvider(provider)}>
+              <HStack alignItems={'center'} space={'2'}>
+                <Avatar size={'sm'} source={{uri: provider.image?.image_url}} />
+                <Text style={styles.text}>{provider.title}</Text>
+              </HStack>
+            </Actionsheet.Item>
+          ))}
+        </Actionsheet.Content>
+      </Actionsheet>
+    </MainLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.background,
-    paddingHorizontal: 25,
-  },
-  headerWrapper: {
-    marginTop: hp(3),
-    flexDirection: 'row',
-    width: '100%',
-
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  headerTitleText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    textAlign: 'center',
-  },
-  searchBox: {
-    flex: 1,
-    marginHorizontal: wp(20),
-    // backgroundColor: 'red',
-    fontFamily: 'Poppins-Medium',
-  },
-  headerUnderLine: {
-    marginTop: hp(10),
-    height: hp(1),
-    width: wp(350),
-    alignSelf: 'center',
-    backgroundColor: colors.textLight,
-  },
-  bodyWrapper: {
-    flex: 1,
-  },
-  pickerButton: {
-    marginTop: hp(20),
-    backgroundColor: '#f4f4f4',
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  pickerItemTitle: {
-    fontFamily: 'Poppins-Medium',
-    color: colors.textLight,
-  },
-  meterNameText: {
-    fontFamily: 'Poppins',
-    fontSize: hp(16),
-    color: colors.primary,
-    width: '100%',
-    textAlign: 'right',
-  },
-  inputLabel: {
-    marginTop: hp(10),
-    fontFamily: 'Poppins-Medium',
-    color: colors.textLight,
-  },
-  input: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    fontFamily: 'Poppins-Medium',
-    color: colors.textBlack,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  buttonContinue: {
-    paddingVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Poppins-Medium',
-    color: colors.textBlack,
-    backgroundColor: colors.primary,
-    marginBottom: hp(20),
-  },
-  buttonTitle: {
-    fontFamily: 'Poppins-Medium',
-    color: colors.textWhite,
-  },
-  electProviderWrapper: {
-    width: '100%',
-    backgroundColor: 'white',
-    padding: 25,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    // alignItems: 'center',
-  },
-  itemWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: colors.textLight,
-    alignItems: 'center',
-  },
-  itemTitle: {
-    flex: 1,
-    paddingHorizontal: 20,
-    fontFamily: 'Poppins-Medium',
+  text: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 16,
   },
 });
+
+export default ElectricityPaymentScreen;

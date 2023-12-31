@@ -18,7 +18,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {hp, wp} from '../config/dpTopx';
 
-export default function DataCategoryScreen({navigation}) {
+export const DataCategoryScreen = ({navigation}) => {
   const data_category = useSelector(state => state.data_bundles.data_category);
 
   const renderDataCategory = ({item}) => {
@@ -107,7 +107,7 @@ export default function DataCategoryScreen({navigation}) {
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

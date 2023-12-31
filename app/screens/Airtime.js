@@ -1,537 +1,373 @@
 /* eslint-disable react-native/no-inline-styles */
+import {Alert, PermissionsAndroid, Platform, StyleSheet} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {MainLayout} from '../components';
 import {
-  View,
+  Actionsheet,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  FormControl,
+  HStack,
+  IconButton,
+  Input,
+  Pressable,
+  ScrollView,
+  VStack,
   Text,
-  StyleSheet,
-  StatusBar,
-  Platform,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  FlatList,
-  TextInput,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
-
-import colors from '../../assets/colors/colors';
+} from 'native-base';
 import {useDispatch, useSelector} from 'react-redux';
+import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Formik} from 'formik';
+import * as yup from 'yup';
+import {selectContactPhone} from 'react-native-select-contact';
+import {buyAirtimeService} from '../api/service.api';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
-import {hp, wp} from '../config/dpTopx';
-import OverLayModel from '../components/OverLayModel';
-import BottomModel from '../components/BottomModel';
-import {buyAirtime} from '../redux/actions/airtime';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {getWalletBalance} from '../redux/actions/wallet';
 
-export default function Airtime({navigation}) {
+const defaultValues = {
+  network: '',
+  amount: '',
+  phone_number: '',
+};
+
+const buyAirtimeValidation = yup.object().shape({
+  network: yup.string().required('Please select your network'),
+  amount: yup
+    .number()
+    .min(50, 'Minimum amount is 50 naira')
+    .required('Please add amount to recharge'),
+  phone_number: yup
+    .string()
+    .matches(/(0)(\d){8}\b/, 'Enter a valid phone number')
+    .required('Phone number is required'),
+});
+
+export const AirtimeScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
-  const [selectedService, setSelectedService] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [discount, setDiscount] = useState('');
-  const [customer, setCustomer] = useState('');
-  const [rechargeType, setRechargeType] = useState(null);
-  const [validate, setValidate] = useState(false);
+  const {services, available} = useSelector(state => state.airtime);
+  const [toggleSelectNetwork, setToggleSelectNetwork] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState(0);
+  const formRef = useRef();
 
-  const [toggleRechargeType, setToggleRechargeType] = useState(false);
-  const [toggleRechargeTypeSelect, setToggleRechargeTypeSelect] =
-    useState(false);
-
-  const airtime = useSelector(state => state.airtime.airtime);
-  const balance = useSelector(state => state.wallet.wallet_balance);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isBuyLoading, setIsBuyLoading] = useState(false);
-  const [buttonDisable, setButtonDisable] = useState(true);
-
-  useEffect(() => {
-    if (Number(amount) > 50) {
-      setDiscount(calculatePercentage());
-    }
-  }, [amount]);
-
-  const calculatePercentage = () => {
-    const total = Number(amount) / 100;
-    return Number(Number(amount) - total * selectedService.discount);
+  const handleSelectNetwork = network => {
+    setSelectedNetwork(network);
+    formRef.current?.setFieldValue('network', network.id);
+    setToggleSelectNetwork(false);
   };
 
-  useEffect(() => {
-    if (!airtime.available) {
-      var timeOutId = setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
+  function calculateDiscount(originalPrice, discountPercentage) {
+    // Check for valid input
+    if (
+      originalPrice < 0 ||
+      discountPercentage < 0 ||
+      discountPercentage > 100
+    ) {
+      return originalPrice;
     }
 
-    return () => {
-      clearTimeout(timeOutId);
-    };
-  }, []);
+    // Calculate the discount amount
+    const discountAmount = (discountPercentage / 100) * originalPrice;
 
-  const handelSetRechargeType = item => {
-    setToggleRechargeTypeSelect(false);
-    setRechargeType(item);
-  };
-
-  const getServiceImage = service => {
-    switch (service.toLowerCase()) {
-      case 'mtn':
-        return require('../../assets/images/mtn.jpg');
-      case 'airtel':
-      case 'zain':
-        return require('../../assets/images/airtel.jpg');
-      case 'etisalat':
-      case '9mobile':
-        return require('../../assets/images/9mobile.jpg');
-      case 'glo':
-        return require('../../assets/images/glo.png');
-      default:
-        return require('../../assets/images/bank-building.png');
-    }
-  };
-
-  const validateAndBuy = () => {
-    if (customer.length !== 11) {
-      return;
-    }
-    if (amount === '' || amount === '0') {
-      return;
-    }
-    if (Number(amount) < 50) {
-      alert('Amount cannot be less thant 50 naira');
-      return;
-    }
-    if (balance < Number(amount)) {
-      alert('You do not have sufficient balance. Please fund your wallet');
-      return;
-    }
-    // Alert.alert(
-    //   'Alert',
-    //   `you are about time buy ${amount} naira airtime to ${customer}`,
-    //   [{text: 'Cancel'}, {text: 'OK', onPress: () => buyAirtime()}],
-    // );
-    setValidate(true);
-  };
-
-  const handleBuyAirtime = () => {
-    setIsBuyLoading(true);
-
-    dispatch(
-      buyAirtime(
-        {
-          amount,
-          customer,
-          recharge_type: rechargeType,
-          service: selectedService.id,
-        },
-        handleResponse,
-      ),
-    );
-
-    // send request to buy airtime
-  };
-
-  const handleResponse = (res_data, res_status) => {
-    if (res_status < 300) {
-      // success
-      alert(
-        'Your order has been successfully submitted✔️. Thank you for choosing DataShop',
-      );
-      navigation.navigate('Home');
-      return;
-    }
-
-    // error
-    console.log(res_data);
-    setIsBuyLoading(false);
-    setValidate(false);
-  };
-
-  if (!airtime.available) {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        {isLoading ? (
-          <ActivityIndicator size={40} color={colors.primary} />
-        ) : (
-          <>
-            <Text
-              style={{
-                fontFamily: 'Poppins-Medium',
-                fontSize: hp(14),
-                color: colors.textBlack,
-              }}>
-              Not available at the moment
-            </Text>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{padding: hp(10), backgroundColor: colors.textBlack}}>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Regular',
-                  color: colors.textWhite,
-                }}>
-                go back
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
-    );
+    return discountAmount;
   }
+
+  const handleBuyAirtime = async payload => {
+    setLoading(true);
+    const request = await buyAirtimeService({
+      amount: payload.amount,
+      service: payload.network,
+      customer: payload.phone_number,
+    });
+
+    if (request.ok) {
+      Alert.alert(
+        'Airtime Purchase Success',
+        request.data?.message || 'Airtime purchase success',
+        [{text: 'OK', onPress: () => navigation.goBack()}],
+      );
+      dispatch(getDataPurchaseHistory());
+      dispatch(getWalletBalance());
+
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    Alert.alert(
+      'Airtime Purchase Error',
+      request.data?.failed || 'Something went wrong',
+    );
+  };
+
+  const handleAddContact = async () => {
+    // check permission
+    const granted = await getContactPermission();
+
+    if (!granted) {
+      return Alert.alert(
+        'Warning',
+        'Please grant permission for reading contact',
+      );
+    }
+
+    const phoneNumber = await selectContactPhone().then(selection => {
+      if (!selection) {
+        return null;
+      }
+
+      let {contact, selectedPhone} = selection;
+      return selectedPhone.number;
+    });
+
+    if (!phoneNumber) {
+      return Alert.alert('Warning', 'Please select valid phone number');
+    }
+
+    if (phoneNumber.startsWith('0')) {
+      const contact = phoneNumber.replaceAll('-', '').replaceAll(' ', '');
+      formRef.current?.setFieldValue('phone_number', contact);
+      return;
+    }
+
+    if (phoneNumber.startsWith('234')) {
+      const contact = phoneNumber
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replace('234', '0');
+      formRef.current?.setFieldValue('phone_number', contact);
+      return;
+    }
+
+    if (phoneNumber.startsWith('+234')) {
+      const contact = phoneNumber
+        .replaceAll('-', '')
+        .replaceAll(' ', '')
+        .replace('+234', '0');
+      formRef.current?.setFieldValue('phone_number', contact);
+      return;
+    }
+
+    alert(`Invalid phone number: ${phoneNumber}`);
+  };
+
+  const getContactPermission = async () => {
+    if (Platform.OS === 'android') {
+      const request = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      );
+
+      // denied permission
+      if (request === PermissionsAndroid.RESULTS.DENIED) return false;
+      // user chose 'deny, don't ask again'
+      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN)
+        return false;
+    }
+
+    return true;
+  };
+
   return (
-    <>
-      {toggleRechargeTypeSelect && (
-        <BottomModel
-        // onBlankPress={() =>
-        //   setToggleRechargeTypeSelect(!toggleRechargeTypeSelect)
-        // }
-        >
-          <View style={styles.electProviderWrapper}>
-            <TouchableOpacity
-              onPress={() =>
-                setToggleRechargeTypeSelect(!toggleRechargeTypeSelect)
-              }>
-              <Feather name="x" color={colors.textBlack} size={30} />
-            </TouchableOpacity>
-
-            <FlatList
-              data={selectedService.recharge_type.split(',')}
-              keyExtractor={item => item}
-              renderItem={({item}) => (
-                // items
-                <TouchableOpacity
-                  style={styles.itemWrapper}
-                  onPress={() => handelSetRechargeType(item)}>
-                  <Text style={styles.itemTitle}>{item}</Text>
-                  <Feather
-                    name="chevron-right"
-                    size={25}
-                    color={colors.textLight}
-                  />
-                </TouchableOpacity>
-
-                // items
-              )}
-            />
-          </View>
-        </BottomModel>
-      )}
-
-      {validate && (
-        <BottomModel
-          onBlankPress={() => setValidate(false)}
-          style={{background: 'white'}}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              paddingTop: hp(30),
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              paddingHorizontal: 25,
-            }}>
-            <Text
-              style={{
-                fontFamily: 'Poppins-Medium',
-                fontSize: hp(16),
-                color: colors.textBlack,
-              }}>
-              You are about to buy {amount} airtime to {customer}
-            </Text>
-            {/* <TextInput
-              placeholder="PIN"
-              keyboardType={'numeric'}
-              maxLength={4}
-              autoFocus={true}
-              style={{fontSize: hp(30)}}
-              textAlign={'center'}
-              secureTextEntry={true}
-            /> */}
-            <TouchableOpacity
-              style={[
-                styles.buttonBody,
-                {marginTop: hp(10)},
-                isBuyLoading && {backgroundColor: colors.textLight},
-              ]}
-              onPress={handleBuyAirtime}
-              disabled={isBuyLoading ? true : false}>
-              {isBuyLoading ? (
-                <ActivityIndicator size={'large'} color={colors.textWhite} />
-              ) : (
-                <Text style={styles.buttonText}>Continue</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </BottomModel>
-      )}
-
-      <KeyboardAwareScrollView style={styles.container}>
-        <SafeAreaView>
-          {/* Header */}
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather
-                name="chevron-left"
-                size={hp(35)}
-                color={colors.textBlack}
-              />
-            </TouchableOpacity>
-            <Text style={styles.headerTitleText}>Airtime</Text>
-            <Text>{'  '}</Text>
-          </View>
-
-          <View style={styles.headerUnderLine} />
-        </SafeAreaView>
-
-        {/* Body */}
-        <View>
-          <FlatList
-            data={airtime.services}
-            keyExtractor={item => item.id}
-            horizontal={true}
-            scrollEnabled={false}
-            renderItem={({item}) => (
-              <>
-                {item.available && (
-                  <View style={styles.serviceWrapper}>
-                    <TouchableOpacity
-                      style={styles.serviceLogo}
-                      onPress={() => setSelectedService(item)}>
-                      <Image
-                        source={getServiceImage(item.service)}
-                        style={styles.serviceImage}
-                      />
-                      {selectedService && (
-                        <View
-                          style={[
-                            {
-                              position: 'absolute',
-                              width: '100%',
-                              height: '100%',
-                              backgroundColor: 'black',
-                              opacity: 0.9,
-                            },
-                            selectedService.id === item.id && {opacity: 0.0},
-                          ]}
+    <MainLayout showHeader={true} headerTitle={'Airtime'}>
+      <ScrollView flex={1} px={'4'}>
+        {!available ? (
+          <Text style={styles.unavailableText}>
+            Service temporarily unavailable at the moment
+          </Text>
+        ) : (
+          <Box>
+            <Formik
+              innerRef={formRef}
+              initialValues={defaultValues}
+              validationSchema={buyAirtimeValidation}
+              onSubmit={form => handleBuyAirtime(form)}>
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                setFieldTouched,
+                handleBlur,
+                setFieldValue,
+              }) => (
+                <>
+                  <FormControl isInvalid={errors.network && touched.network}>
+                    <FormControl.Label>Network</FormControl.Label>
+                    <Pressable
+                      onPress={() => {
+                        setFieldTouched('network');
+                        setToggleSelectNetwork(true);
+                      }}>
+                      <HStack
+                        px={2}
+                        rounded={'4'}
+                        py={'3'}
+                        borderWidth={1}
+                        borderColor={'gray.200'}
+                        alignItems={'center'}
+                        justifyContent={'space-between'}>
+                        {selectedNetwork ? (
+                          <HStack alignItems={'center'} space={'2'}>
+                            <Avatar
+                              size={'xs'}
+                              alt={'network image'}
+                              source={{
+                                uri: selectedNetwork?.image?.image_url,
+                              }}
+                            />
+                            <Text>{selectedNetwork?.service}</Text>
+                          </HStack>
+                        ) : (
+                          <Text style={styles.placeholderText}>Choose one</Text>
+                        )}
+                        <Feather
+                          name={'chevron-down'}
+                          size={20}
+                          color={'black'}
                         />
-                      )}
-                    </TouchableOpacity>
-                    <Text style={styles.serviceName}>{item.service}</Text>
-                  </View>
-                )}
-              </>
-            )}
-          />
-        </View>
-        {!selectedService && (
-          <View
-            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                marginTop: hp(80),
-                fontFamily: 'Poppins-Medium',
-                fontSize: hp(16),
-                color: colors.secondary,
-                textAlign: 'center',
-                paddingHorizontal: hp(30),
-              }}>
-              Select a Service provider
-            </Text>
-          </View>
+                      </HStack>
+                    </Pressable>
+                    <FormControl.ErrorMessage
+                      leftIcon={<Feather name="info" size={10} />}>
+                      {errors.network}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+
+                  <FormControl
+                    isRequired
+                    isInvalid={errors.phone_number && touched.phone_number}>
+                    <FormControl.Label>Phone Number</FormControl.Label>
+                    <Input
+                      value={values.phone_number}
+                      onBlur={handleBlur('phone_number')}
+                      onChangeText={handleChange('phone_number')}
+                      placeholder="Phone Number"
+                      keyboardType="number-pad"
+                      py={'3'}
+                      size={'lg'}
+                      InputRightElement={
+                        <IconButton
+                          onPress={handleAddContact}
+                          rounded={'full'}
+                          icon={
+                            <AntDesign
+                              size={20}
+                              name={'contacts'}
+                              color={'black'}
+                            />
+                          }
+                        />
+                      }
+                    />
+                    <FormControl.ErrorMessage
+                      leftIcon={<Feather name="info" size={10} />}>
+                      {errors.phone_number}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+                  <FormControl
+                    isRequired
+                    isInvalid={errors.amount && touched.amount}>
+                    <FormControl.Label>
+                      Amount (Minimum 50NGN)
+                    </FormControl.Label>
+                    <Input
+                      value={values.amount}
+                      onChangeText={text => {
+                        setFieldValue('amount', text);
+                        setAmount(text);
+                      }}
+                      keyboardType={'number-pad'}
+                      onBlur={handleBlur('amount')}
+                      placeholder="Amount"
+                      py={'3'}
+                      size={'lg'}
+                    />
+                    <FormControl.ErrorMessage
+                      leftIcon={<Feather name="info" size={10} />}>
+                      {errors.amount}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+                </>
+              )}
+            </Formik>
+          </Box>
         )}
-        {selectedService && (
-          <>
-            <View style={{flex: 1}}>
-              <Text style={styles.label}>Phone number to buy airtime to:</Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <TextInput
-                  placeholder="Phone number"
-                  style={styles.inputStyle}
-                  keyboardType={'numeric'}
-                  value={customer}
-                  onChangeText={text => setCustomer(text)}
-                  maxLength={11}
-                />
-              </View>
-              {selectedService.service === 'MTN' && (
-                <TouchableOpacity
-                  style={styles.pickerButton}
-                  onPress={() =>
-                    setToggleRechargeTypeSelect(!toggleRechargeTypeSelect)
-                  }>
-                  <Text
-                    style={[
-                      styles.pickerItemTitle,
-                      rechargeType && {color: colors.textBlack},
-                    ]}>
-                    {rechargeType ? rechargeType : 'Select Recharge Type...'}
+      </ScrollView>
+      {available && (
+        <Box px={'4'} pb={'3'}>
+          {Number(amount) && Number(amount) > 50 && selectedNetwork ? (
+            <Card bgColor={'primary.100'} mb={'4'} rounded={'xl'}>
+              <VStack space={'2'}>
+                <HStack justifyContent={'space-between'}>
+                  <Text fontSize={'md'}>Sub total</Text>
+                  <Text fontSize={'md'} fontWeight={'semibold'}>
+                    ₦{amount}
                   </Text>
-                  <Feather
-                    name="chevron-down"
-                    color={colors.textBlack}
-                    size={20}
-                  />
-                </TouchableOpacity>
-              )}
-              <Text style={styles.label}>Amount you want to buy for:</Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={styles.nairaSign}>₦</Text>
-                <TextInput
-                  placeholder="Amount"
-                  style={styles.inputStyle}
-                  keyboardType={'numeric'}
-                  value={amount}
-                  onChangeText={text => setAmount(text)}
-                />
-              </View>
-              {discount !== '' && (
-                <Text
-                  style={{
-                    width: '100%',
-                    textAlign: 'right',
-                    fontFamily: 'Poppins-Regular',
-                  }}>
-                  You will pay ₦{discount}
-                </Text>
-              )}
-              <Text
-                style={[
-                  styles.label,
-                  {width: '100%', textAlign: 'center', color: colors.secondary},
-                ]}>
-                Note: ₦50 naira minimum
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={styles.buttonBody}
-              onPress={validateAndBuy}>
-              <Text style={styles.buttonText}>Buy</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </KeyboardAwareScrollView>
-    </>
+                </HStack>
+                <HStack justifyContent={'space-between'}>
+                  <Text fontSize={'md'}>Discount</Text>
+                  <Text fontSize={'md'} fontWeight={'semibold'}>
+                    ₦{selectedNetwork.discount}
+                  </Text>
+                </HStack>
+                <HStack justifyContent={'space-between'}>
+                  <Text fontSize={'md'}>Total</Text>
+                  <Text fontWeight={'semibold'} fontSize={'md'}>
+                    ₦
+                    {amount -
+                      calculateDiscount(amount, selectedNetwork.discount)}
+                  </Text>
+                </HStack>
+              </VStack>
+            </Card>
+          ) : (
+            <></>
+          )}
+          <Button isLoading={loading} onPress={formRef.current?.handleSubmit}>
+            Continue
+          </Button>
+        </Box>
+      )}
+      <Actionsheet
+        isOpen={toggleSelectNetwork}
+        onClose={() => setToggleSelectNetwork(false)}>
+        <Actionsheet.Content>
+          {services.map((network, index) => (
+            <Actionsheet.Item
+              key={index}
+              onPress={() => handleSelectNetwork(network)}>
+              <HStack alignItems={'center'} space={'2'}>
+                <Avatar size={'sm'} source={{uri: network.image?.image_url}} />
+                <Text style={styles.text}>{network.service}</Text>
+              </HStack>
+            </Actionsheet.Item>
+          ))}
+        </Actionsheet.Content>
+      </Actionsheet>
+    </MainLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.background,
-    paddingHorizontal: 25,
-  },
-  headerWrapper: {
-    marginTop: hp(3),
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  headerTitleText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
+  unavailableText: {
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
+    fontSize: 16,
+    marginTop: 100,
   },
-
-  headerUnderLine: {
-    marginTop: hp(10),
-    height: hp(1),
-    width: wp(350),
-    alignSelf: 'center',
-    backgroundColor: colors.textLight,
+  placeholderText: {
+    fontFamily: 'Poppins-Regular',
+    color: 'gray',
   },
-  serviceWrapper: {
-    marginTop: 20,
-    marginLeft: wp(10),
-    alignItems: 'center',
-  },
-  serviceLogo: {
-    width: wp(65),
-    height: hp(65),
-    backgroundColor: colors.secondary,
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  serviceImage: {
-    width: wp(65),
-    height: hp(65),
-  },
-  serviceName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(13),
-    color: colors.textLight,
-  },
-  label: {
-    marginTop: hp(20),
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(13),
-    color: colors.textBlack,
-  },
-  inputStyle: {
-    flex: 1,
-    marginTop: hp(10),
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    color: colors.textBlack,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    paddingHorizontal: 30,
-  },
-  nairaSign: {
-    position: 'absolute',
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    paddingTop: hp(7),
-    paddingLeft: wp(10),
-  },
-  buttonBody: {
-    marginTop: hp(140),
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  buttonText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    color: colors.textWhite,
-  },
-  electProviderWrapper: {
-    width: '100%',
-    backgroundColor: 'white',
-    padding: 25,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    // alignItems: 'center',
-  },
-  itemWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: colors.textLight,
-    alignItems: 'center',
-  },
-  itemTitle: {
-    flex: 1,
-    paddingHorizontal: 20,
-    fontFamily: 'Poppins-Medium',
-  },
-  pickerButton: {
-    marginTop: hp(20),
-    backgroundColor: '#f4f4f4',
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  pickerItemTitle: {
-    fontFamily: 'Poppins-Medium',
-    color: colors.textLight,
+  text: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 16,
   },
 });
+
+export default AirtimeScreen;

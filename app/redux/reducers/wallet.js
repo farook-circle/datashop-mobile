@@ -1,67 +1,26 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-import {
-  CREATE_VIRTUAL_ACCOUNT,
-  GET_BALANCE,
-  GET_VIRTUAL_ACCOUNT,
-  DELETE_VIRTUAL_ACCOUNT,
-  GET_MOMO_AGENT_NUMBER,
-  GET_ACCOUNT_NUMBER,
-  GET_PAYMENT_STATUS,
-  GET_AIRTIME_FUNDING,
-} from '../constants/wallet';
+import {REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE} from '../constants/wallet';
 
 const initialState = {
   wallet_balance: '0.00',
-  account: {},
-  momo_agent_number: [],
-  payment_method: [],
-  payment_status: [],
-  airtime_instruction: null,
+  automated_deposit: {},
+  manual_deposit: {},
+  momo_agent_deposit: {},
+  standard_deposit: {},
   isLoading: false,
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case GET_BALANCE:
+    case REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE:
       return {
         ...state,
-        wallet_balance: action.payload.balance,
-      };
-    case GET_PAYMENT_STATUS:
-      return {
-        ...state,
-        payment_status: action.payload,
-      };
-    case CREATE_VIRTUAL_ACCOUNT:
-      return {
-        ...state,
-        account: action.payload,
-      };
-    case GET_AIRTIME_FUNDING:
-      return {
-        ...state,
-        airtime_instruction: action.payload,
-      };
-    case GET_VIRTUAL_ACCOUNT:
-      return {
-        ...state,
-        account: action.payload,
-      };
-    case GET_MOMO_AGENT_NUMBER:
-      return {
-        ...state,
-        momo_agent_number: action.payload,
-      };
-    case GET_ACCOUNT_NUMBER:
-      return {
-        ...state,
-        payment_method: action.payload,
-      };
-    case DELETE_VIRTUAL_ACCOUNT:
-      return {
-        ...state,
-        account: {},
+        wallet_balance: action.payload.wallet_balance,
+        automated_deposit: action.payload.automated_deposit,
+        manual_deposit: action.payload.manual_deposit,
+        momo_agent_deposit: action.payload.momo_agent_deposit,
+        standard_deposit: action.payload.standard_deposit,
       };
     default:
       return state;

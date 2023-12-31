@@ -1,12 +1,12 @@
 import {create} from 'apisauce';
-import {AppConstant} from '../lib';
+import {AppConstant, CURRENT_API} from '../lib';
 import {Platform} from 'react-native';
 
 // for development server
 
 // for production server
 export const api = create({
-  baseURL: AppConstant.Config.LOCAL_API_URL,
+  baseURL: CURRENT_API,
   headers: {
     'X-Platform': Platform.OS,
     'X-App-Build-Number': '1.2.0',

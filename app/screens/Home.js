@@ -30,11 +30,19 @@ import {
   getDataCategory,
   getDataPurchaseHistory,
 } from '../redux/actions/data_plans';
-import {getPaymentStatus, getWalletBalance} from '../redux/actions/wallet';
+import {
+  getPaymentStatus,
+  getWalletBalance,
+  paymentOptionWalletBalance,
+} from '../redux/actions/wallet';
 import {getMessages, getNotifications} from '../redux/actions/messages';
 import OverLayModel from '../components/OverLayModel';
 import Button from '../components/Button';
-import {getElectricProviders} from '../redux/actions/bill_payment';
+import {
+  getCableProviders,
+  getElectricProviders,
+  getExamProviders,
+} from '../redux/actions/bill_payment';
 import {getAirtimeServices} from '../redux/actions/airtime';
 import {
   getCollaboratorBank,
@@ -70,10 +78,8 @@ Array.prototype.groupBy = function (key) {
   }, {});
 };
 
-export default function Home({navigation}) {
+export const Home = ({navigation}) => {
   const dispatch = useDispatch();
-  const [selectedId, setSelectedId] = useState(null);
-
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -107,8 +113,11 @@ export default function Home({navigation}) {
     dispatch(getPaymentStatus());
     dispatch(getDataCategory());
     dispatch(getElectricProviders());
+    dispatch(getCableProviders());
+    dispatch(getExamProviders());
     dispatch(getAirtimeServices());
     dispatch(getDataRecentContacts());
+    dispatch(paymentOptionWalletBalance());
     // checkIfPriorityMessage();
     handleSetMessageAvailable();
   }, [dispatch, refreshing]);
@@ -139,10 +148,6 @@ export default function Home({navigation}) {
 
   React.useEffect(() => {
     handleGetHomeScreenPic();
-    displayNotification({
-      title: 'Welcome back',
-      body: 'Welcome back to datashop',
-    });
     deviceNotificationToken();
   }, []);
 
@@ -337,7 +342,7 @@ export default function Home({navigation}) {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   secContainer: {

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import {MainLayout} from '../components';
 
 import colors from '../../assets/colors/colors';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -21,7 +22,7 @@ import Message from '../components/Message';
 import Notification from '../components/Notification';
 import {hp, wp} from '../config/dpTopx';
 
-export default function Messages({route, navigation}) {
+export const Messages = ({route, navigation}) => {
   const [messageSelect, setMessageSelect] = useState(false);
   const [notificationSelect, setNotificationSelect] = useState(true);
 
@@ -35,53 +36,55 @@ export default function Messages({route, navigation}) {
     setNotificationSelect(false);
   };
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
-        {/* Header */}
-        <View style={styles.headerWrapper}>
-          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
+    <MainLayout>
+      <View style={styles.container}>
+        <SafeAreaView>
+          {/* Header */}
+          <View style={styles.headerWrapper}>
+            {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Feather name="chevron-left" size={35} color={colors.primary} />
           </TouchableOpacity> */}
-          <View style={styles.MessageIconWrapper}>
-            <TouchableOpacity
-              onPress={() => handleToggleSelected(0)}
-              style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Feather
-                name="bell"
-                size={35}
-                color={notificationSelect ? colors.primary : colors.textBlack}
-              />
-              <Text
-                style={[
-                  styles.iconTitle,
-                  notificationSelect ? {color: colors.primary} : '',
-                ]}>
-                NOTIFICATION
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleToggleSelected(1)}
-              style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Feather
-                name="message-circle"
-                size={35}
-                color={messageSelect ? colors.primary : colors.textBlack}
-              />
-              <Text
-                style={[
-                  styles.iconTitle,
-                  messageSelect ? {color: colors.primary} : '',
-                ]}>
-                MESSAGE
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.MessageIconWrapper}>
+              <TouchableOpacity
+                onPress={() => handleToggleSelected(0)}
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Feather
+                  name="bell"
+                  size={35}
+                  color={notificationSelect ? colors.primary : colors.textBlack}
+                />
+                <Text
+                  style={[
+                    styles.iconTitle,
+                    notificationSelect ? {color: colors.primary} : '',
+                  ]}>
+                  NOTIFICATION
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleToggleSelected(1)}
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Feather
+                  name="message-circle"
+                  size={35}
+                  color={messageSelect ? colors.primary : colors.textBlack}
+                />
+                <Text
+                  style={[
+                    styles.iconTitle,
+                    messageSelect ? {color: colors.primary} : '',
+                  ]}>
+                  MESSAGE
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
-      {messageSelect ? <Message /> : <Notification />}
-    </View>
+        </SafeAreaView>
+        {messageSelect ? <Message /> : <Notification />}
+      </View>
+    </MainLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

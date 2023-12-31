@@ -31,6 +31,7 @@ import {
   VStack,
 } from 'native-base';
 import {formatCurrency} from '../utils';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const url = 'https://awesome.contents.com/';
 const title = 'Awesome Contents';
@@ -48,12 +49,13 @@ const Text = props => (
   </NText>
 );
 
-export default function Receipt({navigation, route}) {
+export const Receipt = ({navigation, route}) => {
   const viewShotRef = useRef();
   const whatsapp = useSelector(state => state.config.contact_info);
   const user = useSelector(state => state.auth.user);
 
   const [show, setShow] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [screenShotImage, setScreenShotImage] = useState(null);
 
   useEffect(() => {
@@ -65,6 +67,15 @@ export default function Receipt({navigation, route}) {
     viewShotRef.current.capture().then(uri => {
       setScreenShotImage(uri);
     });
+  };
+
+  const copyToClipboard = text => {
+    setCopied(true);
+    Clipboard.setString(text);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+    alert('Copied');
   };
 
   const share = async (customOptions = options) => {
@@ -84,6 +95,8 @@ export default function Receipt({navigation, route}) {
     quantity,
     price,
     customer,
+    meta,
+    transaction_type,
     date,
     time,
     transaction_ref,
@@ -234,6 +247,32 @@ export default function Receipt({navigation, route}) {
                 {quantity !== 'None' ? quantity : amount}
               </Text>
             </VStack>
+            {transaction_type && transaction_type === 'EXAM_PURCHASE' && (
+              <VStack alignItems={'center'} space={1}>
+                <Text>Exam PIN</Text>
+                <HStack alignItems={'center'}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Semibold',
+                      fontSize: 20,
+                      color: colors.primary,
+                    }}>
+                    {meta?.data_pin?.pin}
+                  </Text>
+                  <IconButton
+                    onPress={() => copyToClipboard(meta?.data_pin?.pin)}
+                    rounded={'full'}
+                    icon={
+                      <Feather
+                        name={copied ? 'check' : 'copy'}
+                        color={'green'}
+                        size={20}
+                      />
+                    }
+                  />
+                </HStack>
+              </VStack>
+            )}
           </VStack>
 
           <View style={{paddingHorizontal: hp(10), backgroundColor: 'white'}}>
@@ -315,7 +354,7 @@ export default function Receipt({navigation, route}) {
       }
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

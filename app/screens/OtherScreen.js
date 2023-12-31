@@ -19,10 +19,10 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import { Divider, HStack, Pressable, VStack } from 'native-base';
+import {Divider, HStack, Pressable, VStack} from 'native-base';
 import CategoryItem from '../components/other/CategoryItem';
 
-export default function OtherScreen({navigation}) {
+export const OtherScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,25 +54,31 @@ export default function OtherScreen({navigation}) {
           icon={'bolt'}
           onPress={() => navigation.navigate('ElectricityPaymentScreen')}
         />
-         <CategoryItem
-          title={'Airtime to cash'}
-          icon={'money-bill'}
-          onPress={() => navigation.navigate('AirtimeToCashScreen')}
-        />
-         <CategoryItem
-          title={'TV Subscription'}
+
+        <CategoryItem
+          title={'Cable Subscription'}
           icon={'tv'}
           onPress={() => navigation.navigate('TvSubscriptionScreen')}
         />
-         <CategoryItem
+        <CategoryItem
+          title={'Exam Payment'}
+          icon={'cube'}
+          onPress={() => navigation.navigate('ExamPaymentScreen')}
+        />
+        <CategoryItem
           title={'Wallet Transfer'}
           icon={'paper-plane'}
           onPress={() => navigation.navigate('WalletTransferScreen')}
         />
+        <CategoryItem
+          title={'Airtime to cash'}
+          icon={'money-bill'}
+          onPress={() => navigation.navigate('AirtimeToCashScreen')}
+        />
       </VStack>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

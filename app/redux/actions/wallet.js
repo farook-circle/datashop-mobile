@@ -9,8 +9,10 @@ import {
   GET_MOMO_AGENT_NUMBER,
   GET_PAYMENT_STATUS,
   GET_AIRTIME_FUNDING,
+  REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
 } from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
+import {getPaymentOptionWalletBalance} from '../../api/user.api';
 
 export const getWalletBalance = () => (dispatch, getState) => {
   //Get Token from the state
@@ -304,4 +306,14 @@ export const paymentAccountDetails = () => (dispatch, getState) => {
         // do nothing
       }
     });
+};
+
+export const paymentOptionWalletBalance = () => async dispatch => {
+  const request = await getPaymentOptionWalletBalance();
+  if (request.ok) {
+    dispatch({
+      type: REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
+      payload: request.data,
+    });
+  }
 };

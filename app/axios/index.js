@@ -1,12 +1,12 @@
 import axios from 'axios';
-import {AppConstant} from '../lib';
+import {CURRENT_API} from '../lib';
 import {Platform} from 'react-native';
 
 // for development server
 
 // for production server
 export default axios.create({
-  baseURL: AppConstant.Config.LOCAL_API_URL,
+  baseURL: CURRENT_API,
   headers: {
     'X-Platform': Platform.OS,
     'X-App-Build-Number': '1.2.0',

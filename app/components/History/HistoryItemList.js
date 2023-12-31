@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {Avatar, Badge, Box, HStack, Pressable, VStack} from 'native-base';
 import React from 'react';
 import {Text, StyleSheet} from 'react-native';
@@ -34,7 +35,12 @@ export default function HistoryItemList({
             <Text style={styles.amountStyle}>{amount}</Text>
             <Text
               style={{
-                color: status === 'pending' ? 'orange' : 'green',
+                color:
+                  status.toLowerCase() === 'pending'
+                    ? 'orange'
+                    : status.toLowerCase() === 'failed'
+                    ? 'red'
+                    : 'green',
                 fontSize: hp(12),
               }}>
               {status.toUpperCase()}

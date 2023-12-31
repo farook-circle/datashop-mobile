@@ -28,7 +28,7 @@ import {
 } from '../redux/actions/collaborator';
 import OverLayModel from '../components/OverLayModel';
 
-export default function EditProfile({navigation}) {
+export const EditProfile = ({navigation}) => {
   const dispatch = useDispatch();
   const [updateBank, setUpdateBank] = useState(false);
   const [updateWhatsapp, setUpdateWhatsapp] = useState(false);
@@ -203,7 +203,7 @@ export default function EditProfile({navigation}) {
       </KeyboardAwareScrollView>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

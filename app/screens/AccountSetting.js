@@ -24,7 +24,7 @@ const AccountOption = ({icon, title, onPress}) => (
   </Pressable>
 );
 
-export default function AccountSetting({navigation, router}) {
+export const AccountSetting = ({navigation, router}) => {
   const handleGoBack = () => {
     navigation.goBack();
   };
@@ -57,7 +57,7 @@ export default function AccountSetting({navigation, router}) {
       </VStack>
     </Box>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

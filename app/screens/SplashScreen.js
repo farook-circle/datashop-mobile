@@ -3,7 +3,7 @@ import React from 'react';
 import colors from '../../assets/colors/colors';
 import {hp} from '../config/dpTopx';
 
-export default function SplashScreen() {
+export const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerWrapper}>
@@ -14,7 +14,7 @@ export default function SplashScreen() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

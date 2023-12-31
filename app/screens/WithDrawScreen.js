@@ -5,27 +5,21 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
-  Image,
   TouchableOpacity,
   SafeAreaView,
-  FlatList,
   TextInput,
   Alert,
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import Input from '../components/Input';
-import Button from '../components/Button';
 import {withdrawCollaborator} from '../redux/actions/collaborator';
 
-export default function Withdraw({navigation}) {
+export const Withdraw = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [amount, setAmount] = useState('');
@@ -140,7 +134,7 @@ export default function Withdraw({navigation}) {
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

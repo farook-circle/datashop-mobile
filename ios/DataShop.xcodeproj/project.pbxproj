@@ -13,7 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		20EF2CE610964B8897E5476A /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13BBB48BB0494ACBA4CB29EC /* Poppins-SemiBold.ttf */; };
 		4EC455C30C2BCDB48916087A /* Pods_DataShop_DataShopTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD8BBF38159F3B4294B7A99 /* Pods_DataShop_DataShopTests.framework */; };
-		6BE8CF1E2AC99E1F00E8BA3E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BE8CF1D2AC99E1F00E8BA3E /* GoogleService-Info.plist */; };
+		6BFEEB7F2B3A1E810034B568 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BFEEB7E2B3A1E810034B568 /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8284137E82CC80DB1A7DA5D7 /* Pods_DataShop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAE7F4CFF4E4150821567CD4 /* Pods_DataShop.framework */; };
 		843196572447486D9C9C9193 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC4007BDC538484FB5809465 /* Poppins-Light.ttf */; };
@@ -72,7 +72,7 @@
 		6BCA1E752AC996D600077F02 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		6BCA1E762AC996D600077F02 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		6BCA1E772AC996D600077F02 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		6BE8CF1D2AC99E1F00E8BA3E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6BFEEB7E2B3A1E810034B568 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6DBEB0A439620BBF8D362BB0 /* Pods-DataShop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DataShop.debug.xcconfig"; path = "Target Support Files/Pods-DataShop/Pods-DataShop.debug.xcconfig"; sourceTree = "<group>"; };
 		72AF05882C464D018E7B57A0 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		7ADE72C03A4945688692E9A0 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 		13B07FAE1A68108700A75B9A /* DataShop */ = {
 			isa = PBXGroup;
 			children = (
-				6BE8CF1D2AC99E1F00E8BA3E /* GoogleService-Info.plist */,
+				6BFEEB7E2B3A1E810034B568 /* GoogleService-Info.plist */,
 				6BCA1E642AC9962F00077F02 /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -346,7 +346,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				6BE8CF1E2AC99E1F00E8BA3E /* GoogleService-Info.plist in Resources */,
+				6BFEEB7F2B3A1E810034B568 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				90F2D2848E6C4CA6946239BD /* Poppins-Bold.ttf in Resources */,
 				843196572447486D9C9C9193 /* Poppins-Light.ttf in Resources */,

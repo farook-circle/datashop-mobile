@@ -5,7 +5,7 @@ import {hp, wp} from '../../config/dpTopx';
 
 import HeaderBackButton from '../../components/HeaderBackButton';
 
-export default function ActivityDetails({navigation, route}) {
+export const ActivityDetails = ({navigation, route}) => {
   return (
     <Box flex={1} safeArea px={'4'} pt={'4'}>
       <HeaderBackButton
@@ -17,10 +17,10 @@ export default function ActivityDetails({navigation, route}) {
           textAlign: 'center',
           fontFamily: 'Poppins-Regular',
           fontSize: hp(16),
-          marginTop: hp(10)
+          marginTop: hp(10),
         }}>
         Not enough data to generate your activity
       </Text>
     </Box>
   );
-}
+};

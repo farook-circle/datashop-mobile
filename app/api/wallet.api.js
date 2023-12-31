@@ -17,18 +17,34 @@ export const validateAccountId = async payload => {
   return api.get('/wallet/validate', payload, config);
 };
 
-export const transferWalletFund = async (payload) => {
-    const token = store.getState().auth.token;
+export const transferWalletFund = async payload => {
+  const token = store.getState().auth.token;
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  
-    if (token) {
-      config.headers['Authorization'] = `Token ${token}`;
-    }
-  
-    return api.post('/wallet/transfer', payload, config);
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  return api.post('/wallet/transfer', payload, config);
+};
+
+export const cardWalletDeposit = async payload => {
+  const token = store.getState().auth.token;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (token) {
+    config.headers['Authorization'] = `Token ${token}`;
+  }
+
+  return api.post('/wallet/transfer', payload, config);
 };

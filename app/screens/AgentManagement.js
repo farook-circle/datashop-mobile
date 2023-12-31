@@ -29,7 +29,7 @@ import {useState} from 'react';
 
 import BottomModal from '../components/BottomModel';
 
-export default function AgentManagement({navigation}) {
+export const AgentManagement = ({navigation}) => {
   const dispatch = useDispatch();
   const [collaborator_agent, setCollaboratorAgent] = useState([]);
 
@@ -304,7 +304,7 @@ export default function AgentManagement({navigation}) {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

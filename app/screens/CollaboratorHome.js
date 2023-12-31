@@ -39,7 +39,7 @@ const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 
-export default function CollaboratorHome({navigation}) {
+export const CollaboratorHome = ({navigation}) => {
   const dispatch = useDispatch();
   const [selectedId, setSelectedId] = useState(null);
 
@@ -385,7 +385,7 @@ export default function CollaboratorHome({navigation}) {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   secContainer: {

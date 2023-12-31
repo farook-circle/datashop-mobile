@@ -38,7 +38,7 @@ import Contacts from 'react-native-contacts';
 import RecentContactCard from '../components/contact/RecentContactCard';
 import {getDataRecentContacts} from '../redux/actions/user';
 
-function DataPlan({route, navigation}) {
+export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const dispatch = useDispatch();
 
   const modalizeRef = useRef(null);
@@ -255,7 +255,6 @@ function DataPlan({route, navigation}) {
       case 'etisalat':
         return require('../../assets/images/9mobile.jpg');
       default:
-        console.log(service);
         return require('../../assets/images/transfer.png');
     }
   };
@@ -664,7 +663,7 @@ function DataPlan({route, navigation}) {
       </View>
     </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -798,5 +797,3 @@ const styles = StyleSheet.create({
     marginBottom: hp(10),
   },
 });
-
-export default gestureHandlerRootHOC(DataPlan);

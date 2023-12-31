@@ -10,6 +10,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {USER_LOGOUT} from '../../redux/constants/auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import colors from '../../../assets/colors/colors';
+import Entypo from 'react-native-vector-icons/Entypo';
+import {ROUTES} from '../../lib';
 
 const MenuItem = ({icon, title, onPress}) => (
   <Pressable onPress={onPress}>
@@ -160,16 +162,22 @@ const CustomSidebarMenu = props => {
           />
 
           <MenuItem
+            onPress={() => navigateToDrawerScreen(ROUTES.TICKET_LIST_SCREEN)}
+            title={'Create ticket'}
+            icon={<Entypo name="ticket" color={'white'} size={hp(20)} />}
+          />
+
+          <MenuItem
+            onPress={() => navigateToDrawerScreen('TalkToUsScreen')}
+            title={'Talk to us'}
+            icon={<Feather name="send" color={'white'} size={hp(20)} />}
+          />
+          <MenuItem
             onPress={() => navigateToDrawerScreen('ApiDocScreen')}
             title={'API Doc'}
             icon={
               <FontAwesome5Icon name="book" color={'white'} size={hp(20)} />
             }
-          />
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('TalkToUsScreen')}
-            title={'Talk to us'}
-            icon={<Feather name="send" color={'white'} size={hp(20)} />}
           />
           <MenuItem
             onPress={() => navigateToDrawerScreen('DevelopersInfoScreen')}

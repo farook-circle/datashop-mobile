@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React from 'react';
 import {
   Box,
@@ -23,7 +24,7 @@ const walletTransferValidation = yup.object().shape({
   remark: yup.string().required('Transfer Remark is required'),
 });
 
-export default function WalletTransferScreen({navigation, route}) {
+export const WalletTransferScreen = ({navigation, route}) => {
   const [loading, setLoading] = React.useState(false);
   const balance = useSelector(state => state.wallet.wallet_balance);
 
@@ -63,8 +64,11 @@ export default function WalletTransferScreen({navigation, route}) {
       return;
     }
 
-
-    alert(request.data && request.data.message ? request.data.message : 'Unable to complete your request please try again');
+    alert(
+      request.data && request.data.message
+        ? request.data.message
+        : 'Unable to complete your request please try again',
+    );
     setLoading(false);
   };
 
@@ -93,19 +97,24 @@ export default function WalletTransferScreen({navigation, route}) {
           setFieldValue,
         }) => (
           <VStack mt={'2'} space={'4'} flex={1}>
-            <FormControl>
+            <FormControl
+              isRequired
+              isInvalid={errors.account_id && touched.account_id}>
               <FormControl.Label>User Phone number</FormControl.Label>
               <Input
+                py={'3'}
+                size={'lg'}
                 value={values.account_id}
                 onBlur={handleBlur('account_id')}
                 onChangeText={handleChange('account_id')}
                 placeholder="Phone number"
               />
-              {errors.account_id && touched.account_id && (
-                <Text color={'red.400'}>{errors.account_id}</Text>
-              )}
+              <FormControl.ErrorMessage
+                leftIcon={<Feather name="info" size={10} />}>
+                {errors.account_id}
+              </FormControl.ErrorMessage>
             </FormControl>
-            <FormControl>
+            <FormControl isRequired isInvalid={errors.amount && touched.amount}>
               <HStack alignItems={'center'} justifyContent={'space-between'}>
                 <FormControl.Label>Amount</FormControl.Label>
                 <FormControl.Label color={'primary.500'}>
@@ -113,26 +122,32 @@ export default function WalletTransferScreen({navigation, route}) {
                 </FormControl.Label>
               </HStack>
               <Input
+                py={'3'}
+                size={'lg'}
                 value={values.amount}
                 onBlur={handleBlur('amount')}
                 onChangeText={handleChange('amount')}
                 placeholder="Amount"
               />
-              {errors.amount && touched.amount && (
-                <Text color={'red.400'}>{errors.amount}</Text>
-              )}
+              <FormControl.ErrorMessage
+                leftIcon={<Feather name="info" size={10} />}>
+                {errors.amount}
+              </FormControl.ErrorMessage>
             </FormControl>
-            <FormControl>
+            <FormControl isRequired isInvalid={errors.remark && touched.remark}>
               <FormControl.Label>Remark</FormControl.Label>
               <Input
+                py={'3'}
+                size={'lg'}
                 value={values.remark}
                 onBlur={handleBlur('remark')}
                 onChangeText={handleChange('remark')}
                 placeholder="Remark"
               />
-              {errors.remark && touched.remark && (
-                <Text color={'red.400'}>{errors.remark}</Text>
-              )}
+              <FormControl.ErrorMessage
+                leftIcon={<Feather name="info" size={10} />}>
+                {errors.remark}
+              </FormControl.ErrorMessage>
             </FormControl>
             <Box flex={1} justifyContent={'flex-end'} pb={'4'}>
               <Button onPress={handleSubmit} isLoading={loading}>
@@ -144,4 +159,4 @@ export default function WalletTransferScreen({navigation, route}) {
       </Formik>
     </Box>
   );
-}
+};

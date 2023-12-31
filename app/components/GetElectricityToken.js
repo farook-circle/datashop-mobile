@@ -76,9 +76,7 @@ export default function GetElectricityToken({data}) {
     setRetry(0);
   };
 
-  const handleContactUs = () => {
-    console.log('contact us');
-  };
+  const handleContactUs = () => {};
   return (
     <View style={styles.container}>
       {isLoading ? (

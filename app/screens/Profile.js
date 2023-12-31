@@ -20,7 +20,7 @@ import {USER_LOGOUT} from '../redux/constants/auth';
 import {changeUserPassword} from '../redux/actions/auth';
 import {Button} from 'native-base';
 
-export default function Profile({navigation}) {
+export const Profile = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [changePassword, setChangePassoword] = useState(true);
@@ -196,7 +196,7 @@ export default function Profile({navigation}) {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

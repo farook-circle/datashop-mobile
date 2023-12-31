@@ -24,7 +24,7 @@ import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import {getComplain, makeComplain} from '../redux/actions/complain';
 
-export default function ComplainScreen({route, navigation}) {
+export const ComplainScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [extraDetail, setExtraDetail] = useState('');
@@ -214,7 +214,7 @@ export default function ComplainScreen({route, navigation}) {
       </KeyboardAwareScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

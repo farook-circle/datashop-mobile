@@ -31,7 +31,7 @@ const meterTypeData = [
   {id: 1, code: '01', title: 'Prepaid'},
   {id: 2, code: '02', title: 'Postpaid'},
 ];
-export default function ElectricityPayment({navigation}) {
+export const ElectricityPayment = ({navigation}) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [electricityCompany, setElectricityCompany] = useState(null);
@@ -230,7 +230,7 @@ export default function ElectricityPayment({navigation}) {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

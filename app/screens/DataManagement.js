@@ -19,7 +19,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 
-export default function DataManagement({navigation}) {
+export const DataManagement = ({navigation}) => {
   const dispatch = useDispatch();
 
   const data_category = useSelector(state => state.data_bundles.data_category);
@@ -63,7 +63,7 @@ export default function DataManagement({navigation}) {
       </SafeAreaView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

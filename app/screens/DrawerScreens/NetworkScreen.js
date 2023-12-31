@@ -1,11 +1,12 @@
 import {Box, HStack, VStack} from 'native-base';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Text} from 'react-native';
 import HeaderBackButton from '../../components/HeaderBackButton';
 import {hp} from '../../config/dpTopx';
 import {useDispatch, useSelector} from 'react-redux';
 import {getServiceSuccessRate} from '../../api/service.api';
 import {GET_SUCCESS_RATE} from '../../redux/constants/service';
+import {MainLayout} from '../../components';
 
 const ChartBar = ({title, percentage}) => {
   const getBgColor = perc => {
@@ -43,38 +44,40 @@ const ChartBar = ({title, percentage}) => {
   );
 };
 
-export default function NetworkScreen({navigation, route}) {
+export const NetworkScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const {success_rate} = useSelector(state => state.service);
 
-  const getNetSuccessRate = async () => {
+  const getNetSuccessRate = useCallback(async () => {
     const request = await getServiceSuccessRate();
     if (request.ok) {
+      console.log(request.data);
       dispatch({type: GET_SUCCESS_RATE, payload: request.data});
     }
-  };
+  }, [dispatch]);
 
   React.useEffect(() => {
     getNetSuccessRate();
-  }, []);
+  }, [getNetSuccessRate]);
 
   return (
-    <Box flex={1} safeArea px={'4'} pt={'4'}>
-      <HeaderBackButton onBackButtonPress={() => navigation.goBack()} title={'Success Rate (%)'} />
-      {success_rate.length < 1 ? (
-        <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-          <Text>Not Available at the moment check back later</Text>
-        </Box>
-      ) : (
-        <VStack space={'2'} pt={'4'}>
-          {success_rate.map(successRate => (
-            <ChartBar
-              title={successRate.name}
-              percentage={Number(successRate.successRate)}
-            />
-          ))}
-        </VStack>
-      )}
-    </Box>
+    <MainLayout headerTitle={'Success Rate (%)'} showHeader={true}>
+      <Box px={'4'}>
+        {success_rate.length < 1 ? (
+          <Box flex={1} justifyContent={'center'} alignItems={'center'}>
+            <Text>Not Available at the moment check back later</Text>
+          </Box>
+        ) : (
+          <VStack space={'2'} pt={'4'}>
+            {success_rate.map(successRate => (
+              <ChartBar
+                title={successRate.name}
+                percentage={Number(successRate.successRate)}
+              />
+            ))}
+          </VStack>
+        )}
+      </Box>
+    </MainLayout>
   );
-}
+};

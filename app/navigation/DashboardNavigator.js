@@ -34,6 +34,8 @@ import {
   TalkToUsScreen,
   DevelopersInfoScreen,
   AboutUsScreen,
+  BvnUpdateScreen,
+  ReceiptScreen,
 } from '../screens';
 import {TicketListScreen, TicketMessageScreen} from '../screens/ticket';
 import notifee, {EventType} from '@notifee/react-native';
@@ -198,7 +200,7 @@ export const DashboardNavigator = () => {
 
       <Stack.Screen
         name={ROUTES.RECEIPT_SCREEN}
-        component={Receipt}
+        component={ReceiptScreen}
         options={screenOptions}
       />
       <Stack.Screen
@@ -236,6 +238,12 @@ export const DashboardNavigator = () => {
       <Stack.Screen
         name={ROUTES.WALLET_TRANSFER_SCREEN}
         component={WalletTransferScreen}
+        options={screenOptions}
+      />
+
+      <Stack.Screen
+        name={ROUTES.USER_BVN_UPDATE}
+        component={BvnUpdateScreen}
         options={screenOptions}
       />
 

@@ -42,4 +42,5 @@ export const ROUTES = {
   ABOUT_US_SCREEN: 'AboutUsScreen',
   TICKET_LIST_SCREEN: 'TicketListScreen',
   TICKET_MESSAGE_SCREEN: 'TicketMessageScreen',
+  USER_BVN_UPDATE: 'USER_BVN_UPDATE',
 };

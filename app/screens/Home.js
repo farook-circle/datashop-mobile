@@ -21,7 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
-import {Button as NBButton} from 'native-base';
+import {Button as NBButton, useTheme} from 'native-base';
 
 import {USER_LOGOUT} from '../redux/constants/auth';
 
@@ -64,6 +64,7 @@ import {getHomepageGallery} from '../api/service.api';
 import {formatCurrency} from '../utils';
 import {getDataRecentContacts} from '../redux/actions/user';
 import {deviceNotificationToken, displayNotification} from '../lib';
+import moment from 'moment-timezone';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -80,6 +81,8 @@ Array.prototype.groupBy = function (key) {
 
 export const Home = ({navigation}) => {
   const dispatch = useDispatch();
+  const color = useTheme().colors;
+
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -202,9 +205,10 @@ export const Home = ({navigation}) => {
             <HStack
               bgColor={'rgba(0,0,0,0.5)'}
               p={'2'}
+              px={'1'}
               rounded={'full'}
               alignItems={'center'}
-              space={'2'}>
+              space={'4'}>
               <Pressable onPress={openWhatsapp}>
                 <MaterialCommunityIcons
                   name="whatsapp"
@@ -213,7 +217,7 @@ export const Home = ({navigation}) => {
                 />
               </Pressable>
               <Pressable onPress={handleMessages}>
-                <Feather name="message-circle" size={hp(24)} color={'white'} />
+                <Feather name="bell" size={hp(24)} color={'white'} />
                 {messageAvailable && <View style={styles.dotIcon} />}
               </Pressable>
             </HStack>
@@ -241,20 +245,29 @@ export const Home = ({navigation}) => {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginVertical: hp(20),
+                marginVertical: hp(10),
               }}>
-              <TouchableOpacity
-                style={[styles.buttonStyle, {marginRight: wp(8)}]}
-                onPress={() => navigation.navigate('Deposit')}>
-                <Text style={styles.buttonTitle}>ADD FUND</Text>
-              </TouchableOpacity>
-              {collaborator && (
-                <TouchableOpacity
-                  style={[styles.buttonStyle, {backgroundColor: '#E53429'}]}
-                  onPress={() => navigation.navigate('Withdraw')}>
-                  <Text style={styles.buttonTitle}>WITHDRAW</Text>
-                </TouchableOpacity>
-              )}
+              <HStack space={2}>
+                <IconButton
+                  rounded={'full'}
+                  onPress={() => navigation.navigate('Deposit')}
+                  bgColor={'white'}
+                  icon={
+                    <Feather
+                      name={'plus'}
+                      size={hp(20)}
+                      color={colors.primary}
+                    />
+                  }
+                  variant={'solid'}
+                />
+                <IconButton
+                  rounded={'full'}
+                  onPress={() => navigation.navigate('WalletTransferScreen')}
+                  icon={<Feather name={'send'} size={hp(20)} color={'white'} />}
+                  variant={'solid'}
+                />
+              </HStack>
             </View>
           </View>
         </View>
@@ -306,30 +319,27 @@ export const Home = ({navigation}) => {
             See All
           </NBButton>
         </HStack>
+
         <ScrollView>
           {Object.entries(
             data_purchase_history.slice(0, 5).groupBy('date'),
           ).map(([key, value]) => (
-            <VStack space={'3'}>
-              <Box px={'6'} bgColor={'primary.200'} py={'2'}>
+            <VStack space={'2'}>
+              <Box px={'4'} mt={'2'}>
                 <Text
                   style={{
                     fontFamily: 'Poppins-Medium',
-                    color: 'black',
-                    fontSize: hp(18),
+                    color: color.gray[500],
+                    fontSize: hp(14),
                   }}>
-                  {new Date(key).toDateString()}
+                  {moment(key).format('MMMM D, YYYY')}
                 </Text>
               </Box>
-              <VStack space={'3'}>
+              <VStack space={'2'}>
                 {value.map(item => (
                   <HistoryItemList
-                    avatar={item.image}
-                    name={item.customer}
-                    time={item.time.slice(0, 5)}
-                    amount={item.quantity}
                     key={item.id}
-                    status={item.status}
+                    item={item}
                     onPress={() =>
                       navigation.navigate('Receipt', {transaction: item})
                     }
@@ -360,7 +370,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
   },
   dotIcon: {
     position: 'absolute',
@@ -379,7 +389,7 @@ const styles = StyleSheet.create({
     color: colors.textBlack,
   },
   balanceContainerWrapper: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
     // flexDirection: 'row',
     marginTop: hp(30),
     width: '100%',

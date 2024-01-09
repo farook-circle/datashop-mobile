@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, Alert} from 'react-native';
+import {View, Text, Alert, Platform, TouchableOpacity} from 'react-native';
 import {Avatar, Box, Divider, HStack, Pressable, VStack} from 'native-base';
 
 import Feather from 'react-native-vector-icons/Feather';
@@ -12,6 +12,9 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import colors from '../../../assets/colors/colors';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {ROUTES} from '../../lib';
+import {formatCurrency} from '../../utils';
+import {DrawerContentScrollView} from '@react-navigation/drawer';
+import {StyleSheet} from 'react-native';
 
 const MenuItem = ({icon, title, onPress}) => (
   <Pressable onPress={onPress}>
@@ -21,7 +24,8 @@ const MenuItem = ({icon, title, onPress}) => (
         space={'2'}
         bgColor={isPressed ? 'primary.100' : 'transparent'}
         rounded={'lg'}
-        p={'2'}>
+        my={hp(4.5)}
+        p={hp(0)}>
         <Avatar shadow={'3'} size={'sm'} bgColor={'primary.500'} rounded={'lg'}>
           {icon}
         </Avatar>
@@ -76,8 +80,8 @@ const CustomSidebarMenu = props => {
   };
 
   return (
-    <Box flex={1} bgColor={'white'}>
-      <Box bgColor={'primary.500'} px={'4'} pb={'4'} pt={'16'}>
+    <Box safeArea flex={1} bgColor={'white'}>
+      <Box bgColor={'primary.500'} px={'4'} pb={'4'} pt={'4'}>
         <VStack space={'2'}>
           <HStack space={'3'}>
             <Avatar
@@ -123,7 +127,12 @@ const CustomSidebarMenu = props => {
           </VStack>
         </VStack>
 
-        <VStack bgColor={'primary.800'} shadow={'4'} p={'2'} rounded={'4'}>
+        <VStack
+          bgColor={'primary.800'}
+          // shadow={'4'}
+          p={'2'}
+          mt={2}
+          rounded={'4'}>
           <Text
             style={{
               color: 'white',
@@ -138,62 +147,82 @@ const CustomSidebarMenu = props => {
               fontSize: hp(20),
               fontFamily: 'Poppins-SemiBold',
             }}>
-            ₦ {wallet_balance}
+            {formatCurrency(wallet_balance)}
           </Text>
         </VStack>
+        {!user?.details?.is_bvn_verified && (
+          <Box mt={2} bgColor={'white'} p={'1'}>
+            <TouchableOpacity
+              onPress={() => navigateToDrawerScreen(ROUTES.USER_BVN_UPDATE)}>
+              <Text
+                style={{
+                  color: 'red',
+                  fontSize: hp(13),
+                  fontFamily: 'Poppins-Medium',
+                }}>
+                Click to Verify your BVN
+              </Text>
+            </TouchableOpacity>
+          </Box>
+        )}
       </Box>
-      <Box px={2} py={2}>
-        <VStack mt={'4'} px={'2'}>
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('AccountSetting')}
-            title={'Account'}
-            icon={<Feather name="user" color={'white'} size={hp(20)} />}
-          />
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('ActivityDetails')}
-            title={'Statistics'}
-            icon={<Feather name="pie-chart" color={'white'} size={hp(20)} />}
-          />
+      <Box px={2} py={2} flex={1}>
+        <DrawerContentScrollView
+          {...props}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.drawerContainer}>
+          <VStack mt={'4'} px={'2'}>
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('AccountSetting')}
+              title={'Account'}
+              icon={<Feather name="user" color={'white'} size={hp(20)} />}
+            />
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('ActivityDetails')}
+              title={'Statistics'}
+              icon={<Feather name="pie-chart" color={'white'} size={hp(20)} />}
+            />
 
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('NetworkScreen')}
-            title={'Network'}
-            icon={<Feather name="globe" color={'white'} size={hp(20)} />}
-          />
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('NetworkScreen')}
+              title={'Network'}
+              icon={<Feather name="globe" color={'white'} size={hp(20)} />}
+            />
 
-          <MenuItem
-            onPress={() => navigateToDrawerScreen(ROUTES.TICKET_LIST_SCREEN)}
-            title={'Create ticket'}
-            icon={<Entypo name="ticket" color={'white'} size={hp(20)} />}
-          />
+            <MenuItem
+              onPress={() => navigateToDrawerScreen(ROUTES.TICKET_LIST_SCREEN)}
+              title={'Support'}
+              icon={<Entypo name="ticket" color={'white'} size={hp(20)} />}
+            />
 
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('TalkToUsScreen')}
-            title={'Talk to us'}
-            icon={<Feather name="send" color={'white'} size={hp(20)} />}
-          />
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('ApiDocScreen')}
-            title={'API Doc'}
-            icon={
-              <FontAwesome5Icon name="book" color={'white'} size={hp(20)} />
-            }
-          />
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('DevelopersInfoScreen')}
-            title={"Developer's info"}
-            icon={
-              <FontAwesome5Icon name="laptop" color={'white'} size={hp(20)} />
-            }
-          />
-          <MenuItem
-            onPress={() => navigateToDrawerScreen('AboutUsScreen')}
-            title={'About Datashop'}
-            icon={<Feather name="info" color={'white'} size={hp(20)} />}
-          />
-        </VStack>
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('TalkToUsScreen')}
+              title={'Talk to us'}
+              icon={<Feather name="send" color={'white'} size={hp(20)} />}
+            />
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('ApiDocScreen')}
+              title={'API Doc'}
+              icon={
+                <FontAwesome5Icon name="book" color={'white'} size={hp(20)} />
+              }
+            />
+            {/* <MenuItem
+              onPress={() => navigateToDrawerScreen('DevelopersInfoScreen')}
+              title={"Developer's info"}
+              icon={
+                <FontAwesome5Icon name="laptop" color={'white'} size={hp(20)} />
+              }
+            /> */}
+            <MenuItem
+              onPress={() => navigateToDrawerScreen('AboutUsScreen')}
+              title={'About Datashop'}
+              icon={<Feather name="info" color={'white'} size={hp(20)} />}
+            />
+          </VStack>
+        </DrawerContentScrollView>
 
-        <View style={{marginTop: hp(30)}}>
+        <View style={{marginBottom: hp(2)}}>
           <Divider />
           <VStack mt={'2'} px={'2'}>
             <MenuItem
@@ -212,5 +241,13 @@ const CustomSidebarMenu = props => {
     </Box>
   );
 };
+
+export const styles = StyleSheet.create({
+  drawerContainer: {
+    backgroundColor: '#fff',
+    marginTop: Platform.OS === 'ios' ? -50 : -20,
+    zIndex: 10,
+  },
+});
 
 export default CustomSidebarMenu;

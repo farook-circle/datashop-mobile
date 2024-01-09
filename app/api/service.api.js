@@ -17,7 +17,7 @@ export const getAirtimeServices = async () => {
     config.headers.Authorization = `Token ${token}`;
   }
 
-  return api.get('/airtime', {}, config);
+  return api.get('/airtime/', {}, config);
 };
 
 export const buyAirtimeService = async payload => {

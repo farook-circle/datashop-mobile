@@ -5,3 +5,4 @@ export * from './themes';
 export * from './routes';
 export * from './api';
 export * from './image';
+export * from './receipt-template';

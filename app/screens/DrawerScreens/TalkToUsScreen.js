@@ -1,10 +1,21 @@
-import {Box, Button, HStack, IconButton, Pressable, VStack} from 'native-base';
+import {
+  Avatar,
+  Box,
+  Button,
+  HStack,
+  IconButton,
+  Pressable,
+  Text,
+  VStack,
+} from 'native-base';
 import React from 'react';
-import {Linking, StyleSheet, Text} from 'react-native';
+import {Linking, StyleSheet, Touchable, TouchableOpacity} from 'react-native';
 import {hp} from '../../config/dpTopx';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
+import {MainLayout} from '../../components';
+import colors from '../../../assets/colors/colors';
 
 const SocialMedias = [
   {
@@ -31,10 +42,6 @@ const SocialMedias = [
 export const TalkToUsScreen = ({navigation, route}) => {
   const whatsapp = useSelector(state => state.config.contact_info);
 
-  const openFacebook = () => {
-    Linking.openURL('fb://page/DataShopNG');
-  };
-
   const openWhatsapp = async () => {
     const isWhatsappInstalled = await Linking.canOpenURL('whatsapp://');
     if (isWhatsappInstalled) {
@@ -56,59 +63,72 @@ export const TalkToUsScreen = ({navigation, route}) => {
     Linking.openURL('http://m.me/DataShopNG');
   };
 
-  const openSocialMedia = social => {
-    switch (social) {
-      case 'facebook':
-        openFacebook();
-        break;
-      case 'whatsapp':
-        openWhatsapp();
-        break;
-      case 'messenger':
-        openMessenger();
-        break;
-      default:
-        return;
-    }
-  };
-
   return (
-    <Box safeArea flex={1} px={'3'} pt={'2'}>
-      <HStack alignItems={'center'} space={'2'}>
-        <IconButton
-          onPress={() => navigation.goBack()}
-          rounded={'full'}
-          icon={<Feather name={'chevron-left'} size={hp(30)} color={'black'} />}
-        />
-        <Text style={styles.headerText}>Contact us</Text>
-      </HStack>
-      <VStack space={'2'} width={'100%'}>
-        {SocialMedias.map((data, index) => (
-          <Pressable onPress={() => openSocialMedia(data.type)}>
-            {({isPressed}) => (
-              <HStack
-                width={'100%'}
-                key={index}
-                alignItems={'center'}
-                space={'4'}
-                bgColor={isPressed ? 'primary.100' : 'transparent'}
-                p={'4'}
-                rounded={'4'}
-                borderWidth={'1'}
-                borderColor={'primary.500'}>
-                <Box width={hp(30)}>
-                  <Fontisto name={data.type} color={data.color} size={hp(25)} />
-                </Box>
-                <Text
-                  style={{flex: 1, color: 'black', fontFamily: 'Poppins-Bold'}}>
-                  {data.description}
-                </Text>
-              </HStack>
-            )}
-          </Pressable>
-        ))}
+    <MainLayout showHeader={true} headerTitle={'Contact us'}>
+      <VStack space={'3'} width={'100%'} px={'6'}>
+        <Text fontSize={'md'} my={3}>
+          If you have any inquiry, please contact us on any of the following,
+          we'll be glad to help you.
+        </Text>
+        <HStack
+          shadow={2}
+          backgroundColor={'white'}
+          rounded={'4'}
+          p={'3'}
+          space={'2'}
+          alignItems={'center'}>
+          <Avatar bgColor={'white'} shadow={1} rounded={'lg'}>
+            <Feather name={'phone'} color={'green'} size={hp(20)} />
+          </Avatar>
+          <VStack>
+            <Text>Phone</Text>
+            <Text fontWeight={'semibold'}>+234847394843</Text>
+          </VStack>
+        </HStack>
+        <HStack
+          shadow={2}
+          backgroundColor={'white'}
+          rounded={'4'}
+          p={'3'}
+          space={'2'}
+          alignItems={'center'}>
+          <Avatar bgColor={'white'} rounded={'lg'} shadow={1}>
+            <Feather name={'mail'} color={colors.primary} size={hp(25)} />
+          </Avatar>
+          <VStack>
+            <Text>Email</Text>
+            <Text fontWeight={'semibold'}>datashop@farookcircle.com</Text>
+          </VStack>
+        </HStack>
+        <VStack
+          shadow={2}
+          backgroundColor={'white'}
+          rounded={'4'}
+          p={'3'}
+          space={'2'}>
+          <Text fontSize={'md'} fontWeight={'semibold'}>
+            Get in touch on social media
+          </Text>
+
+          <HStack space={'2'}>
+            <TouchableOpacity onPress={openWhatsapp} activeOpacity={0.7}>
+              <Avatar bgColor={'white'} shadow={1} rounded={'lg'}>
+                <Fontisto name={'whatsapp'} color={'green'} size={hp(25)} />
+              </Avatar>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={openMessenger} activeOpacity={0.7}>
+              <Avatar bgColor={'white'} shadow={1} rounded={'lg'}>
+                <Fontisto
+                  name={'messenger'}
+                  color={colors.primary}
+                  size={hp(25)}
+                />
+              </Avatar>
+            </TouchableOpacity>
+          </HStack>
+        </VStack>
       </VStack>
-    </Box>
+    </MainLayout>
   );
 };
 

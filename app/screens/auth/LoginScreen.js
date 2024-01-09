@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: hp(36),
   },
   illustratedImage: {
-    marginTop: hp(45),
+    marginTop: hp(5),
     alignSelf: 'center',
     width: wp(231),
     height: hp(199),

@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.background,
-    paddingHorizontal: 25,
+    paddingHorizontal: 15,
   },
   headerWrapper: {
     marginTop: hp(3),
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#000000',
-    borderRadius: 5,
+    borderRadius: 115,
   },
   categoryTitle: {
     flex: 1,

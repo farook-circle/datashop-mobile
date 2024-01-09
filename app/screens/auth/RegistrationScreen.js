@@ -15,7 +15,14 @@ import Feather from 'react-native-vector-icons/Feather';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
 import {hp, dp, wp} from '../../config/dpTopx';
-import {Button, FormControl, Input, VStack, Pressable} from 'native-base';
+import {
+  Button,
+  FormControl,
+  Input,
+  VStack,
+  Pressable,
+  Checkbox,
+} from 'native-base';
 import {Formik} from 'formik';
 import * as validation from '../../utils/validations';
 
@@ -28,14 +35,13 @@ const registerInitialValue = {
   phone: '',
   email: '',
   password: '',
-  password_again: '',
+  referral_code: '',
 };
 
 export const RegistrationScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [eyePassword, setEyePassword] = useState(false);
-  const [eyePasswordAgain, setEyePasswordAgain] = useState(false);
 
   const {isLoading} = useSelector(state => state.auth);
 
@@ -54,6 +60,10 @@ export const RegistrationScreen = ({navigation}) => {
       username: data.phone,
       password: data.password,
     };
+
+    if (data.referral_code) {
+      payload.referral_code = data.referral_code;
+    }
 
     dispatch(signUp(payload, ErrorOccur));
   };
@@ -152,6 +162,22 @@ export const RegistrationScreen = ({navigation}) => {
                   {errors.email}
                 </FormControl.ErrorMessage>
               </FormControl>
+              <FormControl>
+                <FormControl.Label>Referral Code (Optional)</FormControl.Label>
+                <Input
+                  size={'lg'}
+                  py={'3'}
+                  placeholder="Referral Code"
+                  keyboardType="decimal-pad"
+                  value={values.referral_code}
+                  onBlur={handleBlur('referral_code')}
+                  onChangeText={handleChange('referral_code')}
+                />
+                <FormControl.ErrorMessage
+                  leftIcon={<Feather name="info" size={10} />}>
+                  {errors.password_again}
+                </FormControl.ErrorMessage>
+              </FormControl>
               <FormControl isInvalid={errors.password && touched.password}>
                 <FormControl.Label>Password</FormControl.Label>
                 <Input
@@ -180,35 +206,7 @@ export const RegistrationScreen = ({navigation}) => {
                   {errors.password}
                 </FormControl.ErrorMessage>
               </FormControl>
-              <FormControl
-                isInvalid={errors.password_again && touched.password_again}>
-                <FormControl.Label>Retype password</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Retype password"
-                  value={values.password_again}
-                  onBlur={handleBlur('password_again')}
-                  onChangeText={handleChange('password_again')}
-                  secureTextEntry={!eyePasswordAgain}
-                  autoCapitalize={'none'}
-                  InputRightElement={
-                    <Pressable
-                      onPress={() => setEyePasswordAgain(!eyePasswordAgain)}
-                      pr={'2'}>
-                      <Feather
-                        name={eyePasswordAgain ? 'eye' : 'eye-off'}
-                        color={'gray'}
-                        size={hp(20)}
-                      />
-                    </Pressable>
-                  }
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.password_again}
-                </FormControl.ErrorMessage>
-              </FormControl>
+
               <Button
                 mt={'2'}
                 size={'lg'}

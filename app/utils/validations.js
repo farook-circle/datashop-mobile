@@ -28,8 +28,5 @@ export const signUpValidationSchema = yup.object().shape({
     .string()
     .min(5, ({min}) => `Password must be at least ${min} characters`)
     .required('Password is required'),
-  password_again: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords do not match')
-    .required('Confirm password is required'),
+  referral_code: yup.string().notRequired('This field is not required'),
 });

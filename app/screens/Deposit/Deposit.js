@@ -17,12 +17,13 @@ import {
 import {MainLayout} from '../../components';
 import Feather from 'react-native-vector-icons/Feather';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {Alert} from 'react-native';
+import {Alert, Share} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {ManualDeposit, MomoAgent, CardDeposit} from '../../components';
 import {useSelector} from 'react-redux';
 import CompleteCardPayment from '../../components/CompleteCardPayment';
+import {hp} from '../../config/dpTopx';
 
 export const DepositScreen = ({route, navigation}) => {
   const {colors} = useTheme();
@@ -57,6 +58,13 @@ export const DepositScreen = ({route, navigation}) => {
       option: 'manual_deposit',
     },
     {
+      title: 'Momo Agent',
+      label: 'Fund your wallet by sending float to our momo agent number',
+      icon: <FontAwesome name="money" color={colors.primary[500]} size={20} />,
+      link: 'https://i.postimg.cc/R05gnQjv/unnamed-2.png',
+      option: 'momo_agent_deposit',
+    },
+    {
       title: 'Top-up with Card or Account',
       label: 'Add money directly from your bank card or account',
       icon: (
@@ -64,13 +72,6 @@ export const DepositScreen = ({route, navigation}) => {
       ),
       link: undefined,
       option: 'standard_deposit',
-    },
-    {
-      title: 'Momo Agent',
-      label: 'Fund your wallet by sending float to our momo agent number',
-      icon: <FontAwesome name="money" color={colors.primary[500]} size={20} />,
-      link: 'https://i.postimg.cc/R05gnQjv/unnamed-2.png',
-      option: 'momo_agent_deposit',
     },
   ];
 
@@ -127,6 +128,16 @@ export const DepositScreen = ({route, navigation}) => {
     }
   };
 
+  const handleShareAccountDetails = async () => {
+    try {
+      const result = await Share.share({
+        message: `Account Name: ${automated_deposit?.account_name} \nAccount Number: ${automated_deposit?.account_number} \nBank Name: ${automated_deposit?.bank_name}`,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <MainLayout headerTitle={'Deposit to wallet'} showHeader={true}>
       {paymentLink && (
@@ -143,8 +154,8 @@ export const DepositScreen = ({route, navigation}) => {
         <VStack alignItems={'center'}>
           <VStack
             width={'100%'}
-            mt={'5'}
-            p={'4'}
+            mt={hp(5)}
+            p={hp(20)}
             space={'3'}
             bgColor={'white'}
             shadow={'4'}
@@ -167,8 +178,8 @@ export const DepositScreen = ({route, navigation}) => {
             </HStack>
             <Divider />
             <VStack mt={'2'}>
-              <Text fontSize={'xs'} color={'gray.500'}>
-                {automated_deposit?.bank_name} Account Number
+              <Text fontSize={'md'} color={'black'}>
+                {automated_deposit?.bank_name}
               </Text>
               <Text>Acccount Name: {automated_deposit?.account_name}</Text>
               <Text fontSize={'3xl'} fontWeight={'medium'}>
@@ -192,7 +203,10 @@ export const DepositScreen = ({route, navigation}) => {
                 }>
                 Copy Number
               </Button>
-              <Button rounded={'xl'} flex={1}>
+              <Button
+                rounded={'xl'}
+                flex={1}
+                onPress={handleShareAccountDetails}>
                 Share Details
               </Button>
             </HStack>
@@ -201,7 +215,7 @@ export const DepositScreen = ({route, navigation}) => {
           <HStack
             space={'4'}
             alignItems={'center'}
-            my={'4'}
+            my={hp(4)}
             px={'10'}
             width={'full'}>
             <Divider flex={1} />
@@ -253,7 +267,10 @@ export const DepositScreen = ({route, navigation}) => {
           isOpen={sheetContent !== null}
           onClose={() => setSheetContent(null)}>
           <Actionsheet.Content>
-            <ScrollView height={600} width={'100%'}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              height={600}
+              width={'100%'}>
               {sheetContent ? sheetContent : <></>}
             </ScrollView>
           </Actionsheet.Content>

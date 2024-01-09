@@ -135,8 +135,8 @@ android {
         applicationId "com.farookcircle.datashop"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 13
-        versionName "3.2"
+        versionCode 14
+        versionName "3.3"
     }
     splits {
         abi {

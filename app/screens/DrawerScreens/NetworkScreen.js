@@ -1,5 +1,5 @@
-import {Box, HStack, VStack} from 'native-base';
-import React, {useCallback} from 'react';
+import {Box, Divider, HStack, Spinner, VStack} from 'native-base';
+import React, {useCallback, useState} from 'react';
 import {Text} from 'react-native';
 import HeaderBackButton from '../../components/HeaderBackButton';
 import {hp} from '../../config/dpTopx';
@@ -47,13 +47,16 @@ const ChartBar = ({title, percentage}) => {
 export const NetworkScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const {success_rate} = useSelector(state => state.service);
+  const [loading, setLoading] = useState(false);
 
   const getNetSuccessRate = useCallback(async () => {
+    setLoading(true);
     const request = await getServiceSuccessRate();
+
     if (request.ok) {
-      console.log(request.data);
       dispatch({type: GET_SUCCESS_RATE, payload: request.data});
     }
+    setLoading(false);
   }, [dispatch]);
 
   React.useEffect(() => {
@@ -62,20 +65,44 @@ export const NetworkScreen = ({navigation, route}) => {
 
   return (
     <MainLayout headerTitle={'Success Rate (%)'} showHeader={true}>
-      <Box px={'4'}>
-        {success_rate.length < 1 ? (
+      <Box px={'4'} flex={1}>
+        {loading ? (
           <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-            <Text>Not Available at the moment check back later</Text>
+            <Spinner />
           </Box>
         ) : (
-          <VStack space={'2'} pt={'4'}>
-            {success_rate.map(successRate => (
-              <ChartBar
-                title={successRate.name}
-                percentage={Number(successRate.successRate)}
-              />
-            ))}
-          </VStack>
+          <>
+            {!success_rate ? (
+              <Box flex={1} justifyContent={'center'} alignItems={'center'}>
+                <Text>Not Available at the moment check back later</Text>
+              </Box>
+            ) : (
+              <VStack flex={1} space={'2'} pt={'4'}>
+                <HStack space={4} width={'100%'} alignItems={'center'}>
+                  <Divider flex={1} />
+                  <Text>Data</Text>
+                  <Divider flex={1} />
+                </HStack>
+                {success_rate?.data_success_rate?.map(successRate => (
+                  <ChartBar
+                    title={successRate.name}
+                    percentage={Number(successRate.successRate)}
+                  />
+                ))}
+                <HStack space={4} mt={'4'} width={'100%'} alignItems={'center'}>
+                  <Divider flex={1} />
+                  <Text>Other Services</Text>
+                  <Divider flex={1} />
+                </HStack>
+                {success_rate?.other_services?.map(successRate => (
+                  <ChartBar
+                    title={successRate.name}
+                    percentage={Number(successRate.successRate)}
+                  />
+                ))}
+              </VStack>
+            )}
+          </>
         )}
       </Box>
     </MainLayout>

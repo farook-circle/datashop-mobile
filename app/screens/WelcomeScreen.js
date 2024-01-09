@@ -44,7 +44,7 @@ export const WelcomeScreen = ({navigation}) => {
       <Text style={styles.introTitle}>your number one datashop</Text>
 
       {/* Register and Login Button */}
-      <VStack px={'6'} space={'4'} mt={'20'}>
+      <VStack px={'6'} space={'4'} mt={hp(40)}>
         <Button
           onPress={() => navigation.navigate('Register')}
           rounded={'xl'}

@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
@@ -6,10 +7,7 @@ import {
   StatusBar,
   Platform,
   Image,
-  TouchableOpacity,
   SafeAreaView,
-  FlatList,
-  Linking,
 } from 'react-native';
 
 import Share from 'react-native-share';
@@ -17,19 +15,11 @@ import Share from 'react-native-share';
 import React, {useEffect, useRef, useState} from 'react';
 import ViewShot from 'react-native-view-shot';
 import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import colors from '../../assets/colors/colors';
 import {hp, wp} from '../config/dpTopx';
 import {useSelector} from 'react-redux';
-import {
-  Avatar,
-  Button,
-  HStack,
-  IconButton,
-  Pressable,
-  VStack,
-} from 'native-base';
+import {Avatar, Button, HStack, IconButton, VStack} from 'native-base';
 import {formatCurrency} from '../utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -139,7 +129,7 @@ export const Receipt = ({navigation, route}) => {
           <View style={styles.detailsWrapper}>
             <View style={styles.detailTextWrapper}>
               <Text style={styles.detailText}>
-                {quantity === 'None' ? 'Deposited to:' : 'Send Data To:'}{' '}
+                {quantity === 'None' ? 'Deposited to:' : 'Send Data To:'}
               </Text>
               <Text style={styles.detailText}>
                 {quantity === 'None' ? 'wallet' : customer}
@@ -247,6 +237,59 @@ export const Receipt = ({navigation, route}) => {
                 {quantity !== 'None' ? quantity : amount}
               </Text>
             </VStack>
+            {transaction_type &&
+              transaction_type === 'ELECTRICITY_PURCHASE' && (
+                <VStack alignItems={'center'} space={1}>
+                  <Text>Meter Token</Text>
+                  <HStack alignItems={'center'}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Semibold',
+                        fontSize: 20,
+                        color: colors.primary,
+                      }}>
+                      {meta?.token}
+                    </Text>
+                    <IconButton
+                      onPress={() => copyToClipboard(meta?.token)}
+                      rounded={'full'}
+                      icon={
+                        <Feather
+                          name={copied ? 'check' : 'copy'}
+                          color={'green'}
+                          size={20}
+                        />
+                      }
+                    />
+                  </HStack>
+                </VStack>
+              )}
+            {transaction_type && transaction_type === 'CABLE_PURCHASE' && (
+              <VStack alignItems={'center'} space={1}>
+                <Text>Cable Pin</Text>
+                <HStack alignItems={'center'}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Semibold',
+                      fontSize: 20,
+                      color: colors.primary,
+                    }}>
+                    {meta?.token}
+                  </Text>
+                  <IconButton
+                    onPress={() => copyToClipboard(meta?.token)}
+                    rounded={'full'}
+                    icon={
+                      <Feather
+                        name={copied ? 'check' : 'copy'}
+                        color={'green'}
+                        size={20}
+                      />
+                    }
+                  />
+                </HStack>
+              </VStack>
+            )}
             {transaction_type && transaction_type === 'EXAM_PURCHASE' && (
               <VStack alignItems={'center'} space={1}>
                 <Text>Exam PIN</Text>

@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import {VStack, Box} from 'native-base';
+import {VStack, Box, Input} from 'native-base';
+import {MainLayout} from '../components';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
 import HistoryItemList from '../components/History/HistoryItemList';
+import moment from 'moment-timezone';
 
 export const History = ({navigation}) => {
   const dispatch = useDispatch();
@@ -51,80 +53,54 @@ export const History = ({navigation}) => {
     setFilteredData(data_purchase_history);
   };
 
-  const handleToggleSearch = () => {
-    setToggleSearch(!toggleSearch);
-    setFilteredData(data_purchase_history);
-    setSearchValue('');
-  };
-
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView>
-        {/* Header */}
-        <View style={styles.headerWrapper}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather
-              name="chevron-left"
-              size={hp(35)}
-              color={colors.textBlack}
-            />
-          </TouchableOpacity>
-          {toggleSearch ? (
-            <TextInput
-              onChangeText={text => handleSearch(text)}
-              value={searchValue}
-              placeholder="Search..."
-              style={styles.searchBox}
-            />
-          ) : (
-            <Text style={styles.headerTitleText}>History</Text>
-          )}
-          <TouchableOpacity onPress={handleToggleSearch}>
-            <Feather
-              name={toggleSearch ? 'x' : 'search'}
-              size={hp(25)}
-              color={colors.textBlack}
-            />
-          </TouchableOpacity>
-        </View>
+    <MainLayout headerTitle={'Transactions'} showHeader={true}>
+      <VStack px={'4'}>
+        <Input
+          InputLeftElement={
+            <Box pl={'3'}>
+              <Feather size={25} color={'gray'} name={'search'} />
+            </Box>
+          }
+          py={'3'}
+          size={'lg'}
+          placeholder="Search"
+          value={searchValue}
+          onChangeText={text => handleSearch(text)}
+        />
+      </VStack>
+      <ScrollView style={styles.container}>
+        {/* History Items */}
 
-        <View style={styles.headerUnderLine} />
-      </SafeAreaView>
-
-      {/* History Items */}
-
-      {Object.entries(filteredData.groupBy('date')).map(([key, value]) => (
-        <VStack space={'3'} key={key}>
-          <Box px={'6'} bgColor={'primary.200'} py={'2'}>
-            <Text
-              style={{
-                fontFamily: 'Poppins-Medium',
-                color: 'black',
-                fontSize: hp(18),
-              }}>
-              {new Date(key).toDateString()}
-            </Text>
-          </Box>
-          <VStack space={'3'}>
-            {value.map((item, index) => (
-              <HistoryItemList
-                avatar={item.image}
-                name={item.customer}
-                time={item.time.slice(0, 5)}
-                amount={item.quantity}
-                key={item.id}
-                status={item.status}
-                onPress={() =>
-                  navigation.navigate('Receipt', {transaction: item})
-                }
-              />
-            ))}
+        {Object.entries(filteredData.groupBy('date')).map(([key, value]) => (
+          <VStack space={'3'} key={key}>
+            <Box px={'6'} py={'2'}>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Medium',
+                  color: 'black',
+                  fontSize: hp(15),
+                }}>
+                {moment(key).format('MMMM D, YYYY')}
+              </Text>
+            </Box>
+            <VStack space={'3'}>
+              {value.map((item, index) => (
+                <HistoryItemList
+                  key={item.id}
+                  item={item}
+                  onPress={() =>
+                    navigation.navigate('Receipt', {transaction: item})
+                  }
+                />
+              ))}
+            </VStack>
           </VStack>
-        </VStack>
-      ))}
+        ))}
 
-      <Box mt={'20'} />
-    </ScrollView>
+        <Box mt={'20'} />
+      </ScrollView>
+    </MainLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import * as serviceType from '../constants/service';
 
 const inititialState = {
-  success_rate: [],
+  success_rate: null,
   isLoading: false,
 };
 

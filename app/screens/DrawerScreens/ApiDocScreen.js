@@ -1,14 +1,39 @@
-import {Box} from 'native-base';
-import React from 'react';
-import {Text} from 'react-native';
-import {hp} from '../../config/dpTopx';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState} from 'react';
+import {WebView} from 'react-native-webview';
+import {View, StyleSheet} from 'react-native';
+import {CURRENT_API} from '../../lib';
+import {MainLayout} from '../../components';
+import {Spinner, Text} from 'native-base';
 
-export const ApiDocScreen = ({navigation, route}) => {
+export const ApiDocScreen = () => {
+  const [loading, setLoading] = useState(true);
+
   return (
-    <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-      <Text style={{fontFamily: 'Poppins-Regular', fontSize: hp(16)}}>
-        not available at the moment
-      </Text>
-    </Box>
+    <MainLayout showHeader={true} headerTitle={'API Documentation'}>
+      <View style={{flex: 1}}>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <Spinner />
+            <Text mt={'4'}>Loading please wait...</Text>
+          </View>
+        )}
+
+        <WebView
+          source={{uri: `${CURRENT_API}/integrations/mobile-documentation/`}}
+          onLoad={() => setLoading(false)}
+        />
+      </View>
+    </MainLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+});

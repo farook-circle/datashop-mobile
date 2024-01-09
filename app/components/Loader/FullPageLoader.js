@@ -2,20 +2,20 @@ import {View, Image, StyleSheet} from 'react-native';
 import React from 'react';
 import colors from '../../../assets/colors/colors';
 import {hp} from '../../config/dpTopx';
-import {Spinner} from 'native-base';
+import {Box, Spinner} from 'native-base';
 
 export const FullPageLoader = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <View style={styles.headerWrapper}>
-          <Image
-            source={require('../../../assets/images/logo_new.png')}
-            style={styles.logoImage}
-          />
-        </View>
+      <View style={styles.headerWrapper}>
+        <Image
+          source={require('../../../assets/images/logo_new.png')}
+          style={styles.logoImage}
+        />
       </View>
-      <Spinner pb={'10'} color={'white'} />
+      <Box position={'absolute'} bottom={10} alignItems={'center'}>
+        <Spinner color={'white'} />
+      </Box>
     </View>
   );
 };
@@ -23,13 +23,9 @@ export const FullPageLoader = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-  },
-  imageContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.primary,
   },
   headerWrapper: {
     width: '100%',

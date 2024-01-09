@@ -55,7 +55,7 @@ export const ResetPassword = ({navigation}) => {
               color={colors.textBlack}
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitleText}>Data Category</Text>
+          <Text style={styles.headerTitleText}>Password Reset</Text>
           <Text>{'  '}</Text>
         </View>
         <View style={styles.headerUnderLine} />

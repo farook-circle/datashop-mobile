@@ -11,9 +11,11 @@ import {
   IconButton,
 } from 'native-base';
 import React from 'react';
+import {Share} from 'react-native';
 import {Alert} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {hp} from '../../config/dpTopx';
 
 export const ManualDeposit = ({manualDepositData, onClose}) => {
   const {colors} = useTheme();
@@ -23,8 +25,27 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
     Alert.alert('Alert', 'Copied');
   };
 
+  const handleShareAccountDetails = async () => {
+    try {
+      const result = await Share.share({
+        message: `Account Name: ${manualDepositData?.account_name} \n Account Number: ${manualDepositData?.account_number} \n Bank: ${manualDepositData?.bank_name}`,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('shared');
+        } else {
+          console.log('shared');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('dismissed');
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
-    <Box flex={1} px={'4'}>
+    <Box flex={1}>
       <HStack width={'full'}>
         <IconButton
           onPress={() => onClose()}
@@ -34,21 +55,20 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
       </HStack>
       <VStack
         width={'100%'}
-        mt={'2'}
-        p={'4'}
+        p={'3'}
         space={'3'}
         bgColor={'white'}
         shadow={'1'}
         rounded={'xl'}>
         <HStack alignItems={'center'} space={2}>
-          <Avatar size={'md'} rounded={'xl'} bgColor={'primary.100'}>
+          <Avatar size={hp(45)} rounded={'xl'} bgColor={'primary.100'}>
             <Feather name={'hash'} size={20} color={colors.primary[500]} />
           </Avatar>
           <VStack flex={1}>
             <Text fontSize={'sm'} color={'gray.500'}>
-              {manualDepositData?.bank_name} Account Number
+              {manualDepositData?.bank_name}
             </Text>
-            <Text fontSize={'xl'} fontWeight={'medium'}>
+            <Text fontSize={'lg'} fontWeight={'medium'}>
               {manualDepositData?.account_number}
             </Text>
           </VStack>
@@ -58,7 +78,7 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
           <Avatar size={'md'} rounded={'xl'} bgColor={'primary.100'}>
             <MaterialCommunityIcons
               name={'bank'}
-              size={20}
+              size={hp(20)}
               color={colors.primary[500]}
             />
           </Avatar>
@@ -74,7 +94,7 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
         <Divider my={'1'} />
         <HStack alignItems={'center'} space={2}>
           <Avatar size={'md'} rounded={'xl'} bgColor={'primary.100'}>
-            <Feather name={'user'} size={25} color={colors.primary[500]} />
+            <Feather name={'user'} size={20} color={colors.primary[500]} />
           </Avatar>
           <VStack flex={1}>
             <Text fontSize={'sm'} color={'gray.500'}>
@@ -94,14 +114,14 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
             onPress={() => handleClipBoard(manualDepositData?.account_number)}>
             Copy Number
           </Button>
-          <Button rounded={'xl'} flex={1}>
+          <Button rounded={'xl'} flex={1} onPress={handleShareAccountDetails}>
             Share Details
           </Button>
         </HStack>
       </VStack>
       <VStack
         width={'100%'}
-        mt={'5'}
+        mt={hp(2)}
         p={'4'}
         space={'3'}
         bgColor={'white'}

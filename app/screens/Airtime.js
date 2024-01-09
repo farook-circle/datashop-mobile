@@ -37,7 +37,7 @@ const buyAirtimeValidation = yup.object().shape({
   network: yup.string().required('Please select your network'),
   amount: yup
     .number()
-    .min(50, 'Minimum amount is 50 naira')
+    .min(100, 'Minimum amount is 100 naira')
     .required('Please add amount to recharge'),
   phone_number: yup
     .string()
@@ -273,7 +273,7 @@ export const AirtimeScreen = ({navigation}) => {
                     isRequired
                     isInvalid={errors.amount && touched.amount}>
                     <FormControl.Label>
-                      Amount (Minimum 50NGN)
+                      Amount (Minimum 100NGN)
                     </FormControl.Label>
                     <Input
                       value={values.amount}
@@ -300,7 +300,7 @@ export const AirtimeScreen = ({navigation}) => {
       </ScrollView>
       {available && (
         <Box px={'4'} pb={'3'}>
-          {Number(amount) && Number(amount) > 50 && selectedNetwork ? (
+          {Number(amount) && Number(amount) > 99 && selectedNetwork ? (
             <Card bgColor={'primary.100'} mb={'4'} rounded={'xl'}>
               <VStack space={'2'}>
                 <HStack justifyContent={'space-between'}>

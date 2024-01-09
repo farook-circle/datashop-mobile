@@ -4,6 +4,7 @@ import {Avatar, Box, Card, HStack, Pressable, VStack} from 'native-base';
 import Header from '../components/Header';
 import Feather from 'react-native-vector-icons/Feather';
 import {hp} from '../config/dpTopx';
+import {MainLayout} from '../components';
 
 const AccountOption = ({icon, title, onPress}) => (
   <Pressable onPress={onPress} width={'100%'}>
@@ -29,8 +30,7 @@ export const AccountSetting = ({navigation, router}) => {
     navigation.goBack();
   };
   return (
-    <Box flex={1} safeArea px={'4'}>
-      <Header title={'Account'} onBackButtonPress={handleGoBack} />
+    <MainLayout showHeader={true} headerTitle={'Account'}>
       <VStack
         alignItems={'center'}
         pt={'20'}
@@ -55,7 +55,7 @@ export const AccountSetting = ({navigation, router}) => {
           />
         </VStack>
       </VStack>
-    </Box>
+    </MainLayout>
   );
 };
 

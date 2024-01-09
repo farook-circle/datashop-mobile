@@ -1,9 +1,62 @@
-import React from 'react';
-import {Box, HStack, IconButton, useTheme, Text, VStack} from 'native-base';
+import React, {useEffect} from 'react';
+import {
+  Box,
+  HStack,
+  IconButton,
+  useTheme,
+  Text,
+  VStack,
+  Button,
+} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
+import {TouchableOpacity} from 'react-native';
+import {Linking} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {set} from 'react-native-reanimated';
 
 export const MomoAgent = ({momoAgentDepositData, onClose}) => {
   const {colors} = useTheme();
+  const [copiedNumber, setCopiedNumber] = React.useState(false);
+  const [copiedUssd, setCopiedUssd] = React.useState(false);
+
+  const handleDialPhone = () => {
+    const url = `tel:${momoAgentDepositData?.ussd.replace(
+      'phone_number',
+      momoAgentDepositData?.phone_number,
+    )}`;
+    Linking.canOpenURL(url)
+      .then(supported => {
+        if (!supported) {
+          console.log('Can not handle dialing');
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
+  const handleCopyClipboard = type => {
+    if (type === 'number') {
+      setCopiedNumber(true);
+      Clipboard.setString(momoAgentDepositData?.phone_number);
+      return;
+    }
+
+    setCopiedUssd(true);
+    Clipboard.setString(
+      momoAgentDepositData?.ussd.replace(
+        'phone_number',
+        momoAgentDepositData?.phone_number,
+      ),
+    );
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCopiedNumber(false);
+      setCopiedUssd(false);
+    }, 3000);
+  }, [copiedNumber, copiedUssd]);
 
   return (
     <Box flex={1} px={'4'}>
@@ -35,9 +88,14 @@ export const MomoAgent = ({momoAgentDepositData, onClose}) => {
         <HStack alignItems={'center'} space={'1'}>
           <Text fontSize={'2xl'}>{momoAgentDepositData?.phone_number}</Text>
           <IconButton
+            onPress={() => handleCopyClipboard('number')}
             rounded={'full'}
             icon={
-              <Feather name={'copy'} color={colors.primary[500]} size={20} />
+              <Feather
+                name={copiedNumber ? 'check' : 'copy'}
+                color={colors.primary[500]}
+                size={20}
+              />
             }
           />
         </HStack>
@@ -55,14 +113,40 @@ export const MomoAgent = ({momoAgentDepositData, onClose}) => {
         <Text textAlign={'center'} fontSize={'md'}>
           {momoAgentDepositData?.instructions}
         </Text>
-        <Text
-          textAlign={'center'}
-          mt={'4'}
-          color={'primary.500'}
-          fontSize={'lg'}
-          fontWeight={'bold'}>
-          {momoAgentDepositData?.ussd}
-        </Text>
+        <VStack>
+          <Text
+            textAlign={'center'}
+            mt={'4'}
+            color={'primary.500'}
+            fontSize={'lg'}
+            fontWeight={'bold'}>
+            {momoAgentDepositData?.ussd.replace(
+              'phone_number',
+              momoAgentDepositData?.phone_number,
+            )}
+          </Text>
+          <HStack width={'100%'} space={2} px={'6'} mt={'3'}>
+            <Button
+              bgColor={'green.700'}
+              onPress={handleDialPhone}
+              leftIcon={<Feather name={'phone'} size={20} color={'white'} />}
+              flex={1}
+            />
+            <Button
+              bgColor={'primary.100'}
+              leftIcon={
+                <Feather
+                  size={20}
+                  name={copiedUssd ? 'check' : 'copy'}
+                  color={colors.primary[700]}
+                />
+              }
+              flex={1}
+              onPress={() => handleCopyClipboard('ussd')}
+            />
+          </HStack>
+        </VStack>
+
         <HStack
           justifyContent={'center'}
           mt={'4'}
@@ -73,7 +157,6 @@ export const MomoAgent = ({momoAgentDepositData, onClose}) => {
           rounded={'full'}>
           <Feather name={'info'} color={colors.primary[500]} size={20} />
           <Text>
-            Processing fee is{' '}
             <Text color={'primary.500'}>{momoAgentDepositData?.fee}</Text>
           </Text>
         </HStack>

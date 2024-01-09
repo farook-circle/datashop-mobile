@@ -19,6 +19,7 @@ import RNDateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import {requestForStatement} from '../api/account.api';
 import {useSelector} from 'react-redux';
+import {MainLayout} from '../components';
 
 export const AccountStatement = ({navigation, router}) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -68,9 +69,8 @@ export const AccountStatement = ({navigation, router}) => {
   );
 
   return (
-    <Box flex={1} safeArea px={'4'}>
-      <Header title={'Download Statement'} onBackButtonPress={handleGoBack} />
-      <VStack pt={'4'} space={'3'}>
+    <MainLayout headerTitle={'Account Statement'} showHeader={true}>
+      <VStack pt={'2'} px={'4'} space={'3'}>
         <FormControl>
           <FormControl.Label>Start Date</FormControl.Label>
           <DatePickerComp
@@ -98,7 +98,7 @@ export const AccountStatement = ({navigation, router}) => {
           Send
         </Button>
       </VStack>
-    </Box>
+    </MainLayout>
   );
 };
 

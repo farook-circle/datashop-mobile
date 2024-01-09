@@ -66,11 +66,6 @@ export const OtherScreen = ({navigation}) => {
           onPress={() => navigation.navigate('ExamPaymentScreen')}
         />
         <CategoryItem
-          title={'Wallet Transfer'}
-          icon={'paper-plane'}
-          onPress={() => navigation.navigate('WalletTransferScreen')}
-        />
-        <CategoryItem
           title={'Airtime to cash'}
           icon={'money-bill'}
           onPress={() => navigation.navigate('AirtimeToCashScreen')}

@@ -10,7 +10,6 @@ export const getAirtimeServices = () => (dispatch, getState) => {
         payload: response.data,
       });
     } else {
-    
     }
   });
 };

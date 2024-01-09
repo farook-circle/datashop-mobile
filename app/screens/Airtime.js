@@ -87,8 +87,8 @@ export const AirtimeScreen = ({navigation}) => {
 
     if (request.ok) {
       Alert.alert(
-        'Airtime Purchase Success',
-        request.data?.message || 'Airtime purchase success',
+        'Airtime Order',
+        request.data?.message || 'Airtime Order Successfully',
         [{text: 'OK', onPress: () => navigation.goBack()}],
       );
       dispatch(getDataPurchaseHistory());

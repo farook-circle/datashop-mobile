@@ -1,7 +1,6 @@
 import moment from 'moment-timezone';
 
 export const ReceiptTemplate = receipt => `
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -89,6 +88,7 @@ export const ReceiptTemplate = receipt => `
         padding: 2rem;
         display: flex;
         justify-content: space-between;
+        align-items: center;
       }
 
       .footer a {
@@ -96,6 +96,24 @@ export const ReceiptTemplate = receipt => `
         color: white;
         font-size: 10px;
       }
+
+      .icon-group {
+        display: flex;
+        align-items: center;
+      }
+
+      .icon-group a {
+        margin-right: 10px;
+      }
+
+      .contactus-label {
+        font-size: 10px;
+        color: #ffffff;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-right: 3px;
+      }
+
     </style>
   </head>
   <body>
@@ -174,14 +192,20 @@ export const ReceiptTemplate = receipt => `
           'MMMM D, YYYY',
         )}</p>
       </div>
-      <div class="amount">
-        <div class="total-price">TOTAL: &#x20A6;${receipt?.amount}</div>
-      </div>
     </main>
     <div class="footer">
       <a href="mailto:datashop@farookcircle.com">datashop@farookcircle.com</a>
-      <a href="https://www.datashop.com.ng"> https://www.datashop.com.ng </a>
+      <div class="icon-group">
+        <p class="contactus-label">Contact us on:</p>
+        <a href="https://wa.me/${receipt?.whatsapp_number}" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="WhatsApp" width="20" height="20">
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.farookcircle.datashop&pcampaignid=web_share" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/GooglePlaySecond.png" alt="Google Play" width="20" height="20">
+        </a>
+      </div>
     </div>
   </body>
 </html>
+
 `;

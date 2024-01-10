@@ -2,7 +2,6 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
   Divider,
   HStack,
   IconButton,
@@ -11,7 +10,6 @@ import {
   useTheme,
 } from 'native-base';
 import React, {useState} from 'react';
-import {MainLayout} from '../../components';
 import {hp} from '../../config/dpTopx';
 import {formatCurrency} from '../../utils';
 import Feather from 'react-native-vector-icons/Feather';
@@ -44,6 +42,7 @@ const TransactionDetail = ({name, value}) => (
 export const ReceiptScreen = ({route, navigation}) => {
   const transaction = route.params?.transaction;
   const {colors} = useTheme();
+
   const [copied, setCopied] = useState(false);
 
   const {generateAndDownloadPDF, status} = useReceipt();
@@ -80,18 +79,13 @@ export const ReceiptScreen = ({route, navigation}) => {
     await generateAndDownloadPDF({...transaction, agent: user.username});
   };
 
-  const handleReportReceipt = () => {
-    navigation.navigate('Complain', {
-      ...transaction,
-    });
-  };
-
   const copyToClipboard = text => {
     setCopied(true);
     Clipboard.setString(text);
     setTimeout(() => {
       setCopied(false);
     }, 1000);
+    // eslint-disable-next-line no-alert
     alert('Copied');
   };
 
@@ -110,12 +104,6 @@ export const ReceiptScreen = ({route, navigation}) => {
             rounded={'full'}
             icon={<Feather name={'chevron-left'} size={20} color={'black'} />}
           />
-          {/* <IconButton
-            variant={'solid'}
-            bgColor={'white'}
-            rounded={'full'}
-            icon={<Feather name={'share-2'} size={20} color={'black'} />}
-          /> */}
         </HStack>
         <Avatar
           source={{uri: transaction?.image}}
@@ -198,12 +186,7 @@ export const ReceiptScreen = ({route, navigation}) => {
         )}
       </VStack>
       <VStack flex={2} bgColor={'white'} />
-      <Box
-        px={'4'}
-        width={'100%'}
-        // height={hp(400)}
-        bottom={hp(40)}
-        position={'absolute'}>
+      <Box px={'4'} width={'100%'} bottom={hp(40)} position={'absolute'}>
         <Box
           rounded={'xl'}
           bgColor={'white'}
@@ -234,13 +217,9 @@ export const ReceiptScreen = ({route, navigation}) => {
             </Avatar>
             <VStack>
               <Text fontSize={'md'} fontWeight={'semibold'}>
-                {transaction?.status?.toLowerCase() === 'pending'
-                  ? 'Pending'
-                  : transaction?.status?.toLowerCase() === 'failed'
-                  ? 'Failed'
-                  : 'Successful'}
+                {transaction?.status}
               </Text>
-              <Text>{moment(new Date()).calendar()}</Text>
+              <Text>{moment(transaction.created_at).calendar()}</Text>
             </VStack>
           </HStack>
           <Divider />

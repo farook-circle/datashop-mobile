@@ -79,6 +79,12 @@ const CustomSidebarMenu = props => {
     props.navigation.closeDrawer();
   };
 
+  const handleVerifyBvn = () => {
+    if (!user?.details?.is_bvn_verified) {
+      navigateToDrawerScreen(ROUTES.USER_BVN_UPDATE);
+    }
+  };
+
   return (
     <Box safeArea flex={1} bgColor={'white'}>
       <Box bgColor={'primary.500'} px={'4'} pb={'4'} pt={'4'}>
@@ -150,21 +156,23 @@ const CustomSidebarMenu = props => {
             {formatCurrency(wallet_balance)}
           </Text>
         </VStack>
-        {!user?.details?.is_bvn_verified && (
-          <Box mt={2} bgColor={'white'} p={'1'}>
-            <TouchableOpacity
-              onPress={() => navigateToDrawerScreen(ROUTES.USER_BVN_UPDATE)}>
-              <Text
-                style={{
-                  color: 'red',
-                  fontSize: hp(13),
-                  fontFamily: 'Poppins-Medium',
-                }}>
-                Click to Verify your BVN
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        )}
+
+        <Box mt={2} bgColor={'white'} p={'1'}>
+          <TouchableOpacity
+            activeOpacity={user?.details?.is_bvn_verified ? 1 : 0.7}
+            onPress={handleVerifyBvn}>
+            <Text
+              style={{
+                color: user?.details?.is_bvn_verified ? 'green' : 'red',
+                fontSize: hp(13),
+                fontFamily: 'Poppins-Medium',
+              }}>
+              {user?.details?.is_bvn_verified
+                ? 'BVN Verified'
+                : 'Click to Verify your BVN'}
+            </Text>
+          </TouchableOpacity>
+        </Box>
       </Box>
       <Box px={2} py={2} flex={1}>
         <DrawerContentScrollView

@@ -31,14 +31,18 @@ export const BvnUpdateScreen = ({navigation}) => {
     const request = await verifyUserBvn(data);
     if (request.ok) {
       dispatch({type: UPDATE_USER, payload: request.data});
-      navigation.goBack();
+      Alert.alert(
+        'Success',
+        request.data?.message || 'You have successfully verify your bvn',
+        [{text: 'OK', onPress: navigation.goBack()}],
+      );
       setLoading(false);
       return;
     }
 
     Alert.alert(
       'Error',
-      request.data?.message ? request.data.message : 'An error occured',
+      request.data?.message ? request.data.message : 'An error occurred',
     );
     setLoading(false);
   };

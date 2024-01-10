@@ -20,11 +20,13 @@ import {Alert} from 'react-native';
 
 const bvnValidation = yup.object().shape({
   bvn: yup.string().required('BVN is required'),
+  phone_number: yup.string().required('Phone Number is required'),
 });
 
 export const BvnUpdateScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const handleVerifyBvn = async data => {
     setLoading(true);
@@ -52,7 +54,7 @@ export const BvnUpdateScreen = ({navigation}) => {
         <Text fontSize={'lg'}>Fill in the form below to verify your BVN</Text>
         <Formik
           validationSchema={bvnValidation}
-          initialValues={{bvn: ''}}
+          initialValues={{bvn: '', phone_number: ''}}
           onSubmit={form => handleVerifyBvn(form)}>
           {({
             values,
@@ -85,14 +87,43 @@ export const BvnUpdateScreen = ({navigation}) => {
                       {errors.bvn}
                     </FormControl.ErrorMessage>
                   </FormControl>
+                  <FormControl
+                    isInvalid={touched.phone_number && errors.phone_number}>
+                    <FormControl.Label>Phone Number</FormControl.Label>
+                    <Input
+                      value={values.phone_number}
+                      onChangeText={handleChange('phone_number')}
+                      onBlur={handleBlur('phon_number')}
+                      keyboardType="numeric"
+                      placeholder="Phone Number"
+                      py={'2'}
+                      size={'lg'}
+                    />
+                    <FormControl.ErrorMessage
+                      leftIcon={
+                        <Feather color={'red'} name="info" size={10} />
+                      }>
+                      {errors.phone_number}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
                 </VStack>
               </KeyboardAvoidingView>
               <VStack space={'3'}>
-                <Checkbox>
-                  <Text>I agree to the terms and condition</Text>
+                <Checkbox onChange={e => setAcceptTerms(e)}>
+                  <Text>
+                    I Agree and Accept the{' '}
+                    <Text fontWeight={'bold'} color={'primary.500'}>
+                      terms
+                    </Text>{' '}
+                    and{' '}
+                    <Text fontWeight={'bold'} color={'primary.500'}>
+                      conditions
+                    </Text>
+                  </Text>
                 </Checkbox>
                 <Button
                   isLoading={loading}
+                  isDisabled={!acceptTerms}
                   size={'lg'}
                   py={'3'}
                   onPress={handleSubmit}>

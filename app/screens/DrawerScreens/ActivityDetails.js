@@ -111,12 +111,12 @@ const LegendComponent = ({data}) => {
 
 export const ActivityDetails = ({navigation, route}) => {
   const [selectedMonth, setSelectedMonth] = useState(
-    months[new Date().getDate() - 1],
+    months[new Date().getMonth()],
   );
+
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isSelectingDate, setIsSelectingDate] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [statistics, setStatistics] = useState(null);
 

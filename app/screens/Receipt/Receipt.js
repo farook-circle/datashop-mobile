@@ -75,8 +75,26 @@ export const ReceiptScreen = ({route, navigation}) => {
     }
   };
 
+  function maskPhoneNumber(phoneNumber) {
+    if (/^\d{11}$/.test(phoneNumber)) {
+      const maskedNumber = phoneNumber.replace(
+        /^(\d{4})\d+(\d{2})$/,
+        '$1*****$2',
+      );
+      return maskedNumber;
+    } else {
+      console.error(
+        'Invalid phone number format. Please provide a valid 11-digit number.',
+      );
+      return null;
+    }
+  }
+
   const handleShareReceipt = async () => {
-    await generateAndDownloadPDF({...transaction, agent: user.username});
+    await generateAndDownloadPDF({
+      ...transaction,
+      agent: maskPhoneNumber(user.username),
+    });
   };
 
   const copyToClipboard = text => {

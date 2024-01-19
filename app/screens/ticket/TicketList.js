@@ -152,7 +152,6 @@ export const TicketListScreen = ({navigation, route}) => {
       formRef.current.resetForm();
       setToggleTicket(false);
 
-      handleNavigateTicket(request.data);
       return;
     }
 

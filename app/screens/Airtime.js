@@ -26,6 +26,7 @@ import {selectContactPhone} from 'react-native-select-contact';
 import {buyAirtimeService} from '../api/service.api';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {getWalletBalance} from '../redux/actions/wallet';
+import uuid from 'react-native-uuid';
 
 const defaultValues = {
   network: '',
@@ -41,7 +42,7 @@ const buyAirtimeValidation = yup.object().shape({
     .required('Please add amount to recharge'),
   phone_number: yup
     .string()
-    .matches(/(0)(\d){8}\b/, 'Enter a valid phone number')
+    .matches(/^(0[7-9](0|1)\d{8})$/, 'Enter a valid phone number')
     .required('Phone number is required'),
 });
 
@@ -53,6 +54,7 @@ export const AirtimeScreen = ({navigation}) => {
   const [selectedNetwork, setSelectedNetwork] = useState(false);
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState(0);
+  const reference = uuid.v4();
   const formRef = useRef();
 
   const handleSelectNetwork = network => {
@@ -73,16 +75,33 @@ export const AirtimeScreen = ({navigation}) => {
 
     // Calculate the discount amount
     const discountAmount = (discountPercentage / 100) * originalPrice;
-
     return discountAmount;
   }
 
   const handleBuyAirtime = async payload => {
+    Alert.alert(
+      'Airtime Purchase',
+      `You are about to purchase ${selectedNetwork?.service} airtime worth ₦${payload.amount} are you sure you want to continue?`,
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => completeAirtimePurchase(payload),
+        },
+      ],
+    );
+  };
+
+  const completeAirtimePurchase = async payload => {
     setLoading(true);
+
     const request = await buyAirtimeService({
       amount: payload.amount,
       service: payload.network,
       customer: payload.phone_number,
+      reference,
     });
 
     if (request.ok) {

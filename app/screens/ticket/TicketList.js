@@ -16,20 +16,36 @@ import {
   Image,
   Spinner,
 } from 'native-base';
-import {ROUTES, pickImage} from '../../lib';
+import {AppConstant, ROUTES, Storage, pickImage} from '../../lib';
 import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import {Alert, RefreshControl, TouchableOpacity} from 'react-native';
 import {createTickets, getTickets} from '../../api';
 import moment from 'moment-timezone';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useIsFocused} from '@react-navigation/native';
+import {formatMessageTime} from '../../utils/formatter';
 
 const createTicketValidation = yup.object().shape({
   title: yup.string().required('Please provide ticket title'),
   descriptions: yup.string().required('Please provide ticket descriptions'),
 });
+
+const TicketBadge = ({status}) => {
+  if (status === true) {
+    return (
+      <Badge
+        _text={{color: 'white', fontSize: '10'}}
+        rounded={'full'}
+        bgColor={'primary.500'}>
+        New
+      </Badge>
+    );
+  } else {
+    return <></>;
+  }
+};
 
 export const TicketListScreen = ({navigation, route}) => {
   const formRef = useRef();
@@ -42,6 +58,8 @@ export const TicketListScreen = ({navigation, route}) => {
   const [attachment, setAttachment] = useState(null);
   const [filtered, setFiltered] = useState('active');
 
+  const [lastViewTicket, setLastViewTicket] = useState([]);
+
   const [userClosedTicket, setUserClosedTicket] = useState([]);
   const [userActiveTicket, setUserActiveTicket] = useState([]);
 
@@ -50,6 +68,22 @@ export const TicketListScreen = ({navigation, route}) => {
   const isFocused = useIsFocused();
 
   const handleNavigateTicket = ticket => {
+    const filteredViewTicket = lastViewTicket.filter(
+      item => item.id !== ticket.id,
+    );
+
+    const newViewTicket = [
+      ...filteredViewTicket,
+      {id: ticket.id, last_message: ticket.last_message},
+    ];
+
+    setLastViewTicket(newViewTicket);
+    // save it on local storage
+    Storage.save(
+      AppConstant.STORAGE_KEYS.TICKET_LIST_VIEW,
+      JSON.stringify(newViewTicket),
+    );
+
     navigation.navigate(ROUTES.TICKET_MESSAGE_SCREEN, {ticket});
   };
 
@@ -88,25 +122,13 @@ export const TicketListScreen = ({navigation, route}) => {
     setLoading(true);
     await getUserTickets();
     setLoading(false);
-  }, []);
+  }, [getUserTickets]);
 
   useEffect(() => {
     if (isFocused) {
       handleInitiateUserTicket();
     }
   }, [handleInitiateUserTicket, isFocused]);
-
-  const formatTicketId = id => {
-    if (!id) {
-      return id;
-    }
-
-    if (Number(id) < 100) {
-      return id;
-    }
-
-    return '99+';
-  };
 
   const handleCreateTicket = async payload => {
     setCreateTicketLoading(true);
@@ -149,6 +171,18 @@ export const TicketListScreen = ({navigation, route}) => {
     }
   };
 
+  const handleTicketStatus = (ticketId, lastMessage) => {
+    const lastViewTicketItem = lastViewTicket.find(
+      item => item.id === ticketId,
+    );
+
+    if (lastViewTicketItem && lastViewTicketItem.last_message === lastMessage) {
+      return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
     if (filtered === 'active') {
       setFilteredTickets(userActiveTicket);
@@ -156,6 +190,20 @@ export const TicketListScreen = ({navigation, route}) => {
       setFilteredTickets(userClosedTicket);
     }
   }, [filtered, userActiveTicket, userClosedTicket, tickets.length]);
+
+  useEffect(() => {
+    handleGetSavedTicketList();
+  }, [isFocused]);
+
+  const handleGetSavedTicketList = async () => {
+    const savedTicketList = await Storage.get(
+      AppConstant.STORAGE_KEYS.TICKET_LIST_VIEW,
+    );
+
+    if (savedTicketList) {
+      setLastViewTicket(JSON.parse(savedTicketList));
+    }
+  };
 
   return (
     <MainLayout headerTitle={'Your tickets'} showHeader={true}>
@@ -216,9 +264,15 @@ export const TicketListScreen = ({navigation, route}) => {
                           space={2}
                           px={'4'}
                           alignItems={'center'}>
-                          <Avatar bgColor={'primary.500'}>{`# ${formatTicketId(
-                            item?.id,
-                          )}`}</Avatar>
+                          <Avatar bgColor={'primary.100'} size={'lg'}>
+                            <Avatar bgColor={'primary.500'} size={'md'}>
+                              <Fontisto
+                                name={'ticket-alt'}
+                                size={20}
+                                color={'white'}
+                              />
+                            </Avatar>
+                          </Avatar>
                           <VStack flex={1}>
                             <Text
                               numberOfLines={1}
@@ -226,17 +280,29 @@ export const TicketListScreen = ({navigation, route}) => {
                               fontWeight={'semibold'}>
                               {item?.title}
                             </Text>
-                            <Text numberOfLines={1}>{item?.descriptions}</Text>
+                            <Text numberOfLines={1}>
+                              {item?.last_message
+                                ? item?.last_message
+                                : item?.descriptions}
+                            </Text>
                           </VStack>
                           <VStack alignItems={'flex-end'}>
-                            <Text>{moment(item.time).calendar()}</Text>
-
-                            <Badge
-                              _text={{color: 'white', fontSize: '10'}}
-                              rounded={'full'}
-                              bgColor={'primary.500'}>
-                              new
-                            </Badge>
+                            <Text>{formatMessageTime(item.updated_at)}</Text>
+                            {item.is_closed ? (
+                              <Badge
+                                _text={{color: 'white', fontSize: '10'}}
+                                rounded={'full'}
+                                bgColor={'red.500'}>
+                                Closed
+                              </Badge>
+                            ) : (
+                              <TicketBadge
+                                status={handleTicketStatus(
+                                  item.id,
+                                  item.last_message,
+                                )}
+                              />
+                            )}
                           </VStack>
                         </HStack>
                       )}
@@ -246,7 +312,7 @@ export const TicketListScreen = ({navigation, route}) => {
               </>
             )}
           </Box>
-          <Box px={'4'} pb={'4'}>
+          <Box px={'4'} pb={'2'} pt={'3'}>
             <Button
               size={'lg'}
               py={'3'}

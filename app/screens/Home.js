@@ -65,6 +65,7 @@ import {formatCurrency} from '../utils';
 import {getDataRecentContacts} from '../redux/actions/user';
 import {deviceNotificationToken, displayNotification} from '../lib';
 import moment from 'moment-timezone';
+import {usePolling} from '../hooks';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -103,6 +104,12 @@ export const Home = ({navigation}) => {
   )[0];
 
   const [dashboardImage, setDashboardImages] = useState([]);
+
+  const handleRefreshPolling = () => {
+    console.log('Refreshing Polling');
+  };
+
+  const {error} = usePolling(handleRefreshPolling, 10000);
 
   const current_image =
     dashboardImage[Math.floor(Math.random() * (dashboardImage.length - 0)) + 0];

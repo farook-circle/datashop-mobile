@@ -24,6 +24,7 @@ import {
   validateSmartCardNumber,
 } from '../../api/service.api';
 import {formatCurrency} from '../../utils';
+import uuid from 'react-native-uuid';
 
 const defaultValues = {
   amount: '',
@@ -50,7 +51,7 @@ export const ExamPaymentScreen = ({navigation}) => {
 
   const [selectedProvider, setSelectedProvider] = useState();
   const [toggleSelectNetwork, setToggleSelectNetwork] = useState(false);
-  const [selectedCable, setSelectedCable] = useState(null);
+  const reference = uuid.v4();
 
   const [loading, setLoading] = useState(false);
   const [meterValidation, setMeterValidation] = useState(
@@ -65,10 +66,28 @@ export const ExamPaymentScreen = ({navigation}) => {
     setMeterValidation(meterValidationInitial);
   };
 
-  const handlePurchaseElectricityBill = async form => {
-  
+  const handleRequestForConfirmation = async form => {
+    Alert.alert(
+      'Confirm Payment',
+      `You are about to pay ${formatCurrency(
+        selectedProvider.amount * form?.quantity,
+      )} for ${form.quantity} ${selectedProvider?.name} exam(s)`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+        },
+        {
+          text: 'Continue',
+          onPress: () => completeExamPayment(form),
+        },
+      ],
+    );
+  };
+
+  const completeExamPayment = async form => {
     setLoading(true);
-    const request = await examBillPayment(form);
+    const request = await examBillPayment({...form, reference});
     if (request.ok) {
       Alert.alert(
         'Payment Success',
@@ -87,7 +106,7 @@ export const ExamPaymentScreen = ({navigation}) => {
     }
 
     setLoading(false);
-    
+
     Alert.alert(
       'Payment Error',
       request.data ? request.data?.failed : 'Unable to complete your request',
@@ -106,7 +125,7 @@ export const ExamPaymentScreen = ({navigation}) => {
             innerRef={formRef}
             initialValues={defaultValues}
             validationSchema={electricityPaymentValidation}
-            onSubmit={data => handlePurchaseElectricityBill(data)}>
+            onSubmit={data => handleRequestForConfirmation(data)}>
             {({
               errors,
               touched,

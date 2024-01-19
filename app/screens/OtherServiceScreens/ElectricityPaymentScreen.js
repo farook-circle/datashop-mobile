@@ -7,7 +7,6 @@ import {
   FormControl,
   Button,
   HStack,
-  VStack,
   Pressable,
   Box,
   Avatar,
@@ -24,6 +23,8 @@ import {
 } from '../../api/service.api';
 import {getDataPurchaseHistory} from '../../redux/actions/data_plans';
 import {getWalletBalance} from '../../redux/actions/wallet';
+import uuid from 'react-native-uuid';
+import {formatCurrency} from '../../utils';
 
 const defaultValues = {
   amount: '',
@@ -54,7 +55,7 @@ export const ElectricityPaymentScreen = ({navigation}) => {
 
   const [selectedProvider, setSelectedProvider] = useState();
   const [toggleSelectNetwork, setToggleSelectNetwork] = useState(false);
-
+  const reference = uuid.v4();
   const [loading, setLoading] = useState(false);
   const [meterValidation, setMeterValidation] = useState(
     meterValidationInitial,
@@ -72,9 +73,26 @@ export const ElectricityPaymentScreen = ({navigation}) => {
     if (!meterValidation.validate) {
       return handleValidateMeterNumber(form);
     }
+    Alert.alert(
+      'Electricity Bill Payment',
+      `You are about to pay ${formatCurrency(form.amount)} for ${
+        form.meter_number
+      } ${selectedProvider?.title} electricity bill`,
+      [
+        {
+          text: 'Cancel',
+        },
+        {
+          text: 'Pay',
+          onPress: () => completeBillPayment(form),
+        },
+      ],
+    );
+  };
 
+  const completeBillPayment = async form => {
     setLoading(true);
-    const request = await electricityBillPayment(form);
+    const request = await electricityBillPayment({...form, reference});
     if (request.ok) {
       dispatch(getDataPurchaseHistory());
       dispatch(getWalletBalance());
@@ -117,7 +135,6 @@ export const ElectricityPaymentScreen = ({navigation}) => {
         error: false,
         message: request.data?.meter_name,
       });
-
       setLoading(false);
       return;
     }

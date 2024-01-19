@@ -17,6 +17,7 @@ import * as yup from 'yup';
 import {useSelector} from 'react-redux';
 import {transferWalletFund, validateAccountId} from '../../api/wallet.api';
 import {Alert} from 'react-native';
+import uuid from 'react-native-uuid';
 
 const walletTransferValidation = yup.object().shape({
   account_id: yup.string().required('User Phone number is required'),
@@ -25,6 +26,7 @@ const walletTransferValidation = yup.object().shape({
 });
 
 export const WalletTransferScreen = ({navigation, route}) => {
+  const reference = uuid.v4();
   const [loading, setLoading] = React.useState(false);
   const balance = useSelector(state => state.wallet.wallet_balance);
 
@@ -55,7 +57,7 @@ export const WalletTransferScreen = ({navigation, route}) => {
 
   const handleCompleteTransactions = async payload => {
     setLoading(true);
-    const request = await transferWalletFund(payload);
+    const request = await transferWalletFund({...payload, reference});
     if (request.ok) {
       Alert.alert('Success', request.data.message, [
         {text: 'OK', onPress: () => navigation.navigate('Home')},

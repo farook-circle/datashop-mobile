@@ -23,14 +23,8 @@ export const useReceipt = () => {
 
       const fullFilePath =
         Platform.OS === 'ios' ? filePath : 'file://' + filePath;
-
-      const shareOptions = {
-        title: 'Share via',
-        message: `Share ${filename}`,
-        url: fullFilePath,
-      };
-
-      await Share.open(shareOptions);
+      setStatus(false);
+      return fullFilePath;
     } catch (error) {
       setStatus(false);
       console.log(error);

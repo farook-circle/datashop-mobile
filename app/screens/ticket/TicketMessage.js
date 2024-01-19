@@ -21,7 +21,7 @@ import {Alert, RefreshControl, TouchableOpacity} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {closeTicket, createTicketMessages, getTicketMessages} from '../../api';
 import {useSelector} from 'react-redux';
-import {pickImage} from '../../lib';
+import {AppConstant, Storage, pickImage} from '../../lib';
 import {GenerateUUID} from 'react-native-uuid';
 import moment from 'moment-timezone';
 
@@ -38,6 +38,7 @@ export const TicketMessageScreen = ({navigation, route}) => {
   const [picture, setPicture] = useState('');
   const [closeTicketLoading, setCloseTicketLoading] = useState(false);
   const [pollingId, setPollingId] = useState(null);
+  const [lastViewTicket, setLastViewTicket] = useState([]);
 
   const [attachment, setAttachment] = useState(null);
 
@@ -177,6 +178,40 @@ export const TicketMessageScreen = ({navigation, route}) => {
     );
     setCloseTicketLoading(false);
   };
+
+  const handleGetSavedTicketList = useCallback(async () => {
+    const savedTicketList = await Storage.get(
+      AppConstant.STORAGE_KEYS.TICKET_LIST_VIEW,
+    );
+
+    if (savedTicketList) {
+      // save but remove the one we have
+      const parseData = JSON.parse(savedTicketList);
+      setLastViewTicket(parseData.filter(item => item.id !== ticket.id));
+    }
+  }, [ticket.id]);
+
+  useEffect(() => {
+    handleGetSavedTicketList();
+  }, [handleGetSavedTicketList]);
+
+  useEffect(() => {
+    handleUpdateLastViewTicket();
+  }, [handleUpdateLastViewTicket, ticketMessages.length]);
+
+  const handleUpdateLastViewTicket = useCallback(async () => {
+    const lastMessage = ticketMessages[ticketMessages.length - 1];
+
+    if (lastMessage) {
+      await Storage.save(
+        AppConstant.STORAGE_KEYS.TICKET_LIST_VIEW,
+        JSON.stringify([
+          ...lastViewTicket,
+          {id: ticket?.id, last_message: lastMessage.message},
+        ]),
+      );
+    }
+  }, [lastViewTicket, ticket?.id, ticketMessages]);
 
   return (
     <>

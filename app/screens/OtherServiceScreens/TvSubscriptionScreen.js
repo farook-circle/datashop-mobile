@@ -25,6 +25,7 @@ import {
   validateSmartCardNumber,
 } from '../../api/service.api';
 import {formatCurrency} from '../../utils';
+import uuid from 'react-native-uuid';
 
 const defaultValues = {
   amount: '',
@@ -54,6 +55,7 @@ export const TvSubscriptionScreen = ({navigation}) => {
   const [toggleSelectNetwork, setToggleSelectNetwork] = useState(false);
   const [selectedCable, setSelectedCable] = useState(null);
 
+  const reference = uuid.v4();
   const [loading, setLoading] = useState(false);
   const [meterValidation, setMeterValidation] = useState(
     meterValidationInitial,
@@ -67,13 +69,26 @@ export const TvSubscriptionScreen = ({navigation}) => {
     setMeterValidation(meterValidationInitial);
   };
 
-  const handlePurchaseElectricityBill = async form => {
+  const handleRequestForConfirmation = async form => {
     if (!meterValidation.validate) {
       return handleValidateMeterNumber(form);
     }
 
+    Alert.alert(
+      'Confirm Payment',
+      `You are about to pay ${formatCurrency(selectedCable.amount)} for ${
+        selectedCable?.name
+      } are you sure you want to continue?`,
+      [
+        {text: 'Cancel'},
+        {text: 'Continue', onPress: () => handlePurchaseElectricityBill(form)},
+      ],
+    );
+  };
+
+  const handlePurchaseElectricityBill = async form => {
     setLoading(true);
-    const request = await cableBillPayment(form);
+    const request = await cableBillPayment({...form, reference});
     if (request.ok) {
       Alert.alert(
         'Payment Success',
@@ -137,7 +152,7 @@ export const TvSubscriptionScreen = ({navigation}) => {
             innerRef={formRef}
             initialValues={defaultValues}
             validationSchema={electricityPaymentValidation}
-            onSubmit={data => handlePurchaseElectricityBill(data)}>
+            onSubmit={data => handleRequestForConfirmation(data)}>
             {({
               errors,
               touched,

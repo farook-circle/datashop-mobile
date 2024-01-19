@@ -105,9 +105,7 @@ export const Home = ({navigation}) => {
 
   const [dashboardImage, setDashboardImages] = useState([]);
 
-  const handleRefreshPolling = () => {
-    console.log('Refreshing Polling');
-  };
+  const handleRefreshPolling = () => {};
 
   const {error} = usePolling(handleRefreshPolling, 10000);
 

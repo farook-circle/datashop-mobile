@@ -32,12 +32,12 @@ export const ManualDeposit = ({manualDepositData, onClose}) => {
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          console.log('shared');
+          
         } else {
-          console.log('shared');
+          
         }
       } else if (result.action === Share.dismissedAction) {
-        console.log('dismissed');
+        
       }
     } catch (error) {
       alert(error.message);

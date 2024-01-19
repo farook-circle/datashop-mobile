@@ -27,12 +27,11 @@ export const MomoAgent = ({momoAgentDepositData, onClose}) => {
     Linking.canOpenURL(url)
       .then(supported => {
         if (!supported) {
-          console.log('Can not handle dialing');
         } else {
           return Linking.openURL(url);
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {});
   };
 
   const handleCopyClipboard = type => {

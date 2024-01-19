@@ -61,10 +61,8 @@ export const DashboardNavigator = () => {
     const unsubscribe = notifee.onForegroundEvent(({type, detail}) => {
       switch (type) {
         case EventType.DISMISSED:
-          console.log('User dismissed notification', detail.notification);
           break;
         case EventType.PRESS:
-          console.log('User pressed notification', detail.notification);
           break;
       }
 
@@ -78,10 +76,8 @@ export const DashboardNavigator = () => {
     notifee.onBackgroundEvent(({type, detail}) => {
       switch (type) {
         case EventType.DISMISSED:
-          console.log('User dismissed notification', detail.notification);
           break;
         case EventType.PRESS:
-          console.log('User pressed notification', detail.notification);
           break;
       }
 

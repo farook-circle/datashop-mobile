@@ -7,7 +7,7 @@ export const pickImage = async () => {
     const result = await launchImageLibrary(options);
     return result?.assets[0];
   } catch (error) {
-    console.log(error);
+    
     return null;
   }
 };

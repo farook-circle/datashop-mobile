@@ -16,6 +16,7 @@ import {
   Button,
   FormControl,
   FlatList,
+  Actionsheet,
 } from 'native-base';
 import {Alert, RefreshControl, TouchableOpacity} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -24,6 +25,7 @@ import {useSelector} from 'react-redux';
 import {AppConstant, Storage, pickImage} from '../../lib';
 import {GenerateUUID} from 'react-native-uuid';
 import moment from 'moment-timezone';
+import {hp} from '../../config/dpTopx';
 
 const POLLING_INTERVAL = 5000;
 
@@ -41,6 +43,8 @@ export const TicketMessageScreen = ({navigation, route}) => {
   const [lastViewTicket, setLastViewTicket] = useState([]);
 
   const [attachment, setAttachment] = useState(null);
+
+  const [toggleDescriptions, setToggleDescriptions] = useState(false);
 
   const [message, setMessage] = useState('');
 
@@ -244,7 +248,17 @@ export const TicketMessageScreen = ({navigation, route}) => {
       ) : (
         <></>
       )}
-      <MainLayout showHeader={true} headerTitle={`Ticket # ${ticket?.id}`}>
+      <MainLayout
+        showHeader={true}
+        headerTitle={`Ticket # ${ticket?.id}`}
+        rightElement={
+          <IconButton
+            onPress={() => setToggleDescriptions(true)}
+            rounded={'full'}
+            variant={'solid'}
+            icon={<Feather color={'white'} name={'info'} size={20} />}
+          />
+        }>
         {loading ? (
           <Box flex={1} justifyContent={'center'} alignItems={'center'}>
             <Spinner />
@@ -427,6 +441,34 @@ export const TicketMessageScreen = ({navigation, route}) => {
           </>
         )}
       </MainLayout>
+      <Actionsheet
+        isOpen={toggleDescriptions}
+        onClose={() => setToggleDescriptions(false)}>
+        <Actionsheet.Content>
+          <VStack space={'2'} width={'100%'} px={'2'}>
+            <VStack>
+              <Text fontWeight={'bold'}>Title:</Text>
+              <Text fontSize={'lg'}>{ticket?.title}</Text>
+            </VStack>
+            <VStack>
+              <Text fontWeight={'bold'}>Descriptions:</Text>
+              <Text fontSize={'lg'}>{ticket?.descriptions}</Text>
+            </VStack>
+            {ticket?.attachment && (
+              <Box width={'100%'} height={hp(200)}>
+                <Image
+                  resizeMode="contain"
+                  source={{uri: ticket?.attachment}}
+                  alt={'image'}
+                  width={'100%'}
+                  height={'100%'}
+                />
+              </Box>
+            )}
+          </VStack>
+        </Actionsheet.Content>
+      </Actionsheet>
+      {console.log(ticket)}
     </>
   );
 };

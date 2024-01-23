@@ -136,6 +136,7 @@ export const TicketListScreen = ({navigation, route}) => {
     const formData = new FormData();
     formData.append('title', payload.title);
     formData.append('descriptions', payload.descriptions);
+
     if (attachment) {
       formData.append('attachment', {
         name: attachment.fileName,
@@ -151,7 +152,7 @@ export const TicketListScreen = ({navigation, route}) => {
       setCreateTicketLoading(false);
       formRef.current.resetForm();
       setToggleTicket(false);
-
+      handleInitiateUserTicket();
       return;
     }
 
@@ -243,6 +244,11 @@ export const TicketListScreen = ({navigation, route}) => {
                     Closed
                   </Button>
                 </HStack>
+                {filteredTickets.length < 1 && (
+                  <Text textAlign={'center'} mt={'20'}>
+                    You don't have any {filtered} tickets.
+                  </Text>
+                )}
                 <FlatList
                   data={filteredTickets}
                   keyExtractor={(item, index) => index.toString()}

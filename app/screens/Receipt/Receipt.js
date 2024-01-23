@@ -14,7 +14,7 @@ import {
   Actionsheet,
 } from 'native-base';
 import React, {useCallback, useEffect, useState} from 'react';
-import {hp} from '../../config/dpTopx';
+import {hp, wp} from '../../config/dpTopx';
 import {formatCurrency} from '../../utils';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment-timezone';
@@ -24,9 +24,14 @@ import {useReceipt} from '../../hooks';
 import {useSelector} from 'react-redux';
 import WebView from 'react-native-webview';
 import {ReceiptTemplate} from '../../lib';
-import {captureRef} from 'react-native-view-shot';
+import ViewShot, {captureRef} from 'react-native-view-shot';
 import {set} from 'react-native-reanimated';
 import Share from 'react-native-share';
+import {Dimensions, SafeAreaView, View} from 'react-native';
+import colors from '../../../assets/colors/colors';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const TRANSACTIONS = {
   DATA_PURCHASE: 'DATA_PURCHASE',
@@ -38,6 +43,27 @@ const TRANSACTIONS = {
   AUTOMATED_FUNDING: 'AUTOMATED_FUNDING',
   MANUAL_DEPOSIT: 'MANUAL_DEPOSIT',
 };
+
+const NameValue = ({name, value}) => (
+  <View
+    style={{
+      paddingVertical: hp(15),
+      borderBottomWidth: 0.2,
+      paddingHorizontal: wp(20),
+      borderBottomColor: colors.textLight,
+      borderStyle: 'solid',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}>
+    <Text fontSize={hp(10)} color={'gray.500'}>
+      {name}
+    </Text>
+    <Text fontSize={hp(10)} color={'primary.500'} fontWeight={'semibold'}>
+      {value}
+    </Text>
+  </View>
+);
 
 const TransactionDetail = ({name, value}) => (
   <VStack width={'100%'}>
@@ -56,7 +82,7 @@ export const ReceiptScreen = ({route, navigation}) => {
   const [receiptPdf, setReceiptPdf] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
 
-  const webviewRef = React.useRef(null);
+  const webviewRef = React.useRef();
 
   const [copied, setCopied] = useState(false);
 
@@ -141,18 +167,14 @@ export const ReceiptScreen = ({route, navigation}) => {
   };
 
   const generateReceiptImage = async () => {
-    captureRef(webviewRef, {
-      format: 'jpg',
-      quality: 0.8,
-    }).then(
-      uri => setReceiptImage(uri),
-      error => console.error('Snapshot failed', error),
-    );
+    webviewRef?.current?.capture().then(uri => {
+      shareImage(uri);
+    });
   };
 
   const handleShareReceipt = () => {
     setIsShareOpen(true);
-    generateReceiptImage();
+    generateReceiptHtml();
     handlePdfReceipt();
   };
 
@@ -166,20 +188,16 @@ export const ReceiptScreen = ({route, navigation}) => {
     Share.open(shareOptions);
   };
 
-  const shareImage = () => {
+  const shareImage = receiptImages => {
     const shareOptions = {
       title: 'Share via',
       message: `Share Datashop_${Date.now()}`,
-      url: receiptImage,
+      url: receiptImages,
     };
     handleCloseShare();
 
     Share.open(shareOptions);
   };
-
-  useEffect(() => {
-    generateReceiptHtml();
-  }, [generateReceiptHtml]);
 
   return (
     <>
@@ -353,62 +371,124 @@ export const ReceiptScreen = ({route, navigation}) => {
           </Box>
         </Box>
         <Actionsheet
-          height={'100%'}
+          // height={'100%'}
           isOpen={isShareOpen}
           onClose={handleCloseShare}>
-          <Actionsheet.Content width={'100%'}>
-            <Box width={'100%'} height={'100%'}>
-              <HStack
-                position={'absolute'}
-                width={'100%'}
-                zIndex={1}
-                justifyContent={'flex-end'}>
-                <IconButton
-                  onPress={handleCloseShare}
-                  variant={'solid'}
-                  rounded={'full'}
-                  icon={<Feather name={'x'} size={20} color={'white'} />}
-                />
-              </HStack>
-              <Image
-                alt={'receipt'}
-                source={{uri: receiptImage}}
-                width={'100%'}
-                height={'100%'}
-                resizeMode={'contain'}
+          {/* <Actionsheet.Content bgColor={'white'}> */}
+
+          <View
+            style={{
+              borderTopEndRadius: 20,
+              borderTopStartRadius: 20,
+              height: '92%',
+              width: '100%',
+              backgroundColor: 'white',
+            }}>
+            <HStack p={'2'} justifyContent={'flex-end'}>
+              <IconButton
+                onPress={handleCloseShare}
+                rounded={'full'}
+                variant={'solid'}
+                icon={<Feather size={20} name={'x'} color={'white'} />}
               />
-            </Box>
-            <HStack
-              px={'6'}
-              width={'100%'}
-              position={'absolute'}
-              bottom={'0'}
-              space={'4'}
-              bgColor={'white'}
-              pb={hp(26)}>
-              <Button onPress={shareImage} flex={1}>
-                Image
+            </HStack>
+            <ViewShot
+              ref={webviewRef}
+              options={{
+                fileName: `Datashop_${Date.now()}`,
+                format: 'jpg',
+                quality: 0.9,
+              }}>
+              <View
+                style={{
+                  paddingHorizontal: wp(15),
+                  backgroundColor: 'white',
+                }}>
+                <View>
+                  <Image
+                    width={wp(90)}
+                    height={hp(70)}
+                    alt="logo"
+                    tintColor={'primary.500'}
+                    source={require('../../../assets/images/logo_new.png')}
+                  />
+                  <Text>Payment Receipt</Text>
+                </View>
+                <Text
+                  color={
+                    transaction?.status.toLowerCase() === 'pending'
+                      ? 'orange.500'
+                      : transaction?.status.toLowerCase() === 'failed'
+                      ? 'red.500'
+                      : 'green.500'
+                  }
+                  fontWeight={'semibold'}
+                  textAlign={'center'}
+                  mt={hp(20)}
+                  marginBottom={hp(20)}
+                  fontSize={'xl'}>
+                  PAYMENT {transaction?.status?.toUpperCase()}
+                </Text>
+
+                <NameValue
+                  name={'AGENT'}
+                  value={maskPhoneNumber(user?.username)}
+                />
+                {transaction?.name && (
+                  <NameValue name={'NAME'} value={transaction?.name} />
+                )}
+                {transaction?.customer && (
+                  <NameValue name={'CUSTOMER'} value={transaction?.customer} />
+                )}
+                <NameValue
+                  name={'TRANSACTION ID'}
+                  value={transaction?.transaction_ref}
+                />
+                <NameValue
+                  name={'PAYMENT METHOD'}
+                  value={transaction?.payment_method?.toUpperCase()}
+                />
+                <NameValue name={'REMARK'} value={transaction?.remark} />
+                <NameValue
+                  name={'TIME'}
+                  value={moment(transaction?.created_at).format('h:mm a')}
+                />
+                <NameValue
+                  name={'DATE'}
+                  value={moment(transaction?.created_at).format('MMMM D, YYYY')}
+                />
+              </View>
+            </ViewShot>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                paddingHorizontal: wp(20),
+              }}>
+              <Button onPress={generateReceiptImage} flex={1} mx={1}>
+                IMAGE
               </Button>
-              <Button onPress={sharePdf} flex={1}>
+              <Button onPress={sharePdf} flex={1} mx={1}>
                 PDF
               </Button>
-            </HStack>
-          </Actionsheet.Content>
+            </View>
+          </View>
+          {/* </Actionsheet.Content> */}
         </Actionsheet>
       </ScrollView>
       {/* Receipt to image content  */}
-      <Box
+      {/* <Box
+        width={windowWidth}
+        height={windowHeight}
         position={'absolute'}
         zIndex={-1}
-        ref={webviewRef}
-        width={'100%'}
-        height={hp(800)}>
+        ref={webviewRef}>
         <WebView
           ref={webviewRef}
           source={{html: receiptHtml}}
-          style={{width: '100%', height: '100%'}}
-        />
-      </Box>
+          style={{width: windowWidth, height: windowHeight}}
+        /> */}
+      {/* </Box> */}
     </>
   );
 };

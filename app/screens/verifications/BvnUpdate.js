@@ -89,13 +89,15 @@ export const BvnUpdateScreen = ({navigation}) => {
                   </FormControl>
                   <FormControl
                     isInvalid={touched.phone_number && errors.phone_number}>
-                    <FormControl.Label>Phone Number</FormControl.Label>
+                    <FormControl.Label>
+                      Phone number associated with BVN
+                    </FormControl.Label>
                     <Input
                       value={values.phone_number}
                       onChangeText={handleChange('phone_number')}
                       onBlur={handleBlur('phon_number')}
                       keyboardType="numeric"
-                      placeholder="Phone Number"
+                      placeholder="Phone number"
                       py={'2'}
                       size={'lg'}
                     />

@@ -82,7 +82,7 @@ export const TalkToUsScreen = ({navigation, route}) => {
           </Avatar>
           <VStack>
             <Text>Phone</Text>
-            <Text fontWeight={'semibold'}>+234847394843</Text>
+            <Text fontWeight={'semibold'}>{whatsapp.number}</Text>
           </VStack>
         </HStack>
         <HStack

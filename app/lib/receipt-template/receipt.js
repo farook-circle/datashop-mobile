@@ -192,6 +192,7 @@ export const ReceiptTemplate = receipt => `
           'MMMM D, YYYY',
         )}</p>
       </div>
+      
     </main>
     <div class="footer">
       <a href="mailto:datashop@farookcircle.com">datashop@farookcircle.com</a>

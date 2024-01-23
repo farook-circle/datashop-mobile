@@ -27,6 +27,7 @@ import {buyAirtimeService} from '../api/service.api';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {getWalletBalance} from '../redux/actions/wallet';
 import uuid from 'react-native-uuid';
+import {set} from 'react-native-reanimated';
 
 const defaultValues = {
   network: '',
@@ -264,7 +265,12 @@ export const AirtimeScreen = ({navigation}) => {
                     <Input
                       value={values.phone_number}
                       onBlur={handleBlur('phone_number')}
-                      onChangeText={handleChange('phone_number')}
+                      onChangeText={text => {
+                        if (text.length > 11) {
+                          return;
+                        }
+                        setFieldValue('phone_number', text);
+                      }}
                       placeholder="Phone Number"
                       keyboardType="number-pad"
                       py={'3'}

@@ -66,6 +66,7 @@ import {getDataRecentContacts} from '../redux/actions/user';
 import {deviceNotificationToken, displayNotification} from '../lib';
 import moment from 'moment-timezone';
 import {usePolling} from '../hooks';
+import {useIsFocused} from '@react-navigation/native';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -105,7 +106,19 @@ export const Home = ({navigation}) => {
 
   const [dashboardImage, setDashboardImages] = useState([]);
 
-  const handleRefreshPolling = () => {};
+  const handleRefreshPolling = () => {
+    dispatch(getDataPurchaseHistory());
+    dispatch(paymentOptionWalletBalance());
+  };
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      dispatch(getDataPurchaseHistory());
+      dispatch(paymentOptionWalletBalance());
+    }
+  }, [isFocused, dispatch]);
 
   const {error} = usePolling(handleRefreshPolling, 10000);
 

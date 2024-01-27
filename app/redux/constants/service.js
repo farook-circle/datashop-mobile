@@ -1,1 +1,0 @@
-export const GET_SUCCESS_RATE = 'GET_SUCCESS_RATE';

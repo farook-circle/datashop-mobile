@@ -138,10 +138,7 @@ export const ElectricityPayment = ({navigation}) => {
     Alert.alert(
       'Information',
       `You are about to buy meter token worth of ₦${amount} to ${res_data.meter_name}`,
-      [
-        {text: 'CANCEL', onPress: () => console.log('CANCEL')},
-        {text: 'OK', onPress: () => finishBuyNow()},
-      ],
+      [{text: 'CANCEL'}, {text: 'OK', onPress: () => finishBuyNow()}],
     );
   };
 

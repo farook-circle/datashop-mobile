@@ -21,11 +21,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import {Alert, RefreshControl, TouchableOpacity} from 'react-native';
 import {createTickets, getTickets} from '../../api';
-import moment from 'moment-timezone';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useIsFocused} from '@react-navigation/native';
 import {formatMessageTime} from '../../utils/formatter';
+import {useDispatch, useSelector} from 'react-redux';
+import {GET_USER_TICKETS} from '../../redux/constants/system';
 
 const createTicketValidation = yup.object().shape({
   title: yup.string().required('Please provide ticket title'),
@@ -50,10 +51,12 @@ const TicketBadge = ({status}) => {
 export const TicketListScreen = ({navigation, route}) => {
   const formRef = useRef();
 
+  const {tickets} = useSelector(state => state.system);
+  const dispatch = useDispatch();
+
   const [toggleTicket, setToggleTicket] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [attachment, setAttachment] = useState(null);
   const [filtered, setFiltered] = useState('active');
@@ -88,41 +91,48 @@ export const TicketListScreen = ({navigation, route}) => {
   };
 
   const onRefresh = useCallback(async () => {
-    setRefreshing(true);
+    if (tickets.length < 1) {
+      setRefreshing(true);
+    }
     await getUserTickets();
     setRefreshing(false);
-  }, [getUserTickets]);
+  }, [getUserTickets, tickets.length]);
 
   const getUserTickets = useCallback(async () => {
     const request = await getTickets();
     if (request.ok) {
       createFilterTicket(request.data);
     }
-  }, []);
+  }, [createFilterTicket]);
 
-  const createFilterTicket = data => {
-    let activeTicket = [];
-    let closedTicket = [];
+  const createFilterTicket = useCallback(
+    data => {
+      let activeTicket = [];
+      let closedTicket = [];
 
-    data.forEach(item => {
-      if (item.is_closed) {
-        closedTicket = [...closedTicket, item];
-      } else {
-        activeTicket = [...activeTicket, item];
-      }
+      data.forEach(item => {
+        if (item.is_closed) {
+          closedTicket = [...closedTicket, item];
+        } else {
+          activeTicket = [...activeTicket, item];
+        }
 
-      setTickets(data);
-    });
+        dispatch({type: GET_USER_TICKETS, payload: data});
+      });
 
-    setUserActiveTicket(activeTicket);
-    setUserClosedTicket(closedTicket);
-  };
+      setUserActiveTicket(activeTicket);
+      setUserClosedTicket(closedTicket);
+    },
+    [dispatch],
+  );
 
   const handleInitiateUserTicket = useCallback(async () => {
-    setLoading(true);
+    if (tickets.length < 1) {
+      setLoading(true);
+    }
     await getUserTickets();
     setLoading(false);
-  }, [getUserTickets]);
+  }, [getUserTickets, tickets.length]);
 
   useEffect(() => {
     if (isFocused) {
@@ -148,7 +158,7 @@ export const TicketListScreen = ({navigation, route}) => {
     const request = await createTickets(formData);
 
     if (request.ok) {
-      setTickets([request.data, ...tickets]);
+      dispatch({type: GET_USER_TICKETS, payload: [request.data, ...tickets]});
       setCreateTicketLoading(false);
       formRef.current.resetForm();
       setToggleTicket(false);

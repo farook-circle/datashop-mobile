@@ -1,12 +1,12 @@
-import {Box, Divider, HStack, Spinner, VStack} from 'native-base';
+import {Box, Divider, HStack, ScrollView, Spinner, VStack} from 'native-base';
 import React, {useCallback, useState} from 'react';
 import {Text} from 'react-native';
-import HeaderBackButton from '../../components/HeaderBackButton';
 import {hp} from '../../config/dpTopx';
 import {useDispatch, useSelector} from 'react-redux';
 import {getServiceSuccessRate} from '../../api/service.api';
-import {GET_SUCCESS_RATE} from '../../redux/constants/service';
+import {GET_SUCCESS_RATE} from '../../redux/constants/system';
 import {MainLayout} from '../../components';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 const ChartBar = ({title, percentage}) => {
   const getBgColor = perc => {
@@ -46,65 +46,60 @@ const ChartBar = ({title, percentage}) => {
 
 export const NetworkScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
-  const {success_rate} = useSelector(state => state.service);
-  const [loading, setLoading] = useState(false);
+  const {success_rate} = useSelector(state => state.system);
+  const [refreshing, setRefreshing] = useState(false);
 
   const getNetSuccessRate = useCallback(async () => {
-    setLoading(true);
     const request = await getServiceSuccessRate();
 
     if (request.ok) {
       dispatch({type: GET_SUCCESS_RATE, payload: request.data});
     }
-    setLoading(false);
   }, [dispatch]);
 
-  React.useEffect(() => {
+  const onRefresh = useCallback(() => {
     getNetSuccessRate();
   }, [getNetSuccessRate]);
 
   return (
     <MainLayout headerTitle={'Success Rate (%)'} showHeader={true}>
-      <Box px={'4'} flex={1}>
-        {loading ? (
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        px={'4'}
+        flex={1}>
+        {!success_rate ? (
           <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-            <Spinner />
+            <Text>Not Available at the moment check back later</Text>
           </Box>
         ) : (
-          <>
-            {!success_rate ? (
-              <Box flex={1} justifyContent={'center'} alignItems={'center'}>
-                <Text>Not Available at the moment check back later</Text>
-              </Box>
-            ) : (
-              <VStack flex={1} space={'2'} pt={'4'}>
-                <HStack space={4} width={'100%'} alignItems={'center'}>
-                  <Divider flex={1} />
-                  <Text>Data</Text>
-                  <Divider flex={1} />
-                </HStack>
-                {success_rate?.data_success_rate?.map(successRate => (
-                  <ChartBar
-                    title={successRate.name}
-                    percentage={Number(successRate.successRate)}
-                  />
-                ))}
-                <HStack space={4} mt={'4'} width={'100%'} alignItems={'center'}>
-                  <Divider flex={1} />
-                  <Text>Other Services</Text>
-                  <Divider flex={1} />
-                </HStack>
-                {success_rate?.other_services?.map(successRate => (
-                  <ChartBar
-                    title={successRate.name}
-                    percentage={Number(successRate.successRate)}
-                  />
-                ))}
-              </VStack>
-            )}
-          </>
+          <VStack flex={1} space={'2'} pt={'4'}>
+            <HStack space={4} width={'100%'} alignItems={'center'}>
+              <Divider flex={1} />
+              <Text>Data</Text>
+              <Divider flex={1} />
+            </HStack>
+            {success_rate?.data_success_rate?.map(successRate => (
+              <ChartBar
+                title={successRate.name}
+                percentage={Number(successRate.successRate)}
+              />
+            ))}
+            <HStack space={4} mt={'4'} width={'100%'} alignItems={'center'}>
+              <Divider flex={1} />
+              <Text>Other Services</Text>
+              <Divider flex={1} />
+            </HStack>
+            {success_rate?.other_services?.map(successRate => (
+              <ChartBar
+                title={successRate.name}
+                percentage={Number(successRate.successRate)}
+              />
+            ))}
+          </VStack>
         )}
-      </Box>
+      </ScrollView>
     </MainLayout>
   );
 };

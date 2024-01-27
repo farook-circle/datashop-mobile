@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ROUTES} from '../lib';
+import {ROUTES, deviceNotificationToken} from '../lib';
 import {screenOptions} from './helpers';
 import {DrawerNavigator} from './DrawerNavigator';
 import {
@@ -20,7 +20,6 @@ import {
   OtherScreen,
   CheckOut,
   History,
-  Receipt,
   ComplainScreen,
   Messages,
   ElectricityPaymentScreen,
@@ -41,11 +40,36 @@ import {TicketListScreen, TicketMessageScreen} from '../screens/ticket';
 import notifee, {EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import {useNotification} from '../hooks';
+import {useDispatch} from 'react-redux';
+import {
+  getDataBundle,
+  getDataCategory,
+  getDataPurchaseHistory,
+} from '../redux/actions/data_plans';
+import {
+  getPaymentStatus,
+  getWalletBalance,
+  paymentOptionWalletBalance,
+} from '../redux/actions/wallet';
+import {getMessages, getNotifications} from '../redux/actions/messages';
+import {
+  getCableProviders,
+  getElectricProviders,
+  getExamProviders,
+} from '../redux/actions/bill_payment';
+import {getAirtimeServices} from '../redux/actions/airtime';
+import {getDataRecentContacts} from '../redux/actions/user';
+import {
+  getAppDashboardWallpaper,
+  getSuccessRate,
+  getUserTickets,
+} from '../redux/actions/system';
 
 const Stack = createNativeStackNavigator();
 
 export const DashboardNavigator = () => {
   const {onMessageReceived, handleNavigation} = useNotification();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async message => {
@@ -91,7 +115,31 @@ export const DashboardNavigator = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [handleNavigation]);
+
+  const handleLoadUserData = useCallback(async () => {
+    dispatch(getDataBundle());
+    dispatch(getDataPurchaseHistory());
+    dispatch(getWalletBalance());
+    dispatch(getMessages());
+    dispatch(getNotifications());
+    dispatch(getPaymentStatus());
+    dispatch(getDataCategory());
+    dispatch(getElectricProviders());
+    dispatch(getCableProviders());
+    dispatch(getExamProviders());
+    dispatch(getAirtimeServices());
+    dispatch(getDataRecentContacts());
+    dispatch(paymentOptionWalletBalance());
+    dispatch(getAppDashboardWallpaper());
+    dispatch(getSuccessRate());
+    dispatch(getUserTickets());
+    deviceNotificationToken();
+  }, [dispatch]);
+
+  useEffect(() => {
+    handleLoadUserData();
+  }, [handleLoadUserData]);
 
   return (
     <Stack.Navigator

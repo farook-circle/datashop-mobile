@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
@@ -6,24 +7,18 @@ import {
   StatusBar,
   Platform,
   Image,
-  TouchableOpacity,
   SafeAreaView,
-  FlatList,
-  Alert,
   RefreshControl,
   ScrollView,
   Linking,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
 import {Button as NBButton, useTheme} from 'native-base';
-
-import {USER_LOGOUT} from '../redux/constants/auth';
 
 import {
   getDataBundle,
@@ -36,37 +31,24 @@ import {
   paymentOptionWalletBalance,
 } from '../redux/actions/wallet';
 import {getMessages, getNotifications} from '../redux/actions/messages';
-import OverLayModel from '../components/OverLayModel';
-import Button from '../components/Button';
+
 import {
   getCableProviders,
   getElectricProviders,
   getExamProviders,
 } from '../redux/actions/bill_payment';
 import {getAirtimeServices} from '../redux/actions/airtime';
-import {
-  getCollaboratorBank,
-  getCollaboratorData,
-  getCollaboratorWhatsapp,
-} from '../redux/actions/collaborator';
-import {
-  Avatar,
-  Box,
-  Divider,
-  HStack,
-  IconButton,
-  Pressable,
-  VStack,
-} from 'native-base';
+
+import {Avatar, Box, HStack, IconButton, Pressable, VStack} from 'native-base';
 import ServiceItemCard from '../components/Dashboard/ServiceItemCard';
 import HistoryItemList from '../components/History/HistoryItemList';
-import {getHomepageGallery} from '../api/service.api';
 import {formatCurrency} from '../utils';
 import {getDataRecentContacts} from '../redux/actions/user';
-import {deviceNotificationToken, displayNotification} from '../lib';
 import moment from 'moment-timezone';
-import {usePolling} from '../hooks';
+
 import {useIsFocused} from '@react-navigation/native';
+import {getAppDashboardWallpaper} from '../redux/actions/system';
+import {usePolling} from '../hooks/polling';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -74,12 +56,16 @@ const wait = timeout => {
 
 Array.prototype.groupBy = function (key) {
   return this.reduce((hash, obj) => {
-    if (obj[key] === undefined) return hash;
+    if (obj[key] === undefined) {
+      return hash;
+    }
     return Object.assign(hash, {
       [obj[key]]: (hash[obj[key]] || []).concat(obj),
     });
   }, {});
 };
+
+const POLLING_REFRESH_TIME = 10000;
 
 export const Home = ({navigation}) => {
   const dispatch = useDispatch();
@@ -92,40 +78,48 @@ export const Home = ({navigation}) => {
 
   const [messageAvailable, setMessageAvailable] = useState(true);
 
-  const collaborator = useSelector(state => state.auth.collaborator);
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
   );
 
   const balance = useSelector(state => state.wallet.wallet_balance);
-  const notifications = useSelector(state => state.messages.notifications);
 
-  const priority_message = notifications.filter(
-    item => item.priority === true,
-  )[0];
-
-  const [dashboardImage, setDashboardImages] = useState([]);
-
-  const handleRefreshPolling = () => {
-    dispatch(getDataPurchaseHistory());
-    dispatch(paymentOptionWalletBalance());
-  };
+  const {dashboard_wallpaper} = useSelector(state => state.system);
 
   const isFocused = useIsFocused();
 
+  const checkForTransactionUpdate = useCallback(() => {
+    dispatch(getDataPurchaseHistory());
+    dispatch(getWalletBalance());
+  }, [dispatch]);
+
+  const handlePollUpdate = useCallback(() => {
+    // check for pending on the history
+    const pendingHistoryExist = data_purchase_history
+      ?.slice(0, 10)
+      ?.find(item => item.status?.toLowerCase() === 'pending');
+
+    // call server to get the new history
+    if (pendingHistoryExist) {
+      dispatch(getWalletBalance());
+      dispatch(getDataPurchaseHistory());
+    }
+  }, [data_purchase_history, dispatch]);
+
+  const {error} = usePolling(handlePollUpdate, POLLING_REFRESH_TIME);
+
   useEffect(() => {
     if (isFocused) {
-      dispatch(getDataPurchaseHistory());
-      dispatch(paymentOptionWalletBalance());
+      checkForTransactionUpdate();
     }
-  }, [isFocused, dispatch]);
-
-  const {error} = usePolling(handleRefreshPolling, 10000);
+  }, [isFocused, dispatch, checkForTransactionUpdate]);
 
   const current_image =
-    dashboardImage[Math.floor(Math.random() * (dashboardImage.length - 0)) + 0];
+    dashboard_wallpaper[
+      Math.floor(Math.random() * (dashboard_wallpaper.length - 0)) + 0
+    ];
 
-  useEffect(() => {
+  const handleReloadData = useCallback(async () => {
     dispatch(getDataBundle());
     dispatch(getDataPurchaseHistory());
     dispatch(getWalletBalance());
@@ -138,17 +132,14 @@ export const Home = ({navigation}) => {
     dispatch(getExamProviders());
     dispatch(getAirtimeServices());
     dispatch(getDataRecentContacts());
-    dispatch(paymentOptionWalletBalance());
-    // checkIfPriorityMessage();
-    handleSetMessageAvailable();
-  }, [dispatch, refreshing]);
+    dispatch(getAppDashboardWallpaper());
+  }, [dispatch]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    handleReloadData();
     wait(2000).then(() => setRefreshing(false));
-  }, []);
-
-  const handleSetMessageAvailable = () => {};
+  }, [handleReloadData]);
 
   const handleMessages = () => {
     navigation.navigate('Messages');
@@ -159,18 +150,6 @@ export const Home = ({navigation}) => {
       'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
     );
   };
-
-  const handleGetHomeScreenPic = async () => {
-    const request = await getHomepageGallery();
-    if (request.ok) {
-      setDashboardImages(request.data);
-    }
-  };
-
-  React.useEffect(() => {
-    handleGetHomeScreenPic();
-    deviceNotificationToken();
-  }, []);
 
   return (
     <>

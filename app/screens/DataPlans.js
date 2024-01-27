@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
@@ -7,48 +8,40 @@ import {
   Platform,
   Image,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
-  TextInput,
-  ActivityIndicator,
   Alert,
   PermissionsAndroid,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {selectContactPhone} from 'react-native-select-contact';
+import {MainLayout} from '../components';
 
 import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {buyDataBundle, getDataBundle} from '../redux/actions/data_plans';
+import {buyDataBundle} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import OverLayModel from '../components/OverLayModel';
 import uuid from 'react-native-uuid';
-import BottomModel from '../components/BottomModel';
-import {
-  getCollaboratorData,
-  updateCollaboratorData,
-} from '../redux/actions/collaborator';
 import {useRef} from 'react';
-import {Modalize} from 'react-native-modalize';
-import {Avatar, HStack, IconButton, Input} from 'native-base';
-import Contacts from 'react-native-contacts';
+import {
+  Actionsheet,
+  Button,
+  HStack,
+  IconButton,
+  Input,
+  Switch,
+} from 'native-base';
 import RecentContactCard from '../components/contact/RecentContactCard';
 import {getDataRecentContacts} from '../redux/actions/user';
 
 export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const dispatch = useDispatch();
 
-  const modalizeRef = useRef(null);
-
   const [itemClick, setItemClick] = useState(false);
   const [itemValue, setItemValue] = useState(null);
-  const [editClick, setEditClick] = useState(false);
-  const [editedAmount, setEditedAmount] = useState('');
-  const [updateDataLoading, setUpdateDataLoading] = useState(false);
-  const [checkout, setCheckOut] = useState(false);
+
   const [isFirstTimeFill, setIsFirstTimeFill] = useState(true);
 
   const [error, setError] = useState(null);
@@ -62,6 +55,8 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const phoneInputRef = useRef();
   const [customReference, setCustomReference] = useState(null);
   const [phoneInputFocus, setPhoneInputFocus] = useState(false);
+
+  const [toggleCheckoutData, setToggleCheckoutData] = useState(false);
 
   const {dataContact} = useSelector(state => state.user);
 
@@ -77,12 +72,12 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const isLoading = useSelector(state => state.data_bundles.isLoading);
 
   const onOpen = () => {
-    modalizeRef.current?.open();
+    setToggleCheckoutData(true);
     setCustomReference(uuid.v4());
   };
 
   const onClose = () => {
-    modalizeRef.current?.close();
+    setToggleCheckoutData(false);
   };
 
   const getCollaboratorPrice = (data_plan_id, data_actual_price) => {
@@ -106,49 +101,6 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
     setCustomer('');
     setError(null);
     onOpen();
-  };
-
-  const handleSellData = () => {
-    setItemClick(false);
-    setItemClicked({
-      ...itemValue,
-      price: getCollaboratorPrice(itemValue.id, itemValue.price),
-    });
-    setCustomer('');
-    setError(null);
-    onOpen();
-  };
-
-  const handleEditPrice = () => {
-    // setEditedAmount(itemValue.price.toString());
-    setEditClick(true);
-  };
-
-  const handleCloseModal = () => {
-    setEditClick(false);
-    setItemClick(false);
-  };
-
-  const handleUpdateData = () => {
-    setUpdateDataLoading(true);
-    dispatch(
-      updateCollaboratorData(
-        {collaborator_price: editedAmount, data_plan_id: itemValue.id},
-        handleUpdateDataResponse,
-      ),
-    );
-  };
-
-  const handleUpdateDataResponse = (res_data, res_status) => {
-    setUpdateDataLoading(false);
-
-    dispatch(getDataBundle());
-    dispatch(getCollaboratorData());
-
-    Alert.alert('Success', 'you have successfully update the data plan price');
-
-    handleCloseModal();
-    setEditedAmount('');
   };
 
   const handleSetCustomer = phoneNumber => {
@@ -349,307 +301,21 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
       );
 
       // denied permission
-      if (request === PermissionsAndroid.RESULTS.DENIED) return false;
-      // user chose 'deny, don't ask again'
-      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN)
+      if (request === PermissionsAndroid.RESULTS.DENIED) {
         return false;
+      }
+      // user chose 'deny, don't ask again'
+      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+        return false;
+      }
     }
 
     return true;
   };
 
   return (
-    <>
-      {itemClick && (
-        <OverLayModel
-          // onOverlayPress={() => setItemClick(false)}
-          style={styles.modelContainer}>
-          <View style={styles.modelWrapper}>
-            <TouchableOpacity
-              onPress={handleCloseModal}
-              style={{
-                marginTop: hp(20),
-                marginBottom: hp(30),
-              }}>
-              <Feather name="x" size={30} color={'red'} />
-            </TouchableOpacity>
-            {!editClick ? (
-              <>
-                <TouchableOpacity
-                  style={[styles.buttonStyle, {marginBottom: 10}]}
-                  onPress={handleSellData}>
-                  <Text style={styles.buttonText}>Sell Data</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleEditPrice}
-                  style={[
-                    styles.buttonStyle,
-                    {
-                      backgroundColor: 'transparent',
-                      borderWidth: 1,
-                      borderColor: colors.primary,
-                    },
-                  ]}>
-                  <Text style={[styles.buttonText, {color: colors.textBlack}]}>
-                    Update Data Plan Price
-                  </Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    fontSize: hp(16),
-                    color: colors.textBlack,
-                    marginBottom: hp(10),
-                  }}>
-                  Please always remember to set a reasonable price
-                </Text>
-                <View>
-                  <Text style={styles.nairaSign}>
-                    {'\u20A6'}
-                    {itemValue.price}+
-                  </Text>
-                  <TextInput
-                    placeholder=" how much do you want to add"
-                    value={editedAmount}
-                    style={styles.dataPriceInput}
-                    onChangeText={text => setEditedAmount(text)}
-                    keyboardType={'numeric'}
-                  />
-                </View>
-                {editedAmount !== '' && (
-                  <Text
-                    style={{
-                      width: '100%',
-                      fontFamily: 'Poppins-Medium',
-                      fontSize: hp(16),
-                      color: colors.primary,
-                      marginBottom: hp(10),
-                      textAlign: 'right',
-                    }}>
-                    updated Price Will be {'\u20A6'}
-                    {Number(itemValue.price) + Number(editedAmount)}
-                  </Text>
-                )}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={handleUpdateData}
-                  disabled={updateDataLoading ? true : false}
-                  style={[
-                    styles.buttonStyle,
-                    {marginBottom: 10},
-                    updateDataLoading && {
-                      backgroundColor: colors.textLight,
-                    },
-                  ]}>
-                  {updateDataLoading ? (
-                    <ActivityIndicator size={'large'} color={colors.primary} />
-                  ) : (
-                    <Text style={styles.buttonText}>Update</Text>
-                  )}
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </OverLayModel>
-      )}
-
-      {/* test overlay */}
-      <Modalize
-        modalHeight={phoneInputFocus ? 600 : 600}
-        keyboardAvoidingBehavior={false}
-        closeSnapPointStraightEnabled={true}
-        panGestureEnabled={true}
-        overlayStyle={{backgroundColor: 'rgba(0,0,0,1)'}}
-        ref={modalizeRef}>
-        {itemClicked && (
-          <View
-            style={{
-              flex: 1,
-              padding: 25,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={onClose}>
-                <Feather name="x" size={hp(25)} color={colors.textBlack} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Medium',
-                  fontSize: hp(18),
-                  color: colors.textBlack,
-                }}>
-                Checkout
-              </Text>
-              <Text>{'      '}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-
-                padding: 10,
-                borderRadius: 5,
-                elevation: 1,
-                backgroundColor: 'white',
-              }}>
-              <Image
-                source={
-                  itemClicked.image !== null
-                    ? {uri: itemClicked.image}
-                    : getDataPlanImage(itemClicked.service)
-                }
-                style={{width: 80, height: 80}}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Medium',
-                  color: colors.secondary,
-                  fontSize: hp(26),
-                  marginLeft: hp(20),
-                }}>
-                {itemClicked && itemClicked.quantity}
-              </Text>
-            </View>
-            <View style={{flex: 1, marginTop: hp(15)}}>
-              {error && (
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    color: 'red',
-                    fontSize: hp(13),
-                    width: '100%',
-                    textAlign: 'center',
-                    marginBottom: hp(10),
-                  }}>
-                  {error}
-                </Text>
-              )}
-
-              <Input
-                ref={phoneInputRef}
-                placeholder="PHONE"
-                onChangeText={text => handleSetCustomer(text)}
-                onFocus={() => setPhoneInputFocus(true)}
-                onBlur={() => setPhoneInputFocus(false)}
-                autoFocus={true}
-                keyboardType={'numeric'}
-                maxLength={11}
-                value={customer}
-                size={'lg'}
-                InputRightElement={
-                  <IconButton
-                    onPress={handleAddContact}
-                    rounded={'full'}
-                    icon={
-                      <AntDesign name="contacts" size={hp(25)} color={'gray'} />
-                    }
-                  />
-                }
-              />
-            </View>
-            {itemClicked.service.toLowerCase() === 'mtn' && (
-              <View style={{flexDirection: 'row', marginTop: hp(10)}}>
-                {check_mtn_number ? (
-                  <TouchableOpacity
-                    onPress={() => setCheckMtnNumber(!check_mtn_number)}>
-                    <Feather
-                      name="toggle-right"
-                      color={colors.primary}
-                      size={hp(25)}
-                      style={{marginRight: hp(10)}}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => setCheckMtnNumber(!check_mtn_number)}>
-                    <Feather
-                      name="toggle-left"
-                      color={colors.textBlack}
-                      size={hp(25)}
-                      style={{marginRight: hp(10)}}
-                    />
-                  </TouchableOpacity>
-                )}
-
-                <Text
-                  style={{
-                    fontSize: hp(14),
-                    fontFamily: 'Poppins-Medium',
-                    color: colors.textBlack,
-                  }}>
-                  Turn off number validation
-                </Text>
-              </View>
-            )}
-            <TouchableOpacity
-              disabled={isLoading}
-              onPress={handleCheckout}
-              style={[
-                {
-                  marginTop: hp(10),
-                  paddingVertical: hp(7),
-                  backgroundColor: colors.primary,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                },
-                isLoading && {backgroundColor: colors.textLight},
-              ]}>
-              {isLoading ? (
-                <ActivityIndicator size={'large'} color={colors.primary} />
-              ) : (
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    fontSize: hp(14),
-                    color: colors.textWhite,
-                  }}>
-                  Buy Data
-                </Text>
-              )}
-            </TouchableOpacity>
-            <HStack pt={'2'}>
-              <FlatList
-                horizontal
-                data={dataContact}
-                renderItem={({item}) => (
-                  <RecentContactCard
-                    contact={item}
-                    onRecentClick={recentNumber => setCustomer(recentNumber)}
-                  />
-                )}
-                keyExtractor={item => item.id}
-                showsHorizontalScrollIndicator={false}
-              />
-            </HStack>
-          </View>
-        )}
-      </Modalize>
-
-      {/* checkout overlay test */}
-      {checkout && <BottomModel />}
+    <MainLayout headerTitle={'Data Plan'} showHeader={true}>
       <View style={styles.container}>
-        <SafeAreaView>
-          {/* Header */}
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather
-                name="chevron-left"
-                size={hp(35)}
-                color={colors.textBlack}
-              />
-            </TouchableOpacity>
-            <Text style={styles.headerTitleText}>Data Plan</Text>
-            <Text>{'  '}</Text>
-          </View>
-          <View style={styles.headerUnderLine} />
-        </SafeAreaView>
         <View style={styles.dataBundleCategoryWrapper}>
           <FlatList
             numColumns={2}
@@ -661,7 +327,155 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
           />
         </View>
       </View>
-    </>
+      <Actionsheet
+        _backdrop={{bgColor: 'black', opacity: 1}}
+        isOpen={toggleCheckoutData}
+        onClose={onClose}>
+        <Actionsheet.Content width={'100%'}>
+          {itemClicked && (
+            <View
+              style={{
+                height: phoneInputFocus ? hp(800) : hp(450),
+                paddingHorizontal: wp(5),
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                <IconButton
+                  rounded={'full'}
+                  onPress={onClose}
+                  icon={
+                    <Feather name="x" size={hp(25)} color={colors.textBlack} />
+                  }
+                />
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Medium',
+                    fontSize: hp(18),
+                    color: colors.textBlack,
+                  }}>
+                  Checkout
+                </Text>
+                <Text>{'      '}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 5,
+                  elevation: 1,
+                  backgroundColor: 'white',
+                }}>
+                <Image
+                  source={
+                    itemClicked.image !== null
+                      ? {uri: itemClicked.image}
+                      : getDataPlanImage(itemClicked.service)
+                  }
+                  style={{width: 80, height: 80}}
+                />
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Medium',
+                    color: colors.secondary,
+                    fontSize: hp(26),
+                    marginLeft: hp(20),
+                  }}>
+                  {itemClicked && itemClicked.quantity}
+                </Text>
+              </View>
+              <View style={{marginBottom: hp(20), marginTop: hp(15)}}>
+                {error && (
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Medium',
+                      color: 'red',
+                      fontSize: hp(13),
+                      width: '100%',
+                      textAlign: 'center',
+                      marginBottom: hp(10),
+                    }}>
+                    {error}
+                  </Text>
+                )}
+
+                <Input
+                  ref={phoneInputRef}
+                  placeholder="PHONE"
+                  onChangeText={text => handleSetCustomer(text)}
+                  onFocus={() => setPhoneInputFocus(true)}
+                  onBlur={() => setPhoneInputFocus(false)}
+                  autoFocus={true}
+                  keyboardType={'numeric'}
+                  maxLength={11}
+                  value={customer}
+                  size={'lg'}
+                  InputRightElement={
+                    <IconButton
+                      onPress={handleAddContact}
+                      rounded={'full'}
+                      icon={
+                        <AntDesign
+                          name="contacts"
+                          size={hp(25)}
+                          color={'gray'}
+                        />
+                      }
+                    />
+                  }
+                />
+              </View>
+              {itemClicked.service.toLowerCase() === 'mtn' && (
+                <HStack alignItems={'center'} space={2}>
+                  <Switch
+                    defaultIsChecked={true}
+                    onValueChange={e => setCheckMtnNumber(e)}
+                  />
+                  <Text
+                    style={{
+                      fontSize: hp(14),
+                      fontFamily: 'Poppins-Medium',
+                      color: colors.textBlack,
+                    }}>
+                    Turn off number validation
+                  </Text>
+                </HStack>
+              )}
+
+              <Button
+                mt={'2'}
+                size={'lg'}
+                py={'3'}
+                isDisabled={isLoading}
+                onPress={handleCheckout}
+                isLoading={isLoading}>
+                Buy Data
+              </Button>
+
+              <HStack pt={'2'}>
+                <FlatList
+                  horizontal
+                  data={dataContact}
+                  renderItem={({item}) => (
+                    <RecentContactCard
+                      contact={item}
+                      onRecentClick={recentNumber => setCustomer(recentNumber)}
+                    />
+                  )}
+                  keyExtractor={item => item.id}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </HStack>
+            </View>
+          )}
+        </Actionsheet.Content>
+      </Actionsheet>
+    </MainLayout>
   );
 });
 
@@ -693,7 +507,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textLight,
   },
   dataBundleCategoryWrapper: {
-    marginTop: hp(10),
     flexDirection: 'row',
     width: '100%',
     alignSelf: 'center',

@@ -6,13 +6,13 @@ export const usePolling = (pollingFunction, interval) => {
   const pollingRef = useRef(null);
   const isFocused = useIsFocused();
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       await pollingFunction();
     } catch (runError) {
       setError(runError);
     }
-  }, [pollingFunction]);
+  };
 
   useEffect(() => {
     const startPolling = () => {
@@ -33,7 +33,7 @@ export const usePolling = (pollingFunction, interval) => {
     return () => {
       stopPolling();
     };
-  }, [pollingFunction, interval, fetchData, isFocused]);
+  }, [interval, isFocused]);
 
   return {error};
 };

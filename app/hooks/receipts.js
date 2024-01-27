@@ -27,7 +27,7 @@ export const useReceipt = () => {
       return fullFilePath;
     } catch (error) {
       setStatus(false);
-      console.log(error);
+
       // handle error
     }
 

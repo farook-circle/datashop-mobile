@@ -21,14 +21,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import OverLayModel from '../../components/OverLayModel';
 import {StackActions} from '@react-navigation/native';
 import {USER_LOGOUT} from '../../redux/constants/auth';
-import {
-  Box,
-  FlatList,
-  HStack,
-  Pressable,
-  ScrollView,
-  VStack,
-} from 'native-base';
+import {Box, FlatList, HStack, Pressable} from 'native-base';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AlertCard from '../../components/AlertCard';
 import {getMessages, getNotifications} from '../../redux/actions/messages';
@@ -138,7 +131,6 @@ export const AddTypePin = ({navigation}) => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.dispatch(StackActions.replace('Home')),
           },
         ],
       );

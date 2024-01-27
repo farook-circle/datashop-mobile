@@ -7,25 +7,20 @@ import {useNetInfo} from '@react-native-community/netinfo';
 import {Platform} from 'react-native';
 import InAppUpdate from './app/utils/InAppUpdate';
 import {AppNavigator} from './app/navigation';
-import {useServer} from './app/hooks';
 
 const App = () => {
   const {isConnected} = useNetInfo();
-  const {serverRunning} = useServer();
 
   React.useEffect(() => {
     if (Platform.OS === 'android') {
       InAppUpdate.checkUpdate();
     }
-  }, [isConnected, serverRunning]);
+  }, [isConnected]);
 
   return (
     <Provider store={store}>
       <NativeBaseProvider theme={theme}>
-        <AppNavigator
-          isConnected={isConnected}
-          isServerRunning={serverRunning}
-        />
+        <AppNavigator isConnected={isConnected} isServerRunning={true} />
       </NativeBaseProvider>
     </Provider>
   );

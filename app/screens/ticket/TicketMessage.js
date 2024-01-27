@@ -468,7 +468,6 @@ export const TicketMessageScreen = ({navigation, route}) => {
           </VStack>
         </Actionsheet.Content>
       </Actionsheet>
-      {console.log(ticket)}
     </>
   );
 };

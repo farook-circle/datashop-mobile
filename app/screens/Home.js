@@ -48,7 +48,6 @@ import moment from 'moment-timezone';
 
 import {useIsFocused} from '@react-navigation/native';
 import {getAppDashboardWallpaper} from '../redux/actions/system';
-import {usePolling} from '../hooks/polling';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -93,20 +92,29 @@ export const Home = ({navigation}) => {
     dispatch(getWalletBalance());
   }, [dispatch]);
 
-  const handlePollUpdate = useCallback(() => {
-    // check for pending on the history
-    const pendingHistoryExist = data_purchase_history
-      ?.slice(0, 10)
-      ?.find(item => item.status?.toLowerCase() === 'pending');
+  const pendingTransaction = data_purchase_history
+    ?.slice(0, 10)
+    .find(item => item.status?.toLowerCase() === 'pending');
 
+  const handlePollUpdate = useCallback(() => {
     // call server to get the new history
-    if (pendingHistoryExist) {
+    if (pendingTransaction) {
       dispatch(getWalletBalance());
       dispatch(getDataPurchaseHistory());
     }
-  }, [data_purchase_history, dispatch]);
+  }, [dispatch, pendingTransaction]);
 
-  const {error} = usePolling(handlePollUpdate, POLLING_REFRESH_TIME);
+  useEffect(() => {
+    let pollInterval;
+
+    if (isFocused) {
+      pollInterval = setInterval(() => {
+        handlePollUpdate();
+      }, POLLING_REFRESH_TIME);
+    }
+
+    return () => clearInterval(pollInterval);
+  }, [isFocused, handlePollUpdate]);
 
   useEffect(() => {
     if (isFocused) {

@@ -1,29 +1,30 @@
 import {useState, useEffect, useRef, useCallback} from 'react';
 import {useIsFocused} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
 export const usePolling = (pollingFunction, interval) => {
   const [error, setError] = useState(null);
   const pollingRef = useRef(null);
   const isFocused = useIsFocused();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(() => {
     try {
-      await pollingFunction();
+      pollingFunction();
     } catch (runError) {
       setError(runError);
     }
+  }, [pollingFunction]);
+
+  const startPolling = useCallback(() => {
+    fetchData();
+    pollingRef.current = setInterval(fetchData, interval);
+  }, [fetchData, interval]);
+
+  const stopPolling = () => {
+    clearInterval(pollingRef.current);
   };
 
   useEffect(() => {
-    const startPolling = () => {
-      fetchData();
-      pollingRef.current = setInterval(fetchData, interval);
-    };
-
-    const stopPolling = () => {
-      clearInterval(pollingRef.current);
-    };
-
     if (isFocused) {
       startPolling();
     } else {
@@ -33,7 +34,7 @@ export const usePolling = (pollingFunction, interval) => {
     return () => {
       stopPolling();
     };
-  }, [interval, isFocused]);
+  }, [interval, isFocused, startPolling]);
 
   return {error};
 };

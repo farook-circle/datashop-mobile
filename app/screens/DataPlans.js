@@ -335,7 +335,7 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
           {itemClicked && (
             <View
               style={{
-                height: phoneInputFocus ? hp(800) : hp(450),
+                height: phoneInputFocus ? hp(900) : hp(450),
                 paddingHorizontal: wp(5),
                 width: '100%',
               }}>

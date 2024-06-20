@@ -62,7 +62,8 @@ export default function HistoryItemList({item, onPress}) {
           justifyContent={'space-between'}
           p={'2'}>
           <Avatar
-            size={hp(40)}
+            width={hp(40)}
+            height={hp(40)}
             bgColor={'primary.500'}
             source={{uri: item?.image}}>
             {getDefaultIcon(item?.transaction_type)}

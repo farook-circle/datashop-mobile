@@ -12,11 +12,6 @@ export const useSession = () => {
   const restoreSession = useCallback(async () => {
     dispatch(getContactInfo());
 
-    try {
-      const response = await axios.get('https://api.paystack.co');
-      console.log(response.data);
-    } catch (error) {}
-
     const userSession = await Storage.get(
       AppConstant.STORAGE_KEYS.USER_SESSION,
     );

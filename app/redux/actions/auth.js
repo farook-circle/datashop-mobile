@@ -1,5 +1,4 @@
 /* eslint-disable no-alert */
-import EncryptedStorage from 'react-native-encrypted-storage';
 
 import axios from '../../axios';
 
@@ -10,11 +9,6 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   REGISTER_SUCCESS,
-  REGISTER_FAIL,
-  UPDATE_USER,
-  UPDATE_USER_FAIL,
-  USER_LOGOUT,
-  SET_TOKEN,
   USER_RESTORING,
   CHANGE_PASSWORD_SUCCESS,
   CHANGE_PASSWORD_FAILED,
@@ -34,7 +28,7 @@ export const restoreUser = () => (dispatch, getState) => {
 
   //Check to see if there is an token and to header
   if (token) {
-    config.headers['Authorization'] = `Token ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
 
   axios
@@ -51,6 +45,7 @@ export const restoreUser = () => (dispatch, getState) => {
           type: AUTH_ERROR,
         });
       } else {
+        console.log(error);
         alert('Network error Please check your connection');
       }
     });
@@ -146,7 +141,7 @@ export const changeUserPassword =
       },
     };
     if (token) {
-      config.headers['Authorization'] = `Token ${token}`;
+      config.headers.Authorization = `Token ${token}`;
     }
     const body = JSON.stringify(userData);
 

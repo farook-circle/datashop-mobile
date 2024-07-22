@@ -27,3 +27,4 @@ export * from './auth';
 export * from './ElectricityPayment';
 export * from './verifications';
 export * from './Receipt';
+export * from './settings';

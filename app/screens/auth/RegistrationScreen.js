@@ -29,6 +29,7 @@ import * as validation from '../../utils/validations';
 import colors from '../../../assets/colors/colors';
 import {signUp} from '../../redux/actions/auth';
 import {MainLayout} from '../../components';
+import {ROUTES} from '../../lib';
 
 const registerInitialValue = {
   full_name: '',

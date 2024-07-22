@@ -8,6 +8,7 @@ export const ROUTES = {
   FORGOT_PASSWORD_CONFIRM_SCREEN: 'ForgotPasswordConfirm',
   FORGOT_PASSWORD_COMPLETE_SCREEN: 'ForgotPasswordComplete',
   RESET_PASSWORD_SCREEN: 'ResetPassword',
+  OAUTH_VERIFICATION_SCREEN: 'OAuthVerificationScreen',
   // Dashboard Navigator
   PASSCODE_SCREEN: 'Auth',
   HOME_SCREEN: 'Home',
@@ -43,4 +44,6 @@ export const ROUTES = {
   TICKET_LIST_SCREEN: 'TicketListScreen',
   TICKET_MESSAGE_SCREEN: 'TicketMessageScreen',
   USER_BVN_UPDATE: 'USER_BVN_UPDATE',
+  SETTINGS_SCREEN: 'SETTINGS_SCREEN',
+  MULTIFACTOR_SCREEN: 'MULTIFACTOR_SCREEN',
 };

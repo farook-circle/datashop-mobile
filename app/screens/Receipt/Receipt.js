@@ -234,12 +234,14 @@ export const ReceiptScreen = ({route, navigation}) => {
             {formatCurrency(transaction?.amount)}
           </Text>
           <Text color={'gray.200'}>Paid for</Text>
-          <Text color={'white'} fontSize={'lg'}>
+          <Text selectable={true} color={'white'} fontSize={'lg'}>
             {transaction?.name}
           </Text>
           {transaction?.transaction_type === 'ELECTRICITY_PURCHASE' && (
             <VStack alignItems={'center'}>
-              <Text color={'white'}>Meter Token</Text>
+              <Text selectable={true} color={'white'}>
+                Meter Token
+              </Text>
               <HStack alignItems={'center'}>
                 <Text color={'white'} fontWeight={'semibold'} fontSize={'lg'}>
                   {transaction?.meta?.token}
@@ -262,7 +264,11 @@ export const ReceiptScreen = ({route, navigation}) => {
             <VStack alignItems={'center'}>
               <Text color={'white'}>Cable Pin</Text>
               <HStack alignItems={'center'}>
-                <Text color={'white'} fontWeight={'semibold'} fontSize={'lg'}>
+                <Text
+                  selectable={true}
+                  color={'white'}
+                  fontWeight={'semibold'}
+                  fontSize={'lg'}>
                   {transaction?.meta?.token}
                 </Text>
                 <IconButton
@@ -283,7 +289,11 @@ export const ReceiptScreen = ({route, navigation}) => {
             <VStack alignItems={'center'}>
               <Text color={'white'}>Exam PIN</Text>
               <HStack alignItems={'center'}>
-                <Text color={'white'} fontWeight={'semibold'} fontSize={'lg'}>
+                <Text
+                  selectable={true}
+                  color={'white'}
+                  fontWeight={'semibold'}
+                  fontSize={'lg'}>
                   {transaction?.meta?.data_pin?.pin}
                 </Text>
                 <IconButton

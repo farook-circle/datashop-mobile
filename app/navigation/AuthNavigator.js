@@ -11,6 +11,7 @@ import {
   ConfirmPasswordReset,
   CompletePasswordReset,
   ResetPassword,
+  OAuthVerificationScreen,
 } from '../screens';
 
 const Stack = createNativeStackNavigator();
@@ -57,6 +58,11 @@ export const AuthNavigator = () => {
       <Stack.Screen
         name={ROUTES.RESET_PASSWORD_SCREEN}
         component={ResetPassword}
+        options={screenOptions}
+      />
+      <Stack.Screen
+        name={ROUTES.OAUTH_VERIFICATION_SCREEN}
+        component={OAuthVerificationScreen}
         options={screenOptions}
       />
     </Stack.Navigator>

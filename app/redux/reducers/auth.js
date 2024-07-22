@@ -16,11 +16,12 @@ import {
   CHANGE_PASSWORD_SUCCESS,
   CHANGE_PASSWORD_FAILED,
 } from '../constants/auth';
+import {AppConstant} from '../../lib';
 
 async function saveUserSession(token, collaborator) {
   try {
     await EncryptedStorage.setItem(
-      'user_session',
+      AppConstant.STORAGE_KEYS.USER_SESSION,
       JSON.stringify({
         token: token,
         collaborator: collaborator,
@@ -52,6 +53,7 @@ const initialState = {
 export default function (state = initialState, action) {
   switch (action.type) {
     case RESTORE_TOKEN:
+      console.log('session setup', action.payload);
       return {
         ...state,
         ...action.payload,

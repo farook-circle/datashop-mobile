@@ -10,10 +10,11 @@ export const MainLayout = ({
   headerTitle,
   rightElement,
   children,
+  bgColor,
 }) => {
   const {goBack} = useNavigation();
   return (
-    <Box flex={1} safeArea bgColor={'white'}>
+    <Box flex={1} safeArea bgColor={bgColor || 'white'}>
       {!rightElement ? (
         <HStack px={'2'} alignItems={'center'}>
           <IconButton

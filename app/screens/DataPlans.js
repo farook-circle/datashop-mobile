@@ -27,14 +27,19 @@ import uuid from 'react-native-uuid';
 import {useRef} from 'react';
 import {
   Actionsheet,
+  Box,
   Button,
+  Heading,
   HStack,
   IconButton,
   Input,
+  Pressable,
   Switch,
+  VStack,
 } from 'native-base';
 import RecentContactCard from '../components/contact/RecentContactCard';
 import {getDataRecentContacts} from '../redux/actions/user';
+import {formatCurrency} from '../utils';
 
 export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const dispatch = useDispatch();
@@ -78,6 +83,25 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
 
   const onClose = () => {
     setToggleCheckoutData(false);
+  };
+
+  const getBgColor = text => {
+    if (text.toLowerCase().includes('mtn')) {
+      return 'yellow.200';
+    }
+
+    if (text.toLowerCase().includes('9mobile')) {
+      return '#D6F26A';
+    }
+
+    if (text.toLowerCase().includes('glo')) {
+      return 'green.200';
+    }
+    if (text.toLowerCase().includes('airtel')) {
+      return 'red.300';
+    }
+
+    return 'gray.200';
   };
 
   const getCollaboratorPrice = (data_plan_id, data_actual_price) => {
@@ -211,37 +235,56 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
     }
   };
 
-  const renderDataBundleItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={[styles.dataBundleItemsWrapper]}
-        onPress={() => handleDataItemClick(item)}>
-        <Image
-          source={
-            item.image !== null
-              ? {uri: item.image}
-              : getDataPlanImage(item.service)
-          }
-          style={[styles.mtnLogoImage]}
-        />
-        <View
-          style={{
-            flex: 1,
-            width: '100%',
-            backgroundColor: 'white',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={styles.quantityText}>{item.quantity}</Text>
-          <Text style={styles.priceText}>
-            {'\u20A6'}
-            {item.price}
+  const renderDataBundleItem = ({item}) => (
+    <Pressable m={2} flex={1} onPress={() => handleDataItemClick(item)}>
+      <VStack
+        borderWidth={1}
+        borderColor={'gray.600'}
+        bgColor={getBgColor(item.service)}
+        rounded={'lg'}
+        py={4}
+        width={'full'}
+        px={'10px'}
+        mt={1}
+        space={1}
+        shadow={4}
+        pt={'2'}>
+        <Box width={'full'}>
+          <Text
+            style={{fontFamily: 'Poppins-Bold', fontSize: hp(20)}}
+            numberOfLines={1}>
+            {item.quantity}
           </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+        </Box>
+        <Text numberOfLines={2}>{item.description}</Text>
+        <HStack alignItems={'center'} justifyContent={'space-between'} mt={'4'}>
+          <VStack>
+            <Text style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
+              Price
+            </Text>
+            <Text style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
+              {formatCurrency(item.price)}
+            </Text>
+          </VStack>
+          <Box mt={'1'}>
+            <Image
+              alt={'logo'}
+              style={{width: 40, height: 40, borderRadius: 100}}
+              source={{uri: item.image}}
+            />
+          </Box>
+          <VStack alignItems={'flex-end'}>
+            <Text style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
+              Validity
+            </Text>
+            <Text style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
+              {item.validity}
+            </Text>
+          </VStack>
+        </HStack>
+      </VStack>
+    </Pressable>
+  );
 
   const handleAddContact = async () => {
     // check permission
@@ -314,19 +357,18 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   };
 
   return (
-    <MainLayout headerTitle={'Data Plan'} showHeader={true}>
-      <View style={styles.container}>
-        <View style={styles.dataBundleCategoryWrapper}>
-          <FlatList
-            numColumns={2}
-            data={data_bundles}
-            renderItem={renderDataBundleItem}
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 100}}
-          />
-        </View>
-      </View>
+    <MainLayout bgColor={'white'} headerTitle={'Data Plans'} showHeader={true}>
+      <Box flex={1} px={'4'}>
+        <FlatList
+          numColumns={1}
+          data={data_bundles}
+          renderItem={renderDataBundleItem}
+          keyExtractor={item => item.id}
+          // showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: 100}}
+        />
+      </Box>
+
       <Actionsheet
         _backdrop={{bgColor: 'black', opacity: 1}}
         isOpen={toggleCheckoutData}
@@ -339,56 +381,72 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
                 paddingHorizontal: wp(5),
                 width: '100%',
               }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <IconButton
-                  rounded={'full'}
-                  onPress={onClose}
-                  icon={
-                    <Feather name="x" size={hp(25)} color={colors.textBlack} />
-                  }
-                />
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    fontSize: hp(18),
-                    color: colors.textBlack,
-                  }}>
-                  Checkout
-                </Text>
-                <Text>{'      '}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 10,
-                  borderRadius: 5,
-                  elevation: 1,
-                  backgroundColor: 'white',
-                }}>
-                <Image
-                  source={
-                    itemClicked.image !== null
-                      ? {uri: itemClicked.image}
-                      : getDataPlanImage(itemClicked.service)
-                  }
-                  style={{width: 80, height: 80}}
-                />
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    color: colors.secondary,
-                    fontSize: hp(26),
-                    marginLeft: hp(20),
-                  }}>
-                  {itemClicked && itemClicked.quantity}
-                </Text>
-              </View>
+              <VStack
+                borderWidth={1}
+                borderColor={'gray.200'}
+                bgColor={getBgColor(itemClicked.service)}
+                rounded={'lg'}
+                py={4}
+                width={'full'}
+                px={'10px'}
+                mt={1}
+                space={1}
+                shadow={4}
+                pt={'2'}>
+                <Box width={'full'}>
+                  <HStack justifyContent={'space-between'}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Bold',
+                        color: 'black',
+                        fontSize: hp(20),
+                      }}
+                      numberOfLines={1}>
+                      {itemClicked.quantity}
+                    </Text>
+                    <IconButton
+                      rounded={'full'}
+                      onPress={onClose}
+                      icon={
+                        <Feather
+                          name="x"
+                          size={hp(25)}
+                          color={colors.textBlack}
+                        />
+                      }
+                    />
+                  </HStack>
+                </Box>
+                <Text numberOfLines={2}>{itemClicked.description}</Text>
+                <HStack
+                  alignItems={'center'}
+                  justifyContent={'space-between'}
+                  mt={'4'}>
+                  <VStack>
+                    <Box>
+                      <Feather name={'wifi'} size={30} color={'black'} />
+                    </Box>
+                  </VStack>
+                  <Box mt={'1'}>
+                    <Image
+                      alt={'logo'}
+                      style={{width: 40, height: 40, borderRadius: 100}}
+                      source={{uri: itemClicked.image}}
+                    />
+                  </Box>
+                  <VStack alignItems={'flex-end'}>
+                    <Text
+                      style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
+                      Validity
+                    </Text>
+                    <Text
+                      style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
+                      {itemClicked.validity}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </VStack>
+
               <View style={{marginBottom: hp(20), marginTop: hp(15)}}>
                 {error && (
                   <Text
@@ -404,31 +462,34 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
                   </Text>
                 )}
 
-                <Input
-                  ref={phoneInputRef}
-                  placeholder="PHONE"
-                  onChangeText={text => handleSetCustomer(text)}
-                  onFocus={() => setPhoneInputFocus(true)}
-                  onBlur={() => setPhoneInputFocus(false)}
-                  autoFocus={true}
-                  keyboardType={'numeric'}
-                  maxLength={11}
-                  value={customer}
-                  size={'lg'}
-                  InputRightElement={
-                    <IconButton
-                      onPress={handleAddContact}
-                      rounded={'full'}
-                      icon={
-                        <AntDesign
-                          name="contacts"
-                          size={hp(25)}
-                          color={'gray'}
-                        />
-                      }
-                    />
-                  }
-                />
+                <Box bgColor={'gray.200'}>
+                  <Input
+                    ref={phoneInputRef}
+                    placeholder="PHONE"
+                    onChangeText={text => handleSetCustomer(text)}
+                    onFocus={() => setPhoneInputFocus(true)}
+                    onBlur={() => setPhoneInputFocus(false)}
+                    autoFocus={true}
+                    keyboardType={'numeric'}
+                    maxLength={11}
+                    variant={'underlined'}
+                    value={customer}
+                    size={'lg'}
+                    InputRightElement={
+                      <IconButton
+                        onPress={handleAddContact}
+                        rounded={'full'}
+                        icon={
+                          <AntDesign
+                            name="contacts"
+                            size={hp(25)}
+                            color={'gray'}
+                          />
+                        }
+                      />
+                    }
+                  />
+                </Box>
               </View>
               {itemClicked.service.toLowerCase() === 'mtn' && (
                 <HStack alignItems={'center'} space={2}>
@@ -513,8 +574,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dataBundleItemsWrapper: {
-    width: wp(145),
-    height: hp(180),
+    width: '47%',
     overflow: 'hidden',
     backgroundColor: 'white',
     borderRadius: hp(10),
@@ -523,18 +583,20 @@ const styles = StyleSheet.create({
     marginBottom: hp(20),
     shadowColor: colors.textBlack,
     shadowOffset: {
-      width: 0,
+      width: 2,
       height: 2,
     },
     shadowOpacity: 4,
     shadowRadius: 20,
     elevation: 4,
+    paddingBottom: hp(10),
   },
   mtnLogoImage: {
     width: '100%',
-    height: '70%',
+    height: '100%',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
+    position: 'absolute',
   },
   roundIconEnter: {
     marginTop: hp(10),
@@ -555,14 +617,13 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   quantityText: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(15),
+    fontFamily: 'Poppins-Regular',
+    fontSize: hp(13),
     color: colors.textBlack,
-    marginRight: wp(10),
   },
   priceText: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(15),
+    fontFamily: 'Poppins-Medium',
+    fontSize: hp(12),
     color: colors.textBlack,
   },
 

@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Feather from 'react-native-vector-icons/Feather';
 import {hp} from '../config/dpTopx';
 import {MainLayout} from '../components';
+import {ROUTES} from '../lib';
 
 const AccountOption = ({icon, title, onPress}) => (
   <Pressable onPress={onPress} width={'100%'}>
@@ -16,19 +17,22 @@ const AccountOption = ({icon, title, onPress}) => (
         space={'4'}
         p={'2'}
         bgColor={isPressed ? 'rgba(0,0,0,0.1)' : 'transparent'}
+        borderBottomWidth={1}
+        borderBottomColor={'gray.200'}
+        py={'4'}
         width={'100%'}>
-        <Feather name={icon} color="black" size={hp(30)} />
+        <Avatar size={'sm'} bgColor={'primary.500'}>
+          <Feather name={icon} color="white" size={hp(14)} />
+        </Avatar>
         <Text style={styles.actionTitle}>{title}</Text>
-        <Feather name="chevron-right" color={'black'} size={hp(30)} />
+
+        <Feather name="chevron-right" color={'gray'} size={hp(20)} />
       </HStack>
     )}
   </Pressable>
 );
 
 export const AccountSetting = ({navigation, router}) => {
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
   return (
     <MainLayout showHeader={true} headerTitle={'Account'}>
       <VStack
@@ -52,6 +56,11 @@ export const AccountSetting = ({navigation, router}) => {
             title={'Download Statement'}
             icon={'download-cloud'}
             onPress={() => navigation.navigate('AccountStatement')}
+          />
+          <AccountOption
+            title={'Security'}
+            icon={'lock'}
+            onPress={() => navigation.navigate(ROUTES.SECURITY_LIST_SCREEN)}
           />
         </VStack>
       </VStack>

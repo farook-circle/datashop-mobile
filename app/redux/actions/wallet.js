@@ -18,6 +18,7 @@ export const getWalletBalance = () => (dispatch, getState) => {
   //Get Token from the state
 
   const token = getState().auth.token;
+
   // Header
   const config = {
     headers: {

@@ -4,7 +4,6 @@ import {AppConstant, Storage} from '../lib';
 import {RESTORE_TOKEN} from '../redux/constants/auth';
 import {restoreUser} from '../redux/actions/auth';
 import {useCallback} from 'react';
-import axios from '../axios';
 
 export const useSession = () => {
   const dispatch = useDispatch();
@@ -17,9 +16,10 @@ export const useSession = () => {
     );
 
     if (userSession) {
-      dispatch({type: RESTORE_TOKEN, payload: JSON.parse(userSession)});
+      const parsedData = JSON.parse(userSession);
+      dispatch({type: RESTORE_TOKEN, payload: parsedData});
+      dispatch(restoreUser(parsedData.token));
     }
-    dispatch(restoreUser());
   }, [dispatch]);
 
   return {restoreSession};

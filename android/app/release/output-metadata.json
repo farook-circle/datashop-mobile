@@ -11,8 +11,8 @@
       "type": "UNIVERSAL",
       "filters": [],
       "attributes": [],
-      "versionCode": 17,
-      "versionName": "3.5.2",
+      "versionCode": 18,
+      "versionName": "3.5.3",
       "outputFile": "app-universal-release.apk"
     },
     {
@@ -24,22 +24,9 @@
         }
       ],
       "attributes": [],
-      "versionCode": 17004,
-      "versionName": "3.5.2",
+      "versionCode": 18004,
+      "versionName": "3.5.3",
       "outputFile": "app-x86_64-release.apk"
-    },
-    {
-      "type": "ONE_OF_MANY",
-      "filters": [
-        {
-          "filterType": "ABI",
-          "value": "arm64-v8a"
-        }
-      ],
-      "attributes": [],
-      "versionCode": 17003,
-      "versionName": "3.5.2",
-      "outputFile": "app-arm64-v8a-release.apk"
     },
     {
       "type": "ONE_OF_MANY",
@@ -50,8 +37,8 @@
         }
       ],
       "attributes": [],
-      "versionCode": 17002,
-      "versionName": "3.5.2",
+      "versionCode": 18002,
+      "versionName": "3.5.3",
       "outputFile": "app-x86-release.apk"
     },
     {
@@ -63,9 +50,22 @@
         }
       ],
       "attributes": [],
-      "versionCode": 17001,
-      "versionName": "3.5.2",
+      "versionCode": 18001,
+      "versionName": "3.5.3",
       "outputFile": "app-armeabi-v7a-release.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "arm64-v8a"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 18003,
+      "versionName": "3.5.3",
+      "outputFile": "app-arm64-v8a-release.apk"
     }
   ],
   "elementType": "File"

@@ -1,5 +1,6 @@
 /* eslint-disable no-alert */
 
+import {getOAuthData} from '../../api';
 import axios from '../../axios';
 
 import {
@@ -14,11 +15,10 @@ import {
   CHANGE_PASSWORD_FAILED,
 } from '../constants/auth';
 
-export const restoreUser = () => (dispatch, getState) => {
+export const restoreUser = token => (dispatch, getState) => {
   dispatch({type: USER_RESTORING});
   //Get Token from the state
 
-  const token = getState().auth.token;
   // Header
   const config = {
     headers: {
@@ -40,6 +40,7 @@ export const restoreUser = () => (dispatch, getState) => {
       });
     })
     .catch(error => {
+      console.log(error.response.error);
       if (error.response) {
         dispatch({
           type: AUTH_ERROR,
@@ -90,7 +91,7 @@ export const signUp = (userData, ErrorOccur) => dispatch => {
     });
 };
 
-export const signIn = (userData, ErrorOccur) => dispatch => {
+export const signIn = (userData, ErrorOccur, onOAuth) => async dispatch => {
   dispatch({type: USER_LOADING});
 
   // Header
@@ -108,25 +109,26 @@ export const signIn = (userData, ErrorOccur) => dispatch => {
     username: cid ? `${userData.username}-${cid}` : userData.username,
   });
 
-  axios
-    .post('/api/login', body, config)
-    .then(res => {
-      dispatch({
-        type: LOGIN_SUCCESS,
-        payload: res.data,
-      });
-    })
-    .catch(error => {
-      if (error.response) {
-        if (error.response.data.non_field_errors) {
-          ErrorOccur(error.response.data.non_field_errors);
-          dispatch({type: LOGIN_FAIL});
-        }
-      } else {
-        ErrorOccur(error.message);
+  try {
+    const response = await axios.post('/api/login', body, config);
+    const checkOAuth = await getOAuthData(response.data?.token);
+    if (checkOAuth.ok) {
+      onOAuth(response.data);
+      return;
+    }
+
+    dispatch({type: LOGIN_SUCCESS, payload: response.data});
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data.non_field_errors) {
+        ErrorOccur(error.response.data.non_field_errors);
         dispatch({type: LOGIN_FAIL});
       }
-    });
+    } else {
+      ErrorOccur(error.message);
+      dispatch({type: LOGIN_FAIL});
+    }
+  }
 };
 
 export const changeUserPassword =

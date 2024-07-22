@@ -34,6 +34,7 @@ import {
 } from 'native-base';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+import {ROUTES} from '../../lib';
 
 const loginValidation = yup.object().shape({
   username: yup
@@ -52,8 +53,13 @@ export const LoginScreen = ({navigation}) => {
   const ErrorOccur = status => {
     alert(status);
   };
+
+  const onOAuth = data => {
+    navigation.navigate(ROUTES.OAUTH_VERIFICATION_SCREEN, {data});
+  };
+
   const logIn = payload => {
-    dispatch(signIn(payload, ErrorOccur));
+    dispatch(signIn(payload, ErrorOccur, onOAuth));
   };
 
   return (

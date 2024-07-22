@@ -6,3 +6,4 @@ export * from './ResetPassword';
 export * from './VerifyEmail';
 export * from './ForgotPasswordRequest';
 export * from './AddTypePin';
+export * from './OAuthVerification';

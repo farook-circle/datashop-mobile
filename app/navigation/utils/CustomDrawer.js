@@ -64,8 +64,8 @@ const CustomSidebarMenu = props => {
     ]);
   };
 
-  const hanldeChangePassword = () => {
-    props.navigation.navigate('Profile');
+  const handleNavigateSettings = () => {
+    props.navigation.navigate(ROUTES.SETTINGS_SCREEN);
     props.navigation.closeDrawer();
   };
 
@@ -215,13 +215,7 @@ const CustomSidebarMenu = props => {
                 <FontAwesome5Icon name="book" color={'white'} size={hp(20)} />
               }
             />
-            {/* <MenuItem
-              onPress={() => navigateToDrawerScreen('DevelopersInfoScreen')}
-              title={"Developer's info"}
-              icon={
-                <FontAwesome5Icon name="laptop" color={'white'} size={hp(20)} />
-              }
-            /> */}
+
             <MenuItem
               onPress={() => navigateToDrawerScreen('AboutUsScreen')}
               title={'About Datashop'}
@@ -234,9 +228,9 @@ const CustomSidebarMenu = props => {
           <Divider />
           <VStack mt={'2'} px={'2'}>
             <MenuItem
-              onPress={hanldeChangePassword}
-              title={'Change password'}
-              icon={<Feather name="unlock" color={'white'} size={hp(20)} />}
+              onPress={handleNavigateSettings}
+              title={'Settings'}
+              icon={<Feather name="settings" color={'white'} size={hp(20)} />}
             />
             <MenuItem
               onPress={handleLogout}

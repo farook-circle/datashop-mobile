@@ -66,13 +66,7 @@ export const LoginScreen = ({navigation}) => {
     <MainLayout showHeader={true}>
       <KeyboardAwareScrollView>
         {/* Header Logo*/}
-        <View style={styles.headerWrapper}>
-          {/* <Image
-            source={require('../../assets/images/logo.png')}
-            style={styles.logoImage}
-          />
-          <Text style={styles.logoTitle}>datashop.</Text> */}
-        </View>
+        <View style={styles.headerWrapper} />
         {/* illustrate Image */}
         <Image
           source={require('../../../assets/images/mobile_login.png')}

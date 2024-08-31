@@ -48,6 +48,7 @@
 		22B0C48C68324A29A053C3A2 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		37959BBF4C544CA0AE70E05B /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		385AFC9A2C46B33800308CF6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		3897CADA2C5E6D6A000E8BBD /* DataShop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = DataShop.entitlements; path = DataShop/DataShop.entitlements; sourceTree = "<group>"; };
 		3C3BFCAB3D12434D81785F01 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		47293D0500604C379ABF21DF /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		55EE9E4FF9FF4F568FF2C79F /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		13B07FAE1A68108700A75B9A /* DataShop */ = {
 			isa = PBXGroup;
 			children = (
+				3897CADA2C5E6D6A000E8BBD /* DataShop.entitlements */,
 				385AFC9A2C46B33800308CF6 /* GoogleService-Info.plist */,
 				6BCA1E642AC9962F00077F02 /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -571,8 +573,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = DataShop/DataShop.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SSPW795KS2;
+				DEVELOPMENT_TEAM = H3S6TR3954;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = DataShop/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -598,8 +601,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = DataShop/DataShop.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SSPW795KS2;
+				DEVELOPMENT_TEAM = H3S6TR3954;
 				INFOPLIST_FILE = DataShop/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

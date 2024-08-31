@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {Avatar, Box, Card, HStack, Pressable, VStack} from 'native-base';
 import Header from '../components/Header';
@@ -6,8 +6,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import {hp} from '../config/dpTopx';
 import {MainLayout} from '../components';
 import {ROUTES} from '../lib';
+import {useDispatch} from 'react-redux';
+import {USER_LOGOUT} from '../redux/constants/auth';
 
-const AccountOption = ({icon, title, onPress}) => (
+const AccountOption = ({icon, title, color = 'primary.500', onPress}) => (
   <Pressable onPress={onPress} width={'100%'}>
     {({isPressed}) => (
       <HStack
@@ -21,11 +23,10 @@ const AccountOption = ({icon, title, onPress}) => (
         borderBottomColor={'gray.200'}
         py={'4'}
         width={'100%'}>
-        <Avatar size={'sm'} bgColor={'primary.500'}>
+        <Avatar size={'sm'} bgColor={color}>
           <Feather name={icon} color="white" size={hp(14)} />
         </Avatar>
         <Text style={styles.actionTitle}>{title}</Text>
-
         <Feather name="chevron-right" color={'gray'} size={hp(20)} />
       </HStack>
     )}
@@ -33,6 +34,31 @@ const AccountOption = ({icon, title, onPress}) => (
 );
 
 export const AccountSetting = ({navigation, router}) => {
+  const dispatch = useDispatch();
+
+  const requestAccountRemoval = () => {
+    Alert.alert(
+      'Account Removal Request',
+      'Are you sure you want to remove your account? This action cannot be undone. After your request, the account removal process will begin. It will take 30 days to complete. You can cancel the request by logging in within this period.',
+      [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: () => handleAccountRemoval(),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const handleAccountRemoval = () => {
+    dispatch({type: USER_LOGOUT});
+  };
+
   return (
     <MainLayout showHeader={true} headerTitle={'Account'}>
       <VStack
@@ -58,9 +84,10 @@ export const AccountSetting = ({navigation, router}) => {
             onPress={() => navigation.navigate('AccountStatement')}
           />
           <AccountOption
-            title={'Security'}
-            icon={'lock'}
-            onPress={() => navigation.navigate(ROUTES.SECURITY_LIST_SCREEN)}
+            title={'Delete Account'}
+            icon={'trash-2'}
+            color={'red.500'}
+            onPress={requestAccountRemoval}
           />
         </VStack>
       </VStack>

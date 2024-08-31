@@ -40,13 +40,11 @@ export const restoreUser = token => (dispatch, getState) => {
       });
     })
     .catch(error => {
-      console.log(error.response.error);
       if (error.response) {
         dispatch({
           type: AUTH_ERROR,
         });
       } else {
-        console.log(error);
         alert('Network error Please check your connection');
       }
     });

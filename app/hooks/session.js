@@ -2,8 +2,8 @@ import {useDispatch} from 'react-redux';
 import {getContactInfo} from '../redux/actions/config';
 import {AppConstant, Storage} from '../lib';
 import {RESTORE_TOKEN} from '../redux/constants/auth';
-import {restoreUser} from '../redux/actions/auth';
 import {useCallback} from 'react';
+import {restoreUser} from '../redux/actions/auth';
 
 export const useSession = () => {
   const dispatch = useDispatch();
@@ -15,11 +15,15 @@ export const useSession = () => {
       AppConstant.STORAGE_KEYS.USER_SESSION,
     );
 
+    let token = null;
+
     if (userSession) {
       const parsedData = JSON.parse(userSession);
       dispatch({type: RESTORE_TOKEN, payload: parsedData});
-      dispatch(restoreUser(parsedData.token));
+      token = parsedData.token;
     }
+
+    dispatch(restoreUser(token));
   }, [dispatch]);
 
   return {restoreSession};

@@ -253,25 +253,53 @@ export const Home = ({navigation}) => {
                 marginVertical: hp(10),
               }}>
               <HStack space={2}>
-                <IconButton
-                  rounded={'full'}
-                  onPress={() => navigation.navigate('Deposit')}
-                  bgColor={'white'}
-                  icon={
-                    <Feather
-                      name={'plus'}
-                      size={hp(20)}
-                      color={colors.primary}
+                {Platform.OS === 'ios' ? (
+                  <Pressable onPress={() => navigation.navigate('Deposit')}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: 'white',
+                        padding: hp(8),
+                        borderRadius: hp(20),
+                      }}>
+                      <Feather
+                        name={'plus'}
+                        size={hp(20)}
+                        color={colors.primary}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: 'Poppins-Regular',
+                          fontSize: hp(13),
+                        }}>
+                        Add Fund
+                      </Text>
+                    </View>
+                  </Pressable>
+                ) : (
+                  <>
+                    <IconButton
+                      rounded={'full'}
+                      bgColor={'white'}
+                      onPress={() => navigation.navigate('Deposit')}
+                      icon={
+                        <Feather name={'plus'} size={hp(20)} color={'blue'} />
+                      }
+                      variant={'solid'}
                     />
-                  }
-                  variant={'solid'}
-                />
-                <IconButton
-                  rounded={'full'}
-                  onPress={() => navigation.navigate('WalletTransferScreen')}
-                  icon={<Feather name={'send'} size={hp(20)} color={'white'} />}
-                  variant={'solid'}
-                />
+                    <IconButton
+                      rounded={'full'}
+                      onPress={() =>
+                        navigation.navigate('WalletTransferScreen')
+                      }
+                      icon={
+                        <Feather name={'send'} size={hp(20)} color={'white'} />
+                      }
+                      variant={'solid'}
+                    />
+                  </>
+                )}
               </HStack>
             </View>
           </View>

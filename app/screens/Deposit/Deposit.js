@@ -13,6 +13,7 @@ import {
   Pressable,
   ScrollView,
   Actionsheet,
+  Spinner,
 } from 'native-base';
 import {MainLayout} from '../../components';
 import Feather from 'react-native-vector-icons/Feather';
@@ -24,30 +25,52 @@ import {ManualDeposit, MomoAgent, CardDeposit} from '../../components';
 import {useSelector} from 'react-redux';
 import CompleteCardPayment from '../../components/CompleteCardPayment';
 import {hp} from '../../config/dpTopx';
+import {ROUTES} from '../../lib';
 
-export const DepositScreen = ({route, navigation}) => {
+const getBankLogo = name => {
+  if (!name) {
+    return;
+  }
+
+  if (name.includes('Wema')) {
+    return require('../../../assets/images/wemabank.jpg');
+  }
+
+  if (name.includes('Sterling')) {
+    return require('../../../assets/images/sterling.png');
+  }
+
+  if (name.includes('Moniepoint')) {
+    return require('../../../assets/images/moniepoint.png');
+  }
+
+  if (name.includes('GTBank')) {
+    return require('../../../assets/images/gtbank.png');
+  }
+
+  return require('../../../assets/images/logo_new.png');
+};
+
+export const DepositScreen = ({navigation}) => {
   const {colors} = useTheme();
   const [sheetContent, setSheetContent] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const [paymentLink, setPaymentLink] = useState('');
 
   const {
     manual_deposit,
-    automated_deposit,
     momo_agent_deposit,
     standard_deposit,
+    accounts,
+    isLoading,
   } = useSelector(state => state.wallet);
+
+  const [selectedAccount, setSelectedAccount] = useState(0);
 
   const handleClipBoard = text => {
     Clipboard.setString(text);
     Alert.alert('Alert', 'Copied');
   };
-
-  // const handleInitiateStandardPayment = async amount => {
-  //   setLoading(true);
-  //   const request = await cardWalletDeposit({amount});
-  // };
 
   const depositOptions = [
     {
@@ -130,13 +153,18 @@ export const DepositScreen = ({route, navigation}) => {
 
   const handleShareAccountDetails = async () => {
     try {
-      const result = await Share.share({
-        message: `Account Name: ${automated_deposit?.account_name} \nAccount Number: ${automated_deposit?.account_number} \nBank Name: ${automated_deposit?.bank_name}`,
-      });
     } catch (error) {
       alert(error.message);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Box flex={1} justifyContent={'center'} alignItems={'center'}>
+        <Spinner />
+      </Box>
+    );
+  }
 
   return (
     <MainLayout headerTitle={'Deposit to wallet'} showHeader={true}>
@@ -158,58 +186,120 @@ export const DepositScreen = ({route, navigation}) => {
             p={hp(20)}
             space={'3'}
             bgColor={'white'}
+            position={'relative'}
             shadow={'4'}
             borderWidth={1}
             rounded={'xl'}>
-            <HStack alignItems={'center'} space={2}>
-              <Avatar size={'md'} rounded={'xl'} bgColor={'primary.100'}>
-                <MaterialCommunityIcons
-                  name={'bank'}
-                  size={23}
-                  color={colors.primary[500]}
-                />
-              </Avatar>
-              <VStack flex={1}>
-                <Text>Bank Transfer</Text>
-                <Text fontSize={'xs'} color={'gray.500'}>
-                  Add money via mobile or internet banking
+            {accounts.length < 1 ? (
+              <Box
+                minHeight={hp(140)}
+                backgroundColor={'white'}
+                justifyContent={'center'}
+                alignItems={'center'}>
+                <Text textAlign={'center'}>
+                  Thank you for choosing Datashop. To generate an account number
+                  with our banking partners, we will need to verify your
+                  information.
                 </Text>
-              </VStack>
-            </HStack>
-            <Divider />
-            <VStack mt={'2'}>
-              <Text fontSize={'md'} color={'black'}>
-                {automated_deposit?.bank_name}
-              </Text>
-              <Text>Acccount Name: {automated_deposit?.account_name}</Text>
-              <Text fontSize={'3xl'} fontWeight={'medium'}>
-                {automated_deposit?.account_number}
-              </Text>
-              <HStack alignItems={'center'} space={'1'}>
-                <Feather name={'info'} color={colors.primary[500]} />
-                <Text fontSize={'xs'} color={'primary.500'}>
-                  Processing fee {automated_deposit?.fee}
-                </Text>
-              </HStack>
-            </VStack>
+                <Button
+                  onPress={() =>
+                    navigation.navigate(ROUTES.ACCOUNT_NUMBER_SCREEN)
+                  }
+                  mt={'4'}
+                  size={'sm'}
+                  width={'70%'}
+                  variant={'outline'}>
+                  Verify Using BVN
+                </Button>
+                <Button
+                  onPress={() =>
+                    navigation.navigate(ROUTES.ACCOUNT_NUMBER_NIN_SCREEN)
+                  }
+                  mt={'2'}
+                  size={'sm'}
+                  width={'70%'}
+                  variant={'outline'}>
+                  Verify Using NIN
+                </Button>
+              </Box>
+            ) : (
+              <>
+                <HStack space={'2'}>
+                  {accounts?.map((account, index) => (
+                    <Pressable
+                      key={index}
+                      borderWidth={1}
+                      borderColor={
+                        selectedAccount === index ? 'primary.500' : 'gray.500'
+                      }
+                      rounded={'full'}
+                      onPress={() => setSelectedAccount(index)}
+                      overflow={'hidden'}
+                      width={'35px'}
+                      height={'35px'}>
+                      <Image
+                        source={getBankLogo(account?.bank_name)}
+                        width={'100%'}
+                        height={'100%'}
+                        alt="bank logo"
+                        resizeMode="contain"
+                      />
+                    </Pressable>
+                  ))}
+                </HStack>
+                <HStack alignItems={'center'} space={2}>
+                  <Avatar size={'md'} rounded={'xl'} bgColor={'primary.100'}>
+                    <MaterialCommunityIcons
+                      name={'bank'}
+                      size={23}
+                      color={colors.primary[500]}
+                    />
+                  </Avatar>
+                  <VStack flex={1}>
+                    <Text>Bank Transfer</Text>
+                    <Text fontSize={'xs'} color={'gray.500'}>
+                      Add money via mobile or internet banking
+                    </Text>
+                  </VStack>
+                </HStack>
+                <Divider />
+                <VStack mt={'2'}>
+                  <Text fontSize={'md'} color={'black'}>
+                    {accounts[selectedAccount]?.bank_name}
+                  </Text>
+                  <Text>
+                    Acccount Name: {accounts[selectedAccount]?.account_name}
+                  </Text>
+                  <Text fontSize={'3xl'} fontWeight={'medium'}>
+                    {accounts[selectedAccount]?.account_number}
+                  </Text>
+                  <HStack alignItems={'center'} space={'1'}>
+                    <Feather name={'info'} color={colors.primary[500]} />
+                    <Text fontSize={'xs'} color={'primary.500'}>
+                      Processing fee {50}
+                    </Text>
+                  </HStack>
+                </VStack>
 
-            <HStack width={'full'} space={'2'}>
-              <Button
-                rounded={'xl'}
-                colorScheme={'coolGray'}
-                flex={1}
-                onPress={() =>
-                  handleClipBoard(automated_deposit?.account_number)
-                }>
-                Copy Number
-              </Button>
-              <Button
-                rounded={'xl'}
-                flex={1}
-                onPress={handleShareAccountDetails}>
-                Share Details
-              </Button>
-            </HStack>
+                <HStack width={'full'} space={'2'}>
+                  <Button
+                    rounded={'xl'}
+                    colorScheme={'coolGray'}
+                    flex={1}
+                    onPress={() =>
+                      handleClipBoard(accounts[selectedAccount]?.account_number)
+                    }>
+                    Copy Number
+                  </Button>
+                  <Button
+                    rounded={'xl'}
+                    flex={1}
+                    onPress={handleShareAccountDetails}>
+                    Share Details
+                  </Button>
+                </HStack>
+              </>
+            )}
           </VStack>
 
           <HStack

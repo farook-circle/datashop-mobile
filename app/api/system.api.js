@@ -1,6 +1,22 @@
 import {api} from './config.api';
 import {store} from '../redux/store';
 
+export const getMonnifyBankList = async () => {
+  const token = store.getState().auth.token;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+
+  return api.get('/api/bank-list', {}, config);
+};
+
 export const getTickets = async () => {
   const token = store.getState().auth.token;
 

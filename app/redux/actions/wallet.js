@@ -10,6 +10,7 @@ import {
   GET_PAYMENT_STATUS,
   GET_AIRTIME_FUNDING,
   REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
+  TOGGLE_LOADING,
 } from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
 import {getPaymentOptionWalletBalance} from '../../api/user.api';
@@ -310,11 +311,15 @@ export const paymentAccountDetails = () => (dispatch, getState) => {
 };
 
 export const paymentOptionWalletBalance = () => async dispatch => {
+  dispatch({type: TOGGLE_LOADING});
+  
   const request = await getPaymentOptionWalletBalance();
   if (request.ok) {
     dispatch({
       type: REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
       payload: request.data,
     });
+  } else {
+    dispatch({type: TOGGLE_LOADING});
   }
 };

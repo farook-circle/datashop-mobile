@@ -86,8 +86,8 @@ const CustomSidebarMenu = props => {
   };
 
   return (
-    <Box safeArea flex={1} bgColor={'white'}>
-      <Box bgColor={'primary.500'} px={'4'} pb={'4'} pt={'4'}>
+    <Box flex={1} bgColor={'white'}>
+      <Box safeArea bgColor={'primary.500'} px={'4'} pb={'4'} pt={'2'}>
         <VStack space={'2'}>
           <HStack space={'3'}>
             <Avatar
@@ -156,23 +156,6 @@ const CustomSidebarMenu = props => {
             {formatCurrency(wallet_balance)}
           </Text>
         </VStack>
-
-        <Box mt={2} bgColor={'white'} p={'1'}>
-          <TouchableOpacity
-            activeOpacity={user?.details?.is_bvn_verified ? 1 : 0.7}
-            onPress={handleVerifyBvn}>
-            <Text
-              style={{
-                color: user?.details?.is_bvn_verified ? 'green' : 'red',
-                fontSize: hp(13),
-                fontFamily: 'Poppins-Medium',
-              }}>
-              {user?.details?.is_bvn_verified
-                ? 'BVN Verified'
-                : 'Click to Verify your BVN'}
-            </Text>
-          </TouchableOpacity>
-        </Box>
       </Box>
       <Box px={2} py={2} flex={1}>
         <DrawerContentScrollView

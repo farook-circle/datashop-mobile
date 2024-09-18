@@ -17,6 +17,8 @@ export const ROUTES = {
   ACCOUNT_STATEMENT_SCREEN: 'AccountStatement',
   EDIT_PROFILE_SCREEN: 'EditProfile',
   DEPOSIT_SCREEN: 'Deposit',
+  ACCOUNT_NUMBER_SCREEN: 'CreateAccountNumberScreen',
+  ACCOUNT_NUMBER_NIN_SCREEN: 'CreateAccountNumberNinScreen',
   WITHDRAW_SCREEN: 'Withdraw',
   DATA_CATEGORY_SCREEN: 'DataCategory',
   DATA_MANAGEMENT_SCREEN: 'DataManagement',

@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Avatar, Badge, Box, HStack, Pressable, VStack} from 'native-base';
+import {Avatar} from 'native-base';
 import React from 'react';
-import {Text, StyleSheet} from 'react-native';
+import {Text, StyleSheet, Image, TouchableOpacity, View} from 'react-native';
 import colors from '../../../assets/colors/colors';
 import {hp} from '../../config/dpTopx';
 import Feather from 'react-native-vector-icons/Feather';
@@ -49,49 +49,51 @@ export default function HistoryItemList({item, onPress}) {
   };
 
   return (
-    <Pressable onPress={onPress}>
-      {({isPressed, isHovered, isFocused}) => (
-        <HStack
-          mx={'4'}
-          rounded={'lg'}
-          bgColor={'gray.50'}
-          borderWidth={1}
-          borderColor={'black'}
-          space={'2'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-          p={'2'}>
-          <Avatar
-            width={hp(40)}
-            height={hp(40)}
-            bgColor={'primary.500'}
-            source={{uri: item?.image}}>
-            {getDefaultIcon(item?.transaction_type)}
-          </Avatar>
-          <VStack flex={1} space={1}>
-            <Text style={styles.nameStyle}>{item?.name}</Text>
-            <Text style={styles.type}>{getType(item?.transaction_type)}</Text>
-          </VStack>
-          <VStack alignItems={'flex-end'} space={1}>
-            <Text style={styles.amountStyle}>
-              {formatCurrency(item.amount)}
-            </Text>
-            <Text
-              style={{
-                color:
-                  item.status.toLowerCase() === 'pending'
-                    ? 'orange'
-                    : item.status.toLowerCase() === 'failed'
-                    ? 'red'
-                    : 'green',
-                fontSize: hp(10),
-              }}>
-              {item.status.toUpperCase()}
-            </Text>
-          </VStack>
-        </HStack>
-      )}
-    </Pressable>
+    <TouchableOpacity onPress={onPress}>
+      <View
+        style={{
+          flexDirection: 'row',
+          borderWidth: 1,
+          marginHorizontal: hp(10),
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderRadius: hp(10),
+          padding: hp(5),
+        }}>
+        <Image
+          source={{uri: item?.image}}
+          style={{
+            width: hp(40),
+            height: hp(40),
+            backgroundColor: 'blue',
+            borderRadius: hp(20),
+          }}
+          resizeMode="cover"
+          defaultSource={require('../../../assets/images/logo_new.png')}
+        />
+
+        <View style={{flex: 1, marginHorizontal: hp(3)}}>
+          <Text style={styles.nameStyle}>{item?.name}</Text>
+          <Text style={styles.type}>{getType(item?.transaction_type)}</Text>
+        </View>
+
+        <View style={{alignItems: 'flex-end'}}>
+          <Text style={styles.amountStyle}>{formatCurrency(item.amount)}</Text>
+          <Text
+            style={{
+              color:
+                item.status.toLowerCase() === 'pending'
+                  ? 'orange'
+                  : item.status.toLowerCase() === 'failed'
+                  ? 'red'
+                  : 'green',
+              fontSize: hp(10),
+            }}>
+            {item.status.toUpperCase()}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

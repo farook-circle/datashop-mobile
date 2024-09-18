@@ -1,57 +1,55 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Platform,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
-  ActivityIndicator,
-} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, Platform, Image} from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
-import {hp, dp, wp} from '../../config/dpTopx';
-import {
-  Button,
-  FormControl,
-  Input,
-  VStack,
-  Pressable,
-  Checkbox,
-} from 'native-base';
+import {hp, wp} from '../../config/dpTopx';
+import {Button, FormControl, Input, VStack, Pressable} from 'native-base';
 import {Formik} from 'formik';
 import * as validation from '../../utils/validations';
 
 import colors from '../../../assets/colors/colors';
 import {signUp} from '../../redux/actions/auth';
 import {MainLayout} from '../../components';
-import {ROUTES} from '../../lib';
+
+// Utility function to calculate password strength
+const calculatePasswordStrength = password => {
+  let strength = 0;
+  if (password.length >= 8) {
+    strength += 1;
+  } // Minimum length
+  if (/[A-Z]/.test(password)) {
+    strength += 1;
+  } // Uppercase letter
+  if (/[a-z]/.test(password)) {
+    strength += 1;
+  } // Lowercase letter
+  if (/[0-9]/.test(password)) {
+    strength += 1;
+  } // Number
+  if (/[^A-Za-z0-9]/.test(password)) {
+    strength += 1;
+  } // Special character
+  return strength;
+};
 
 const registerInitialValue = {
   full_name: '',
   phone: '',
   email: '',
   password: '',
+  confirm_password: '', // Added for retype password
   referral_code: '',
 };
 
 export const RegistrationScreen = ({navigation}) => {
   const dispatch = useDispatch();
-
   const [eyePassword, setEyePassword] = useState(false);
-
+  const [eyeConfirmPassword, setEyeConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength state
   const {isLoading} = useSelector(state => state.auth);
 
-  /* registration form */
-
   const handleRegister = data => {
-    // navigation.navigate('VerifyEmail', {email: data.email});
-    // return;
-
     const [first_name, last_name] = data.full_name.split(' ');
 
     const payload = {
@@ -79,7 +77,6 @@ export const RegistrationScreen = ({navigation}) => {
       titleHeader={'Register'}
       showHeader={true}>
       <KeyboardAwareScrollView>
-        {/* Header Logo*/}
         <View style={styles.headerWrapper}>
           <Image
             source={require('../../../assets/images/logo.png')}
@@ -88,14 +85,11 @@ export const RegistrationScreen = ({navigation}) => {
           <Text style={styles.logoTitle}>datashop.</Text>
         </View>
 
-        {/* Welcome onboard message and subtitle */}
         <Text style={styles.introTitle}>Welcome Onboard!</Text>
         <Text style={styles.introSubtitle}>
           Fill in the form below to become an agent and start selling for your
-          costumer
+          customer.
         </Text>
-
-        {/* Registration Form and button wrapper */}
 
         <Formik
           validationSchema={validation.signUpValidationSchema}
@@ -126,6 +120,7 @@ export const RegistrationScreen = ({navigation}) => {
                   {errors.full_name}
                 </FormControl.ErrorMessage>
               </FormControl>
+
               <FormControl isInvalid={errors.phone && touched.phone}>
                 <FormControl.Label>Phone number</FormControl.Label>
                 <Input
@@ -147,6 +142,7 @@ export const RegistrationScreen = ({navigation}) => {
                   {errors.phone}
                 </FormControl.ErrorMessage>
               </FormControl>
+
               <FormControl isInvalid={errors.email && touched.email}>
                 <FormControl.Label>Email address</FormControl.Label>
                 <Input
@@ -163,6 +159,7 @@ export const RegistrationScreen = ({navigation}) => {
                   {errors.email}
                 </FormControl.ErrorMessage>
               </FormControl>
+
               <FormControl>
                 <FormControl.Label>Referral Code (Optional)</FormControl.Label>
                 <Input
@@ -172,13 +169,16 @@ export const RegistrationScreen = ({navigation}) => {
                   keyboardType="decimal-pad"
                   value={values.referral_code}
                   onBlur={handleBlur('referral_code')}
-                  onChangeText={handleChange('referral_code')}
+                  onChangeText={text => {
+                    if (text.length > 11) {
+                      return;
+                    }
+                    setFieldValue('referral_code', text);
+                  }}
                 />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.password_again}
-                </FormControl.ErrorMessage>
               </FormControl>
+
+              {/* Password Input */}
               <FormControl isInvalid={errors.password && touched.password}>
                 <FormControl.Label>Password</FormControl.Label>
                 <Input
@@ -187,7 +187,10 @@ export const RegistrationScreen = ({navigation}) => {
                   placeholder="Password"
                   value={values.password}
                   onBlur={handleBlur('password')}
-                  onChangeText={handleChange('password')}
+                  onChangeText={text => {
+                    setFieldValue('password', text);
+                    setPasswordStrength(calculatePasswordStrength(text));
+                  }}
                   autoCapitalize={'none'}
                   secureTextEntry={!eyePassword}
                   InputRightElement={
@@ -205,6 +208,60 @@ export const RegistrationScreen = ({navigation}) => {
                 <FormControl.ErrorMessage
                   leftIcon={<Feather name="info" size={10} />}>
                   {errors.password}
+                </FormControl.ErrorMessage>
+              </FormControl>
+
+              {/* Password Strength Indicator */}
+              <View style={styles.passwordStrengthWrapper}>
+                <Text>Password Strength:</Text>
+                <Text
+                  style={[
+                    styles.passwordStrengthText,
+                    {
+                      color:
+                        passwordStrength < 3
+                          ? 'red'
+                          : passwordStrength === 3
+                          ? 'orange'
+                          : 'green',
+                    },
+                  ]}>
+                  {passwordStrength < 3
+                    ? 'Weak'
+                    : passwordStrength === 3
+                    ? 'Medium'
+                    : 'Strong'}
+                </Text>
+              </View>
+
+              {/* Retype Password Input */}
+              <FormControl
+                isInvalid={errors.confirm_password && touched.confirm_password}>
+                <FormControl.Label>Retype Password</FormControl.Label>
+                <Input
+                  size={'lg'}
+                  py={'3'}
+                  placeholder="Retype Password"
+                  value={values.confirm_password}
+                  onBlur={handleBlur('confirm_password')}
+                  onChangeText={handleChange('confirm_password')}
+                  autoCapitalize={'none'}
+                  secureTextEntry={!eyeConfirmPassword}
+                  InputRightElement={
+                    <Pressable
+                      onPress={() => setEyeConfirmPassword(!eyeConfirmPassword)}
+                      pr={'2'}>
+                      <Feather
+                        name={eyeConfirmPassword ? 'eye' : 'eye-off'}
+                        color={'gray'}
+                        size={hp(20)}
+                      />
+                    </Pressable>
+                  }
+                />
+                <FormControl.ErrorMessage
+                  leftIcon={<Feather name="info" size={10} />}>
+                  {errors.confirm_password}
                 </FormControl.ErrorMessage>
               </FormControl>
 
@@ -254,14 +311,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
     fontSize: hp(20),
   },
-
   introTitle: {
     marginTop: hp(15),
     color: colors.textBlack,
     fontFamily: 'Poppins-SemiBold',
     fontSize: hp(20),
     paddingHorizontal: wp(15),
-    // textAlign: 'center',
   },
   introSubtitle: {
     marginTop: hp(2),
@@ -271,51 +326,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(15),
     marginBottom: hp(10),
   },
-  textInputWrapper: {
-    width: wp(310),
-    height: hp(300),
-    marginTop: hp(20),
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  fullNameWrapper: {
-    width: wp(310),
+  passwordStrengthWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: hp(5),
   },
-  textInput: {
-    color: 'black',
-    fontFamily: 'Poppins-Medium',
+  passwordStrengthText: {
     fontSize: hp(14),
-    borderWidth: 2,
-    borderColor: colors.textLight,
-    width: wp(310),
-    height: hp(50),
-    borderRadius: 10,
-    paddingHorizontal: 30,
-  },
-  passwordWrapper: {
-    width: wp(310),
-    height: hp(50),
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: colors.textLight,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  textInputPassword: {
-    color: 'black',
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    height: hp(60),
-    paddingHorizontal: 30,
-    flex: 1,
-  },
-  eyeIcon: {
-    paddingRight: 20,
+    fontWeight: 'bold',
   },
   buttonsWrapper: {
     width: wp(310),
@@ -324,23 +342,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
-    // backgroundColor: 'red',
   },
-
-  registerText: {
-    color: colors.textWhite,
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(20),
-  },
-  registerButton: {
-    width: wp(310),
-    height: hp(60),
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 20,
-  },
-
   textLogin: {
     width: '100%',
     textAlign: 'center',

@@ -10,6 +10,7 @@ import {
   AccountStatement,
   EditProfile,
   DepositScreen,
+  AccountNumberScreen,
   Withdraw,
   DataCategoryScreen,
   DataManagement,
@@ -37,6 +38,7 @@ import {
   ReceiptScreen,
   MultiFactorScreen,
   SettingsScreen,
+  AccountNumberNINScreen,
 } from '../screens';
 import {TicketListScreen, TicketMessageScreen} from '../screens/ticket';
 import notifee, {EventType} from '@notifee/react-native';
@@ -181,6 +183,16 @@ export const DashboardNavigator = () => {
       <Stack.Screen
         name={ROUTES.DEPOSIT_SCREEN}
         component={DepositScreen}
+        options={screenOptions}
+      />
+      <Stack.Screen
+        name={ROUTES.ACCOUNT_NUMBER_SCREEN}
+        component={AccountNumberScreen}
+        options={screenOptions}
+      />
+      <Stack.Screen
+        name={ROUTES.ACCOUNT_NUMBER_NIN_SCREEN}
+        component={AccountNumberNINScreen}
         options={screenOptions}
       />
       <Stack.Screen

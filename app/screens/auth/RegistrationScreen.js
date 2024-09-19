@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {View, Text, StyleSheet, StatusBar, Platform, Image} from 'react-native';
 import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -11,6 +12,7 @@ import * as validation from '../../utils/validations';
 import colors from '../../../assets/colors/colors';
 import {signUp} from '../../redux/actions/auth';
 import {MainLayout} from '../../components';
+import {PasswordRequirementCheck} from '../../components/PasswordRequirementCheck';
 
 // Utility function to calculate password strength
 const calculatePasswordStrength = password => {
@@ -77,14 +79,6 @@ export const RegistrationScreen = ({navigation}) => {
       titleHeader={'Register'}
       showHeader={true}>
       <KeyboardAwareScrollView>
-        <View style={styles.headerWrapper}>
-          <Image
-            source={require('../../../assets/images/logo.png')}
-            style={styles.logoImage}
-          />
-          <Text style={styles.logoTitle}>datashop.</Text>
-        </View>
-
         <Text style={styles.introTitle}>Welcome Onboard!</Text>
         <Text style={styles.introSubtitle}>
           Fill in the form below to become an agent and start selling for your
@@ -211,28 +205,32 @@ export const RegistrationScreen = ({navigation}) => {
                 </FormControl.ErrorMessage>
               </FormControl>
 
-              {/* Password Strength Indicator */}
-              <View style={styles.passwordStrengthWrapper}>
-                <Text>Password Strength:</Text>
-                <Text
-                  style={[
-                    styles.passwordStrengthText,
-                    {
-                      color:
-                        passwordStrength < 3
-                          ? 'red'
-                          : passwordStrength === 3
-                          ? 'orange'
-                          : 'green',
-                    },
-                  ]}>
-                  {passwordStrength < 3
-                    ? 'Weak'
-                    : passwordStrength === 3
-                    ? 'Medium'
-                    : 'Strong'}
-                </Text>
-              </View>
+              {values.password.length > 0 && (
+                <>
+                  <View style={styles.passwordStrengthWrapper}>
+                    <Text>Password Strength:</Text>
+                    <Text
+                      style={[
+                        styles.passwordStrengthText,
+                        {
+                          color:
+                            passwordStrength < 3
+                              ? 'red'
+                              : passwordStrength === 3
+                              ? 'orange'
+                              : 'green',
+                        },
+                      ]}>
+                      {passwordStrength < 3
+                        ? 'Weak'
+                        : passwordStrength === 3
+                        ? 'Medium'
+                        : 'Strong'}
+                    </Text>
+                  </View>
+                  <PasswordRequirementCheck password={values.password} />
+                </>
+              )}
 
               {/* Retype Password Input */}
               <FormControl

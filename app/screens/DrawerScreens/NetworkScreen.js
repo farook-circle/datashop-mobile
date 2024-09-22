@@ -1,12 +1,12 @@
-import {Box, Divider, HStack, ScrollView, Spinner, VStack} from 'native-base';
+import {Box, Divider, HStack, ScrollView, VStack} from 'native-base';
 import React, {useCallback, useState} from 'react';
-import {Text} from 'react-native';
+import {Text, RefreshControl} from 'react-native';
 import {hp} from '../../config/dpTopx';
 import {useDispatch, useSelector} from 'react-redux';
 import {getServiceSuccessRate} from '../../api/service.api';
 import {GET_SUCCESS_RATE} from '../../redux/constants/system';
 import {MainLayout} from '../../components';
-import {RefreshControl} from 'react-native-gesture-handler';
+
 
 const ChartBar = ({title, percentage}) => {
   const getBgColor = perc => {

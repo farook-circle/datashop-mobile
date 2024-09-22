@@ -2,8 +2,6 @@
 import {
   Actionsheet,
   Box,
-  Card,
-  Divider,
   HStack,
   ScrollView,
   Spinner,
@@ -13,7 +11,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
 import {MainLayout, MonthYearPicker} from '../../components';
-import {PieChart} from 'react-native-gifted-charts';
+// import {PieChart} from 'react-native-gifted-charts';
 import colors from '../../../assets/colors/colors';
 import {hp} from '../../config/dpTopx';
 import Feather from 'react-native-vector-icons/Feather';
@@ -132,9 +130,6 @@ export const ActivityDetails = ({navigation, route}) => {
       month: months.indexOf(selectedMonth) + 1,
       year: selectedYear,
     });
-    if (request.ok) {
-      setStatistics(request.data);
-    }
 
     setLoading(false);
   }, [selectedMonth, selectedYear]);
@@ -192,7 +187,7 @@ export const ActivityDetails = ({navigation, route}) => {
                   borderColor: colors.primary,
                   borderWidth: 2,
                 }}>
-                <View style={{padding: 20, alignItems: 'center'}}>
+                {/* <View style={{padding: 20, alignItems: 'center'}}>
                   <PieChart
                     data={statistics?.chart_data}
                     donut
@@ -223,8 +218,8 @@ export const ActivityDetails = ({navigation, route}) => {
                       );
                     }}
                   />
-                </View>
-                <LegendComponent data={statistics?.legend_data} />
+                </View> */}
+                {/* <LegendComponent data={statistics?.legend_data} /> */}
               </View>
               <VStack px={'6'}>
                 <Text style={{fontFamily: 'Poppins-Medium', fontSize: 16}}>

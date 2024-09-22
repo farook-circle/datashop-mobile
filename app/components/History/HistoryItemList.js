@@ -49,30 +49,44 @@ export default function HistoryItemList({item, onPress}) {
   };
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View
         style={{
           flexDirection: 'row',
           borderWidth: 1,
+          borderColor: '#f2f2f2',
           marginHorizontal: hp(10),
           alignItems: 'center',
           justifyContent: 'space-between',
           borderRadius: hp(10),
-          padding: hp(5),
+          padding: hp(10),
         }}>
-        <Image
-          source={{uri: item?.image}}
-          style={{
-            width: hp(40),
-            height: hp(40),
-            backgroundColor: 'blue',
-            borderRadius: hp(20),
-          }}
-          resizeMode="cover"
-          defaultSource={require('../../../assets/images/logo_new.png')}
-        />
+        {item?.image ? (
+          <Image
+            source={{uri: item?.image || undefined}}
+            style={{
+              width: hp(40),
+              height: hp(40),
+              backgroundColor: 'blue',
+              borderRadius: hp(20),
+            }}
+            resizeMode="cover"
+            defaultSource={require('../../../assets/images/logo_new.png')}
+          />
+        ) : (
+          <Image
+            source={require('../../../assets/images/logo_new.png')}
+            style={{
+              width: hp(40),
+              height: hp(40),
+              backgroundColor: 'blue',
+              borderRadius: hp(20),
+            }}
+            resizeMode="cover"
+          />
+        )}
 
-        <View style={{flex: 1, marginHorizontal: hp(3)}}>
+        <View style={{flex: 1, marginHorizontal: hp(7)}}>
           <Text style={styles.nameStyle}>{item?.name}</Text>
           <Text style={styles.type}>{getType(item?.transaction_type)}</Text>
         </View>

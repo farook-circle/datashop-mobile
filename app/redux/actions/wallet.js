@@ -4,7 +4,6 @@ import {
   GET_BALANCE,
   GET_VIRTUAL_ACCOUNT,
   DELETE_VIRTUAL_ACCOUNT,
-  GET_MOM,
   GET_ACCOUNT_NUMBER,
   GET_MOMO_AGENT_NUMBER,
   GET_PAYMENT_STATUS,
@@ -12,7 +11,6 @@ import {
   REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
   TOGGLE_LOADING,
 } from '../constants/wallet';
-import {AUTH_ERROR} from '../constants/auth';
 import {getPaymentOptionWalletBalance} from '../../api/user.api';
 
 export const getWalletBalance = () => (dispatch, getState) => {
@@ -312,7 +310,7 @@ export const paymentAccountDetails = () => (dispatch, getState) => {
 
 export const paymentOptionWalletBalance = () => async dispatch => {
   dispatch({type: TOGGLE_LOADING});
-  
+
   const request = await getPaymentOptionWalletBalance();
   if (request.ok) {
     dispatch({

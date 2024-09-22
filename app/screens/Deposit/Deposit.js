@@ -54,7 +54,6 @@ const getBankLogo = name => {
 export const DepositScreen = ({navigation}) => {
   const {colors} = useTheme();
   const [sheetContent, setSheetContent] = useState(null);
-
   const [paymentLink, setPaymentLink] = useState('');
 
   const {

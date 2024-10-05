@@ -68,6 +68,7 @@ import {
   getSuccessRate,
   getUserTickets,
 } from '../redux/actions/system';
+import {LiveChatScreen} from '../screens/Chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -264,6 +265,11 @@ export const DashboardNavigator = () => {
       <Stack.Screen
         name={ROUTES.COMPLAIN_SCREEN}
         component={ComplainScreen}
+        options={screenOptions}
+      />
+      <Stack.Screen
+        name={ROUTES.LIVE_CHAT_SCREEN}
+        component={LiveChatScreen}
         options={screenOptions}
       />
       <Stack.Screen

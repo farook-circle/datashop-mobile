@@ -181,9 +181,9 @@ const CustomSidebarMenu = props => {
             />
 
             <MenuItem
-              onPress={() => navigateToDrawerScreen(ROUTES.TICKET_LIST_SCREEN)}
-              title={'Support'}
-              icon={<Entypo name="ticket" color={'white'} size={hp(20)} />}
+              onPress={() => navigateToDrawerScreen(ROUTES.LIVE_CHAT_SCREEN)}
+              title={'Live Chat'}
+              icon={<Entypo name="message" color={'white'} size={hp(20)} />}
             />
 
             <MenuItem

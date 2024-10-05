@@ -94,7 +94,11 @@ export const Home = ({navigation}) => {
 
   const pendingTransaction = data_purchase_history
     ?.slice(0, 10)
-    .find(item => item.status?.toLowerCase() === 'pending');
+    .find(
+      item =>
+        item.status?.toLowerCase() === 'pending' ||
+        item?.status?.toLowerCase() === 'processing',
+    );
 
   const handlePollUpdate = useCallback(() => {
     // call server to get the new history

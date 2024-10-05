@@ -16,14 +16,11 @@ import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
 
 import {Button, VStack} from 'native-base';
+import {ROUTES} from '../lib/routes.js';
 
 export const WelcomeScreen = ({navigation}) => {
-  const whatsapp = useSelector(state => state.config.contact_info);
-
-  const openWhatsapp = () => {
-    Linking.openURL(
-      'whatsapp://send?text=' + whatsapp.message + '&phone=' + whatsapp.number,
-    );
+  const handleOpenLiveChat = () => {
+    navigation.navigate(ROUTES.LIVE_CHAT_SCREEN);
   };
 
   return (
@@ -69,8 +66,10 @@ export const WelcomeScreen = ({navigation}) => {
         <Text style={styles.textInfoLink}>privacy policy</Text>
       </Text>
 
-      <TouchableOpacity style={styles.whatAppButton} onPress={openWhatsapp}>
-        <MaterialCommunityIcons name="whatsapp" size={hp(25)} color={'green'} />
+      <TouchableOpacity
+        style={styles.whatAppButton}
+        onPress={handleOpenLiveChat}>
+        <MaterialCommunityIcons name="chat" size={hp(25)} color={'blue'} />
         <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   },
   whatAppButtonText: {
     fontFamily: 'Poppins-Medium',
-    color: 'green',
+    color: 'blue',
     fontSize: hp(16),
     marginLeft: wp(5),
   },

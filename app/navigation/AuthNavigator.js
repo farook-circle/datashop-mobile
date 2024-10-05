@@ -13,6 +13,7 @@ import {
   ResetPassword,
   OAuthVerificationScreen,
 } from '../screens';
+import {LiveChatScreen} from '../screens/Chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +64,11 @@ export const AuthNavigator = () => {
       <Stack.Screen
         name={ROUTES.OAUTH_VERIFICATION_SCREEN}
         component={OAuthVerificationScreen}
+        options={screenOptions}
+      />
+      <Stack.Screen
+        name={ROUTES.LIVE_CHAT_SCREEN}
+        component={LiveChatScreen}
         options={screenOptions}
       />
     </Stack.Navigator>

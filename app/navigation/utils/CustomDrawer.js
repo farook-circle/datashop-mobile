@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {View, Text, Alert, Platform, TouchableOpacity} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {
+  View,
+  Text,
+  Alert,
+  Platform,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 import {Avatar, Box, Divider, HStack, Pressable, VStack} from 'native-base';
 
 import Feather from 'react-native-vector-icons/Feather';
@@ -16,30 +23,62 @@ import {formatCurrency} from '../../utils';
 import {DrawerContentScrollView} from '@react-navigation/drawer';
 import {StyleSheet} from 'react-native';
 
-const MenuItem = ({icon, title, onPress}) => (
-  <Pressable onPress={onPress}>
-    {({isPressed}) => (
-      <HStack
-        alignItems={'center'}
-        space={'2'}
-        bgColor={isPressed ? 'primary.100' : 'transparent'}
-        rounded={'lg'}
-        my={hp(4.5)}
-        p={hp(0)}>
-        <Avatar shadow={'3'} size={'sm'} bgColor={'primary.500'} rounded={'lg'}>
-          {icon}
-        </Avatar>
-        <Text style={{fontFamily: 'Poppins-Medium', color: colors.primary}}>
-          {title}
-        </Text>
-      </HStack>
-    )}
-  </Pressable>
-);
+const MenuItem = ({icon, title, onPress, isLiveChat = false}) => {
+  const blinkAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (isLiveChat) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(blinkAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(blinkAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    }
+  }, [isLiveChat, blinkAnim]);
+
+  return (
+    <Pressable onPress={onPress}>
+      {({isPressed}) => (
+        <HStack
+          alignItems={'center'}
+          space={'2'}
+          bgColor={isPressed ? 'primary.100' : 'transparent'}
+          rounded={'lg'}
+          my={hp(4.5)}
+          p={hp(0)}>
+          <Avatar
+            borderWidth={isLiveChat ? 2 : 0}
+            borderColor={'red.500'}
+            shadow={'3'}
+            size={'sm'}
+            bgColor={'primary.500'}
+            rounded={'lg'}>
+            {isLiveChat ? (
+              <Animated.View style={{opacity: blinkAnim}}>{icon}</Animated.View>
+            ) : (
+              icon
+            )}
+          </Avatar>
+          <Text style={{fontFamily: 'Poppins-Medium', color: colors.primary}}>
+            {title}
+          </Text>
+        </HStack>
+      )}
+    </Pressable>
+  );
+};
 
 const CustomSidebarMenu = props => {
   const dispatch = useDispatch();
-
   const {user} = useSelector(state => state.auth);
   const {wallet_balance} = useSelector(state => state.wallet);
 
@@ -47,7 +86,6 @@ const CustomSidebarMenu = props => {
     try {
       await EncryptedStorage.removeItem('user_session');
       await EncryptedStorage.removeItem('userPin');
-      // Congrats! You've just removed your first value!
     } catch (error) {
       // There was an error on the native side
     }
@@ -133,12 +171,7 @@ const CustomSidebarMenu = props => {
           </VStack>
         </VStack>
 
-        <VStack
-          bgColor={'primary.800'}
-          // shadow={'4'}
-          p={'2'}
-          mt={2}
-          rounded={'4'}>
+        <VStack bgColor={'primary.800'} p={'2'} mt={2} rounded={'4'}>
           <Text
             style={{
               color: 'white',
@@ -173,22 +206,20 @@ const CustomSidebarMenu = props => {
               title={'Statistics'}
               icon={<Feather name="pie-chart" color={'white'} size={hp(20)} />}
             />
-
             <MenuItem
               onPress={() => navigateToDrawerScreen('NetworkScreen')}
               title={'Network'}
               icon={<Feather name="globe" color={'white'} size={hp(20)} />}
             />
-
             <MenuItem
               onPress={() => navigateToDrawerScreen(ROUTES.LIVE_CHAT_SCREEN)}
               title={'Live Chat'}
               icon={<Entypo name="message" color={'white'} size={hp(20)} />}
+              isLiveChat={true}
             />
-
             <MenuItem
               onPress={() => navigateToDrawerScreen('TalkToUsScreen')}
-              title={'Talk to us'}
+              title={'Contact Us'}
               icon={<Feather name="send" color={'white'} size={hp(20)} />}
             />
             <MenuItem
@@ -198,7 +229,6 @@ const CustomSidebarMenu = props => {
                 <FontAwesome5Icon name="book" color={'white'} size={hp(20)} />
               }
             />
-
             <MenuItem
               onPress={() => navigateToDrawerScreen('AboutUsScreen')}
               title={'About Datashop'}

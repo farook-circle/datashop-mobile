@@ -1,5 +1,12 @@
 import * as yup from 'yup';
 
+export const phoneValidationSchema = yup.object().shape({
+  phone: yup
+    .string()
+    .matches(/(0)(\d){10}\b/, 'Enter a valid phone number')
+    .required('Phone number is required'),
+});
+
 // Validation for Login
 export const loginValidationSchema = yup.object().shape({
   email: yup

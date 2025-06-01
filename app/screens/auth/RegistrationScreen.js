@@ -1,292 +1,479 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, Text, StyleSheet, StatusBar, Platform, Image} from 'react-native';
-import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  ImageBackground,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import PhoneInput from 'react-native-phone-number-input';
+import {Wave as LoadingAnimation} from 'react-native-animated-spinkit';
+
 import Feather from 'react-native-vector-icons/Feather';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSelector, useDispatch} from 'react-redux';
 import {hp, wp} from '../../config/dpTopx';
-import {Button, FormControl, Input, VStack, Pressable} from 'native-base';
+import {
+  Button,
+  FormControl,
+  Input,
+  VStack,
+  IconButton,
+  HStack,
+  useTheme,
+} from 'native-base';
 import {Formik} from 'formik';
 import * as validation from '../../utils/validations';
 
 import colors from '../../../assets/colors/colors';
-import {signUp} from '../../redux/actions/auth';
-import {MainLayout} from '../../components';
+import {completeUserAuth, signUp} from '../../redux/actions/auth';
 import {PasswordRequirementCheck} from '../../components/PasswordRequirementCheck';
+import {checkUserExist, registerUser, userVerificaiton} from '../../api';
 
-// Utility function to calculate password strength
-const calculatePasswordStrength = password => {
-  let strength = 0;
-  if (password.length >= 8) {
-    strength += 1;
-  } // Minimum length
-  if (/[A-Z]/.test(password)) {
-    strength += 1;
-  } // Uppercase letter
-  if (/[a-z]/.test(password)) {
-    strength += 1;
-  } // Lowercase letter
-  if (/[0-9]/.test(password)) {
-    strength += 1;
-  } // Number
-  if (/[^A-Za-z0-9]/.test(password)) {
-    strength += 1;
-  } // Special character
-  return strength;
-};
 
-const registerInitialValue = {
-  full_name: '',
+const userCheckInit = {
   phone: '',
+  otp: '',
+  full_name: '',
   email: '',
-  password: '',
-  confirm_password: '', // Added for retype password
-  referral_code: '',
 };
 
 export const RegistrationScreen = ({navigation}) => {
   const dispatch = useDispatch();
-  const [eyePassword, setEyePassword] = useState(false);
-  const [eyeConfirmPassword, setEyeConfirmPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength state
   const {isLoading} = useSelector(state => state.auth);
+  const themeColors = useTheme().colors;
 
-  const handleRegister = data => {
-    const [first_name, last_name] = data.full_name.split(' ');
+  // ---- States for OTP / phone flow ----
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpPending, setOtpPending] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [checkUser, setCheckUser] = useState(false);
+  const [userExists, setUserExists] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formattedValue, setFormattedValue] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const phoneInput = useRef(null);
+  const [currentStep, setCurrentStep] = useState(0); // 0=enter phone, 1=enter personal info
 
-    const payload = {
-      first_name,
-      last_name,
-      email: data.email,
-      username: data.phone,
-      password: data.password,
+  // Countdown effect for “resend OTP” cooldown
+  useEffect(() => {
+    let timer = null;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
     };
+  }, [resendCooldown]);
 
-    if (data.referral_code) {
-      payload.referral_code = data.referral_code;
+  // Handle the “Continue” / “Submit OTP” / “Submit Registration” logic
+  const handleRegister = async data => {
+    // Step 0: The user taps “Continue” with their phone number
+    if (!checkUser) {
+      // Validate phone before sending OTP
+      if (!phoneInput.current?.isValidNumber(phoneNumber)) {
+        Alert.alert('Please enter a valid phone number.');
+        return;
+      }
+
+      setLoading(true);
+      const checkUserResponse = await checkUserExist(phoneNumber);
+      if (checkUserResponse.ok) {
+        setUserExists(Boolean(checkUserResponse.data?.user_exist));
+
+        // Request OTP code
+        const requestOtp = await userVerificaiton.requestCode(phoneNumber);
+        if (requestOtp.ok) {
+          setOtpPending(true);
+          setResendCooldown(60);
+        } else {
+          // Even if OTP request fails, we still show OTP input
+          setOtpPending(true);
+
+          Alert.alert(
+            requestOtp.data?.detail ||
+              'Something went wrong sending OTP. Please try again.',
+          );
+          setResendCooldown(60);
+        }
+
+        setCheckUser(true);
+      } else {
+        Alert.alert(
+          checkUserResponse.data?.detail ||
+            'Unable to check user status. Try again.',
+        );
+      }
+      setLoading(false);
+      return;
     }
 
-    dispatch(signUp(payload, ErrorOccur));
+    // Step 1: OTP is pending, so this is “Submit OTP”
+    if (otpPending) {
+      setLoading(true);
+      const verifyCodeResponse = await userVerificaiton.verifyCode({
+        code: data.otp,
+        phone_number: phoneNumber,
+      });
+      if (verifyCodeResponse.ok) {
+        setOtpVerified(true);
+        setOtpPending(false);
+        setOtp('');
+
+        // If user already existed, log them in immediately
+        if (userExists) {
+          dispatch(completeUserAuth(verifyCodeResponse.data));
+        } else {
+          // New user: show the “enter full name + email” step
+          setCurrentStep(1);
+        }
+      } else {
+        Alert.alert(
+          verifyCodeResponse.data?.detail || 'Invalid OTP. Please try again.',
+        );
+      }
+      setLoading(false);
+      return;
+    }
+
+    // Step 2: New user is filling out name/email to finish registration
+    if (currentStep === 1 && otpVerified && !userExists) {
+      setLoading(true);
+
+      // Prepare payload for registration
+      const [first_name, last_name] = data.full_name?.split(' ');
+      const payload = {
+        first_name,
+        last_name,
+        email: data.email,
+        phone_number: phoneNumber,
+      };
+
+      const registerRequest = await registerUser(payload);
+      if (registerRequest.ok) {
+        dispatch(completeUserAuth(registerRequest.data));
+      } else {
+        Alert.alert(
+          registerRequest.data?.detail ||
+            'Something went wrong while creating your account. Please try again.',
+        );
+      }
+
+      // Reset state after registration
+      setLoading(false);
+    }
   };
 
-  const ErrorOccur = status => {
-    alert(status);
+  // “Resend OTP” button handler
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    if (!phoneInput.current?.isValidNumber(phoneNumber)) {
+      Alert.alert('Please enter a valid phone number before resending OTP.');
+      return;
+    }
+    setLoading(true);
+    const requestOtp = await userVerificaiton.requestCode(phoneNumber);
+    if (requestOtp.ok) {
+      setResendCooldown(60);
+      Alert.alert('A new OTP has been sent.');
+    } else {
+      Alert.alert(
+        requestOtp.data?.detail ||
+          'Something went wrong while resending OTP. Please try again.',
+      );
+    }
+    setLoading(false);
   };
+
+  // Reset all state if user changes their phone
+  const handleResetState = () => {
+    setCurrentStep(0);
+    setOtpPending(false);
+    setOtpVerified(false);
+    setLoading(false);
+    setOtp('');
+    setResendCooldown(0);
+    setCheckUser(false);
+    setUserExists(false);
+  };
+
+  // The “title” and “subtitle” change depending on where we are:
+  const renderHeaderText = () => {
+    if (!checkUser) {
+      // Before we know if the phone belongs to an existing user
+      return {
+        title: 'Welcome!',
+        subtitle: 'Enter your phone number to continue.',
+      };
+    }
+
+    if (checkUser && otpPending) {
+      // After OTP is sent but not verified
+      return userExists
+        ? {
+            title: 'Welcome back!',
+            subtitle: 'Enter the OTP sent to your phone to log in.',
+          }
+        : {
+            title: 'Almost there!',
+            subtitle: 'Enter the OTP sent to your phone to verify.',
+          };
+    }
+
+    if (otpVerified && currentStep === 1) {
+      // New user is on step 2 (fill name/email)
+      return {
+        title: 'Create your account',
+        subtitle:
+          'Set up your name and email address to complete registration.',
+      };
+    }
+
+    // Fallback (should not really happen)
+    return {title: '', subtitle: ''};
+  };
+
+  const {title, subtitle} = renderHeaderText();
 
   return (
-    <MainLayout
-      style={styles.container}
-      titleHeader={'Register'}
-      showHeader={true}>
-      <KeyboardAwareScrollView>
-        <Text style={styles.introTitle}>Welcome Onboard!</Text>
-        <Text style={styles.introSubtitle}>
-          Fill in the form below to become an agent and start selling for your
-          customer.
-        </Text>
+    <ImageBackground
+      blurRadius={8}
+      source={{
+        uri: 'https://plus.unsplash.com/premium_photo-1701791988754-d200cc1b78c7?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      }}
+      style={styles.container}>
+      <HStack px="2">
+        <IconButton
+          rounded={'full'}
+          onPress={() => navigation.goBack()}
+          icon={<Feather name={'arrow-left'} size={20} color={'white'} />}
+        />
+      </HStack>
 
-        <Formik
-          validationSchema={validation.signUpValidationSchema}
-          initialValues={registerInitialValue}
-          onSubmit={form => handleRegister(form)}>
-          {({
-            values,
-            errors,
-            touched,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-            setFieldValue,
-          }) => (
-            <VStack px={'4'} space={'2'}>
-              <FormControl isInvalid={errors.full_name && touched.full_name}>
-                <FormControl.Label>Full name</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Full name"
-                  value={values.full_name}
-                  onBlur={handleBlur('full_name')}
-                  onChangeText={handleChange('full_name')}
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.full_name}
-                </FormControl.ErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={errors.phone && touched.phone}>
-                <FormControl.Label>Phone number</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Phone"
-                  value={values.phone}
-                  onBlur={handleBlur('phone')}
-                  onChangeText={text => {
-                    if (text.length > 11) {
-                      return;
-                    }
-                    setFieldValue('phone', text);
-                  }}
-                  keyboardType={'decimal-pad'}
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.phone}
-                </FormControl.ErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={errors.email && touched.email}>
-                <FormControl.Label>Email address</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Email address"
-                  value={values.email}
-                  onBlur={handleBlur('email')}
-                  onChangeText={handleChange('email')}
-                  autoCapitalize={'none'}
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.email}
-                </FormControl.ErrorMessage>
-              </FormControl>
-
-              <FormControl>
-                <FormControl.Label>Referral Code (Optional)</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Referral Code"
-                  keyboardType="decimal-pad"
-                  value={values.referral_code}
-                  onBlur={handleBlur('referral_code')}
-                  onChangeText={text => {
-                    if (text.length > 11) {
-                      return;
-                    }
-                    setFieldValue('referral_code', text);
-                  }}
-                />
-              </FormControl>
-
-              {/* Password Input */}
-              <FormControl isInvalid={errors.password && touched.password}>
-                <FormControl.Label>Password</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Password"
-                  value={values.password}
-                  onBlur={handleBlur('password')}
-                  onChangeText={text => {
-                    setFieldValue('password', text);
-                    setPasswordStrength(calculatePasswordStrength(text));
-                  }}
-                  autoCapitalize={'none'}
-                  secureTextEntry={!eyePassword}
-                  InputRightElement={
-                    <Pressable
-                      onPress={() => setEyePassword(!eyePassword)}
-                      pr={'2'}>
-                      <Feather
-                        name={eyePassword ? 'eye' : 'eye-off'}
-                        color={'gray'}
-                        size={hp(20)}
-                      />
-                    </Pressable>
-                  }
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.password}
-                </FormControl.ErrorMessage>
-              </FormControl>
-
-              {values.password.length > 0 && (
-                <>
-                  <View style={styles.passwordStrengthWrapper}>
-                    <Text>Password Strength:</Text>
-                    <Text
-                      style={[
-                        styles.passwordStrengthText,
-                        {
-                          color:
-                            passwordStrength < 3
-                              ? 'red'
-                              : passwordStrength === 3
-                              ? 'orange'
-                              : 'green',
-                        },
-                      ]}>
-                      {passwordStrength < 3
-                        ? 'Weak'
-                        : passwordStrength === 3
-                        ? 'Medium'
-                        : 'Strong'}
-                    </Text>
-                  </View>
-                  <PasswordRequirementCheck password={values.password} />
-                </>
-              )}
-
-              {/* Retype Password Input */}
-              <FormControl
-                isInvalid={errors.confirm_password && touched.confirm_password}>
-                <FormControl.Label>Retype Password</FormControl.Label>
-                <Input
-                  size={'lg'}
-                  py={'3'}
-                  placeholder="Retype Password"
-                  value={values.confirm_password}
-                  onBlur={handleBlur('confirm_password')}
-                  onChangeText={handleChange('confirm_password')}
-                  autoCapitalize={'none'}
-                  secureTextEntry={!eyeConfirmPassword}
-                  InputRightElement={
-                    <Pressable
-                      onPress={() => setEyeConfirmPassword(!eyeConfirmPassword)}
-                      pr={'2'}>
-                      <Feather
-                        name={eyeConfirmPassword ? 'eye' : 'eye-off'}
-                        color={'gray'}
-                        size={hp(20)}
-                      />
-                    </Pressable>
-                  }
-                />
-                <FormControl.ErrorMessage
-                  leftIcon={<Feather name="info" size={10} />}>
-                  {errors.confirm_password}
-                </FormControl.ErrorMessage>
-              </FormControl>
-
-              <Button
-                mt={'2'}
-                size={'lg'}
-                py={'3'}
-                isLoading={isLoading}
-                onPress={handleSubmit}>
-                Register
-              </Button>
-            </VStack>
-          )}
-        </Formik>
-
-        <View style={styles.buttonsWrapper}>
-          <Text style={styles.textLogin}>
-            Already have an account?{' '}
+      <View
+        style={{
+          flex: 1,
+          padding: 10,
+          borderRadius: 10,
+          justifyContent: 'center',
+        }}>
+        <View
+          style={{
+            width: '100%',
+            backgroundColor: 'white',
+            paddingHorizontal: 15,
+            paddingVertical: 20,
+            borderRadius: 10,
+            justifyContent: 'center',
+          }}>
+          {/* === HEADER / CONTEXT === */}
+          <View style={{marginBottom: hp(10)}}>
             <Text
-              style={styles.textLoginLink}
-              onPress={() => navigation.navigate('Login')}>
-              Login.
+              style={{
+                fontSize: hp(24),
+                fontWeight: 'bold',
+                color: colors.textBlack,
+              }}>
+              {title}
             </Text>
-          </Text>
+            <Text style={{fontSize: hp(14), color: 'gray', marginTop: hp(2)}}>
+              {subtitle}
+            </Text>
+          </View>
+
+          {/* === FORM START === */}
+          <Formik
+            initialValues={userCheckInit}
+            onSubmit={form => handleRegister(form)}>
+            {({
+              values,
+              touched,
+              errors,
+              handleBlur,
+              handleChange,
+              handleSubmit,
+              setFieldValue,
+            }) => (
+              <VStack space={'4'}>
+                {/* ============== STEP 0: PHONE INPUT ============== */}
+
+                <FormControl
+                  isInvalid={
+                    !phoneInput.current?.isValidNumber(values.phone) &&
+                    touched.phone
+                  }>
+                  <VStack space={'1'}>
+                    <PhoneInput
+                      ref={phoneInput}
+                      defaultValue={values.phone}
+                      defaultCode="NG"
+                      layout="first"
+                      onChangeText={text => {
+                        setFieldValue('phone', text);
+                        setPhoneNumber(text);
+                        handleResetState();
+                        setFieldValue('otp', '');
+                      }}
+                      onChangeFormattedText={text => {
+                        setFormattedValue(text);
+                      }}
+                      withDarkTheme
+                      containerStyle={{
+                        backgroundColor: 'white',
+                        borderRadius: 10,
+                        borderWidth: 1,
+                        borderColor: otpVerified
+                          ? themeColors.green[500]
+                          : themeColors.gray[200],
+                        width: '100%',
+                      }}
+                      textContainerStyle={{borderRadius: 10}}
+                      textInputStyle={{
+                        fontSize: hp(14),
+                        color: themeColors.textBlack,
+                        paddingVertical: 0,
+                      }}
+                      codeTextStyle={{
+                        fontSize: hp(14),
+                        color: themeColors.textBlack,
+                      }}
+                      placeholder="Enter your phone number"
+                      placeholderTextColor="gray"
+                      keyboardType="phone-pad"
+                      autoComplete="tel"
+                      autoCapitalize="none"
+                      maxLength={11}
+                      onBlur={handleBlur('phone')}
+                    />
+                    {otpVerified && (
+                      <HStack
+                        alignItems={'center'}
+                        justifyContent={'flex-end'}
+                        space={'2'}>
+                        <Text
+                          style={{
+                            color: themeColors.green[500],
+                            fontSize: 12,
+                          }}>
+                          Verified
+                        </Text>
+                      </HStack>
+                    )}
+                  </VStack>
+
+                  <FormControl.ErrorMessage
+                    leftIcon={<Feather name="info" size={10} />}>
+                    {'Please enter a valid phone number'}
+                  </FormControl.ErrorMessage>
+                </FormControl>
+
+                {/* ============== STEP 1: OTP INPUT ============== */}
+                {otpPending && currentStep === 0 && (
+                  <VStack space={'2'}>
+                    <FormControl>
+                      <FormControl.Label>OTP</FormControl.Label>
+                      <Input
+                        placeholder="Enter OTP"
+                        value={values.otp}
+                        onBlur={handleBlur('otp')}
+                        onChangeText={handleChange('otp')}
+                        keyboardType="numeric"
+                      />
+                    </FormControl>
+
+                    <HStack alignItems="center" space="2">
+                      <Button
+                        variant="unstyled"
+                        onPress={handleResendOtp}
+                        disabled={resendCooldown > 0 || loading}>
+                        {resendCooldown > 0
+                          ? `Resend OTP in ${resendCooldown}s`
+                          : 'Resend OTP'}
+                      </Button>
+                    </HStack>
+                  </VStack>
+                )}
+
+                {/* ============== STEP 2: NEW USER INFO ============== */}
+                {currentStep === 1 && otpVerified && !userExists && (
+                  <>
+                    <FormControl
+                      isInvalid={errors.full_name && touched.full_name}>
+                      <FormControl.Label>Full name</FormControl.Label>
+                      <Input
+                        placeholder="Full name"
+                        value={values.full_name}
+                        onBlur={handleBlur('full_name')}
+                        onChangeText={handleChange('full_name')}
+                        autoCapitalize={'words'}
+                      />
+                      <FormControl.ErrorMessage
+                        leftIcon={<Feather name="info" size={10} />}>
+                        {errors.full_name}
+                      </FormControl.ErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.email && touched.email}>
+                      <FormControl.Label>Email address</FormControl.Label>
+                      <Input
+                        placeholder="Email address"
+                        value={values.email}
+                        onBlur={handleBlur('email')}
+                        onChangeText={handleChange('email')}
+                        autoCapitalize={'none'}
+                      />
+                      <FormControl.ErrorMessage
+                        leftIcon={<Feather name="info" size={10} />}>
+                        {errors.email}
+                      </FormControl.ErrorMessage>
+                    </FormControl>
+
+                    {values.password?.length > 0 && (
+                      <>
+                        <PasswordRequirementCheck password={values.password} />
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* ============== ACTION BUTTON ============== */}
+                <Button
+                  mt={'2'}
+                  size={'lg'}
+                  py={'3'}
+                  disabled={loading}
+                  onPress={handleSubmit}>
+                  {!loading ? (
+                    // Change text depending on step + userExists
+                    <>
+                      {currentStep === 0
+                        ? 'Continue'
+                        : currentStep === 1 && otpPending
+                        ? 'Submit OTP'
+                        : 'Create Account'}
+                    </>
+                  ) : (
+                    <LoadingAnimation size={20} color={'#FFF'} />
+                  )}
+                </Button>
+              </VStack>
+            )}
+          </Formik>
         </View>
-      </KeyboardAwareScrollView>
-    </MainLayout>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -296,60 +483,13 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: colors.background,
   },
-  headerWrapper: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: hp(20),
-    paddingHorizontal: wp(14),
-  },
-  logoImage: {margin: 5, height: hp(30), width: hp(30)},
-  logoTitle: {
-    color: colors.textBlack,
-    fontFamily: 'Poppins-Bold',
-    fontSize: hp(20),
-  },
-  introTitle: {
-    marginTop: hp(15),
-    color: colors.textBlack,
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(20),
-    paddingHorizontal: wp(15),
-  },
-  introSubtitle: {
-    marginTop: hp(2),
-    color: 'gray',
-    fontFamily: 'Poppins-Regular',
+  switchText: {
     fontSize: hp(13),
-    paddingHorizontal: wp(15),
-    marginBottom: hp(10),
+    color: 'gray',
   },
-  passwordStrengthWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: hp(5),
-  },
-  passwordStrengthText: {
-    fontSize: hp(14),
-    fontWeight: 'bold',
-  },
-  buttonsWrapper: {
-    width: wp(310),
-    height: hp(101),
-    marginTop: hp(5),
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  textLogin: {
-    width: '100%',
-    textAlign: 'center',
-    marginTop: hp(15),
-    fontFamily: 'Poppins-Light',
-    fontSize: hp(14),
-  },
-  textLoginLink: {
-    fontFamily: 'Poppins-Medium',
+  switchLink: {
+    fontSize: hp(13),
     color: colors.primary,
+    fontWeight: '600',
   },
 });

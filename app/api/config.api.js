@@ -41,6 +41,10 @@ const getDeviceHeaders = async () => {
 // Create the API instance
 export const api = create({
   baseURL: CURRENT_API,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add interceptor to include device headers dynamically in every request

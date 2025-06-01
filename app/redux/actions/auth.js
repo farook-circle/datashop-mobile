@@ -129,6 +129,10 @@ export const signIn = (userData, ErrorOccur, onOAuth) => async dispatch => {
   }
 };
 
+export const completeUserAuth = payload => async dispatch => {
+  dispatch({type: LOGIN_SUCCESS, payload: payload});
+};
+
 export const changeUserPassword =
   (userData, requestStatus) => (dispatch, getState) => {
     dispatch({type: USER_LOADING});

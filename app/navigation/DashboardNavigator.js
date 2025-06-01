@@ -2,7 +2,7 @@ import React, {useCallback, useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ROUTES, deviceNotificationToken} from '../lib';
 import {screenOptions} from './helpers';
-import {DrawerNavigator} from './DrawerNavigator';
+import {DrawerNavigator} from './drawerNavigator';
 import {
   AddTypePin,
   Profile,

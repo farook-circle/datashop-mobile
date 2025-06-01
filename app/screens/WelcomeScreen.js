@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Linking,
+  ImageBackground,
 } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,64 +16,77 @@ import {hp, dp, wp} from '../config/dpTopx.js';
 import colors from '../../assets/colors/colors';
 import {useSelector} from 'react-redux';
 
-import {Button, VStack} from 'native-base';
+import {Button, useTheme, VStack} from 'native-base';
 import {ROUTES} from '../lib/routes.js';
 
 export const WelcomeScreen = ({navigation}) => {
+  const themeColors = useTheme().colors;
+
   const handleOpenLiveChat = () => {
     navigation.navigate(ROUTES.LIVE_CHAT_SCREEN);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
+    <ImageBackground
+      style={{flex: 1}}
+      blurRadius={8}
+      source={{
+        uri: 'https://plus.unsplash.com/premium_photo-1701791988754-d200cc1b78c7?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      }}>
+      <SafeAreaView style={styles.container}>
+        <VStack
+          width={'100%'}
+          bgColor={'rgba(255, 255, 255, 0.8)'}
+          borderRadius={'20px'}
+          py={'10'}>
+          <View
+            style={[
+              styles.logoWrapper,
+              {backgroundColor: themeColors.primary[500]},
+            ]}>
+            <Image
+              source={require('../../assets/images/logo_new.png')}
+              resizeMode="contain"
+              style={{width: hp(100), height: hp(100)}}
+            />
+          </View>
+          <VStack px={'6'} space={'4'} mt={hp(40)} width={'100%'}>
+            <Button
+              onPress={() => navigation.navigate('Register')}
+              rounded={'xl'}
+              size={'lg'}
+              py={'3'}>
+              Login / Register
+            </Button>
+            <Button
+              onPress={() => navigation.navigate('Login')}
+              variant={'outline'}
+              borderColor={colors.primary}
+              rounded={'xl'}
+              size={'lg'}
+              _text={{fontWeight: 'bold'}}
+              py={'3'}>
+              Explore Without Login
+            </Button>
+          </VStack>
 
-      {/* illustrate Image */}
-      <Image
-        source={require('../../assets/images/company_logo.jpeg')}
-        style={styles.connectedWorldCanva}
-      />
+          {/*Information text */}
+          <Text style={styles.infoText}>
+            By proceeding, you agree to our{' '}
+            <Text style={styles.textInfoLink}>Terms of Service</Text>
+            {' and '}
+            <Text style={styles.textInfoLink}>Privacy Policy</Text>.
+          </Text>
 
-      <View style={styles.headerWrapper}>
-        <Text style={styles.logoTitle}>datashop.</Text>
-      </View>
-
-      {/* Intro title */}
-      <Text style={styles.introTitle}>your number one datashop</Text>
-
-      {/* Register and Login Button */}
-      <VStack px={'6'} space={'4'} mt={hp(40)}>
-        <Button
-          onPress={() => navigation.navigate('Register')}
-          rounded={'xl'}
-          size={'lg'}
-          py={'3'}>
-          Create account
-        </Button>
-        <Button
-          onPress={() => navigation.navigate('Login')}
-          variant={'outline'}
-          rounded={'xl'}
-          size={'lg'}
-          py={'3'}>
-          Login
-        </Button>
-      </VStack>
-
-      {/*Information text */}
-      <Text style={styles.infoText}>
-        by signing up you accept the{' '}
-        <Text style={styles.textInfoLink}>terms of service</Text>and
-        <Text style={styles.textInfoLink}>privacy policy</Text>
-      </Text>
-
-      <TouchableOpacity
-        style={styles.whatAppButton}
-        onPress={handleOpenLiveChat}>
-        <MaterialCommunityIcons name="chat" size={hp(25)} color={'blue'} />
-        <Text style={styles.whatAppButtonText}>NEED HELP?.</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+          <TouchableOpacity
+            style={styles.whatAppButton}
+            onPress={handleOpenLiveChat}>
+            {/* <MaterialCommunityIcons name="chat" size={hp(25)} color={colors.primary} /> */}
+            <Text style={[styles.whatAppButtonText, {color: themeColors.primary[500]}]}>Contact Us</Text>
+          </TouchableOpacity>
+        </VStack>
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
@@ -80,7 +94,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: wp(10),
+  },
+  logoWrapper: {
+    width: 100,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    alignSelf: 'center',
+    borderRadius: 100,
   },
   whatAppButton: {
     marginTop: hp(5),
@@ -165,6 +190,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins-Light',
     fontSize: hp(14),
+    color: 'black',
   },
   textInfoLink: {
     fontFamily: 'Poppins-Medium',

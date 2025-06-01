@@ -267,6 +267,8 @@ export const AddTypePin = ({navigation}) => {
                   <AlertCard
                     title={item.title}
                     body={item.notification}
+                    createdAt={item?.createdAt}
+                    updatedAt={item?.updatedAt}
                     priority={'High'}
                     onExpand={() => {
                       setSelectedAlert(item);

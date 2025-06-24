@@ -60,6 +60,7 @@ export const ElectricityPaymentScreen = ({navigation}) => {
   const [meterValidation, setMeterValidation] = useState(
     meterValidationInitial,
   );
+
   const formRef = useRef();
 
   const handleSetProvider = provider => {

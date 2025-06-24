@@ -5,6 +5,7 @@ import React from 'react';
 import {Home} from '../screens';
 import CustomSidebarMenu from './utils/CustomDrawer';
 
+
 const Drawer = createDrawerNavigator();
 
 export const DrawerNavigator = () => {

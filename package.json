@@ -16,6 +16,7 @@
     "@react-native-community/netinfo": "^11.2.1",
     "@react-native-firebase/app": "18.3.0",
     "@react-native-firebase/messaging": "18.3.0",
+    "@react-navigation/bottom-tabs": "6.5.16",
     "@react-navigation/drawer": "^6.5.8",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",

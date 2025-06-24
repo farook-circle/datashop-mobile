@@ -69,6 +69,9 @@ import {
   getUserTickets,
 } from '../redux/actions/system';
 import {LiveChatScreen} from '../screens/Chat';
+import BottomNavigator from './BottomNavigation';
+import {DataPlanCheckoutScreen} from '../screens/DataCheckoutScreen';
+import CartScreen from '../screens/CartScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -216,6 +219,20 @@ export const DashboardNavigator = () => {
         component={AgentManagement}
         options={screenOptions}
       />
+      <Stack.Screen
+        name={ROUTES.DATA_CHECKOUT_SCREEN}
+        component={DataPlanCheckoutScreen}
+        options={screenOptions}
+      />
+
+       <Stack.Screen
+        name={ROUTES.CART_SCREEN}
+        component={CartScreen}
+        options={screenOptions}
+      />
+
+      
+
       <Stack.Screen
         name={ROUTES.DATA_PLAN_SCREEN}
         component={DataPlan}

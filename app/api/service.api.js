@@ -114,3 +114,19 @@ export const examBillPayment = async payload => {
 
   return api.post('/bill/exam', payload, config);
 };
+
+export const getDataCategory = () => {
+  const {token} = store.getState().auth;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+
+  return api.get('/products', {}, config);
+};

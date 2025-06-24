@@ -19,14 +19,38 @@ import colors from '../../assets/colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {getDataPurchaseHistory} from '../redux/actions/data_plans';
 import {hp, wp} from '../config/dpTopx';
-import {Divider, HStack, Pressable, VStack} from 'native-base';
+import {Avatar, Divider, HStack, Pressable, VStack} from 'native-base';
 import CategoryItem from '../components/other/CategoryItem';
 
 export const OtherScreen = ({navigation}) => {
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+  const {electricity} = useSelector(state => state.bill_payment);
 
-  useEffect(() => {}, []);
+  const services = [
+    {
+      title: 'Electricity',
+      icon: 'bolt',
+      checkout: 'ElectricityPaymentScreen',
+      providers: electricity.providers,
+    },
+    {
+      title: 'Cable Subscription',
+      icon: 'tv',
+      checkout: 'TvSubscriptionScreen',
+      providers: [],
+    },
+    {
+      title: 'Exam Payment',
+      icon: 'cube',
+      checkout: 'ExamPaymentScreen',
+      providers: [],
+    },
+    {
+      title: 'Betting Wallet',
+      icon: 'suitcase',
+      checkout: 'ExamPaymentScreen',
+      providers: [],
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -48,27 +72,27 @@ export const OtherScreen = ({navigation}) => {
       </SafeAreaView>
 
       {/* Body */}
-      <VStack p={'2'} mt={'2'} space={'2'} divider={<Divider />}>
-        <CategoryItem
-          title={'Electricity'}
-          icon={'bolt'}
-          onPress={() => navigation.navigate('ElectricityPaymentScreen')}
-        />
-
-        <CategoryItem
-          title={'Cable Subscription'}
-          icon={'tv'}
-          onPress={() => navigation.navigate('TvSubscriptionScreen')}
-        />
-        <CategoryItem
-          title={'Exam Payment'}
-          icon={'cube'}
-          onPress={() => navigation.navigate('ExamPaymentScreen')}
-        />
-        <CategoryItem
-          title={'Airtime to cash'}
-          icon={'money-bill'}
-          onPress={() => navigation.navigate('AirtimeToCashScreen')}
+      <VStack py={'2'} mt={'2'} space={'2'}>
+        <FlatList
+          data={services}
+          keyExtractor={item => item.title}
+          renderItem={({item}) => (
+            <CategoryItem title={item.title} icon={item.icon}>
+              <View
+                style={{
+                  marginBottom: 20,
+                  marginTop: 10,
+                  paddingHorizontal: 10,
+                }}>
+                <FlatList
+                  data={item.providers}
+                  numColumns={4}
+                  keyExtractor={data => data.name}
+                  renderItem={() => <Avatar m={'2'} size={'55px'} />}
+                />
+              </View>
+            </CategoryItem>
+          )}
         />
       </VStack>
     </View>

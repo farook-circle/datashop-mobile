@@ -5,6 +5,7 @@ import {
   REFRESH_DEPOSIT_OPTION_AND_WALLET_BALANCE,
   TOGGLE_LOADING,
   UPDATE_ACCOUNT_NUMBERS,
+  UPDATE_USER_CART,
 } from '../constants/wallet';
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   manual_deposit: {},
   momo_agent_deposit: {},
   accounts: [],
+  cart_items: [],
   standard_deposit: {},
   isLoading: false,
 };
@@ -40,6 +42,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         wallet_balance: action.payload.balance,
+      };
+    case UPDATE_USER_CART:
+      return {
+        ...state,
+        cart_items: action.payload,
       };
     case UPDATE_ACCOUNT_NUMBERS:
       return {

@@ -27,8 +27,10 @@ import uuid from 'react-native-uuid';
 import {useRef} from 'react';
 import {
   Actionsheet,
+  Avatar,
   Box,
   Button,
+  Divider,
   Heading,
   HStack,
   IconButton,
@@ -40,6 +42,7 @@ import {
 import RecentContactCard from '../components/contact/RecentContactCard';
 import {getDataRecentContacts} from '../redux/actions/user';
 import {formatCurrency} from '../utils';
+import {DataPlanCard} from './DataPlanCard';
 
 export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const dispatch = useDispatch();
@@ -76,32 +79,12 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
 
   const isLoading = useSelector(state => state.data_bundles.isLoading);
 
-  const onOpen = () => {
-    setToggleCheckoutData(true);
-    setCustomReference(uuid.v4());
-  };
-
   const onClose = () => {
     setToggleCheckoutData(false);
   };
 
-  const getBgColor = text => {
-    if (text.toLowerCase().includes('mtn')) {
-      return 'yellow.200';
-    }
-
-    if (text.toLowerCase().includes('9mobile')) {
-      return '#D6F26A';
-    }
-
-    if (text.toLowerCase().includes('glo')) {
-      return 'green.200';
-    }
-    if (text.toLowerCase().includes('airtel')) {
-      return 'red.300';
-    }
-
-    return 'gray.200';
+  const getScreenBgColor = text => {
+    return 'white';
   };
 
   const getCollaboratorPrice = (data_plan_id, data_actual_price) => {
@@ -115,16 +98,13 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   };
 
   const handleDataItemClick = item => {
-    if (collaborator) {
-      setItemClick(true);
-      setItemValue(item);
-      return;
-    }
-
-    setItemClicked(item);
-    setCustomer('');
-    setError(null);
-    onOpen();
+    navigation.navigate('DataCheckoutScreen', {plan: item});
+    return;
+    // setItemClicked(item);
+    // setCustomer('');
+    // setError(null);
+    // setToggleCheckoutData(true);
+    // setCustomReference(uuid.v4());
   };
 
   const handleSetCustomer = phoneNumber => {
@@ -166,7 +146,7 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
 
     if (
       Number(balance) <
-      Number(getCollaboratorPrice(itemClicked.id, itemClicked.price))
+      Number(getCollaboratorPrice(itemClicked?.id, itemClicked?.price))
     ) {
       setError('You do not have sufficient balance. Please fund your wallet');
       return;
@@ -177,7 +157,7 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
   const completeCheckOut = () => {
     Alert.alert(
       'Buy Data',
-      `Please confirm that you want to order ${itemClicked.quantity} for ${customer}`,
+      `Please confirm that you want to order ${itemClicked?.quantity} for ${customer}`,
       [
         {
           text: 'Cancel',
@@ -191,10 +171,10 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
               buyDataBundle(
                 {
                   check_mtn_number:
-                    itemClicked.service.toLowerCase() !== 'mtn'
+                    itemClicked?.service.toLowerCase() !== 'mtn'
                       ? false
                       : check_mtn_number,
-                  data_bundle_id: itemClicked.id,
+                  data_bundle_id: itemClicked?.id,
                   customer,
                   payment_method,
                   remark,
@@ -217,74 +197,6 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
       [{text: 'OK', onPress: () => navigation.navigate('Home')}],
     );
   };
-
-  const getDataPlanImage = service => {
-    switch (service.toLowerCase()) {
-      case 'mtn':
-        return require('../../assets/images/mtn.jpg');
-      case 'airtel':
-      case 'zain':
-        return require('../../assets/images/airtel.jpg');
-      case 'glo':
-        return require('../../assets/images/glo.png');
-      case '9mobile':
-      case 'etisalat':
-        return require('../../assets/images/9mobile.jpg');
-      default:
-        return require('../../assets/images/transfer.png');
-    }
-  };
-
-  const renderDataBundleItem = ({item}) => (
-    <Pressable m={2} flex={1} onPress={() => handleDataItemClick(item)}>
-      <VStack
-        borderWidth={1}
-        borderColor={'gray.600'}
-        bgColor={getBgColor(item.service)}
-        rounded={'lg'}
-        py={4}
-        width={'full'}
-        px={'10px'}
-        mt={1}
-        space={1}
-        shadow={4}
-        pt={'2'}>
-        <Box width={'full'}>
-          <Text
-            style={{fontFamily: 'Poppins-Bold', fontSize: hp(20)}}
-            numberOfLines={1}>
-            {item.quantity}
-          </Text>
-        </Box>
-        <Text numberOfLines={2}>{item.description}</Text>
-        <HStack alignItems={'center'} justifyContent={'space-between'} mt={'4'}>
-          <VStack>
-            <Text style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
-              Price
-            </Text>
-            <Text style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
-              {formatCurrency(item.price)}
-            </Text>
-          </VStack>
-          <Box mt={'1'}>
-            <Image
-              alt={'logo'}
-              style={{width: 40, height: 40, borderRadius: 100}}
-              source={{uri: item.image}}
-            />
-          </Box>
-          <VStack alignItems={'flex-end'}>
-            <Text style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
-              Validity
-            </Text>
-            <Text style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
-              {item.validity}
-            </Text>
-          </VStack>
-        </HStack>
-      </VStack>
-    </Pressable>
-  );
 
   const handleAddContact = async () => {
     // check permission
@@ -356,318 +268,193 @@ export const DataPlan = gestureHandlerRootHOC(({route, navigation}) => {
     return true;
   };
 
+  const itemService = data_bundles[0]?.service || '';
+
   return (
-    <MainLayout bgColor={'white'} headerTitle={'Data Plans'} showHeader={true}>
+    <MainLayout
+      bgColor={getScreenBgColor(itemService)}
+      headerTitle={'Data Plans'}
+      showHeader={true}>
       <Box flex={1} px={'4'}>
         <FlatList
           numColumns={1}
           data={data_bundles}
-          renderItem={renderDataBundleItem}
+          renderItem={({item}) => (
+            <DataPlanCard
+              item={item}
+              onPress={handleDataItemClick}
+              showProceed={true}
+              bgColor="white"
+            />
+          )}
           keyExtractor={item => item.id}
-          // showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 100}}
         />
       </Box>
 
-      <Actionsheet
+      {/* <Actionsheet
         _backdrop={{bgColor: 'black', opacity: 1}}
-        isOpen={toggleCheckoutData}
+        isOpen={toggleCheckoutData && itemClicked ? true : false}
         onClose={onClose}>
         <Actionsheet.Content width={'100%'}>
-          {itemClicked && (
-            <View
-              style={{
-                height: phoneInputFocus ? hp(900) : hp(450),
-                paddingHorizontal: wp(5),
-                width: '100%',
-              }}>
-              <VStack
-                borderWidth={1}
-                borderColor={'gray.200'}
-                bgColor={getBgColor(itemClicked.service)}
-                rounded={'lg'}
-                py={4}
-                width={'full'}
-                px={'10px'}
-                mt={1}
-                space={1}
-                shadow={4}
-                pt={'2'}>
-                <Box width={'full'}>
-                  <HStack justifyContent={'space-between'}>
-                    <Text
-                      style={{
-                        fontFamily: 'Poppins-Bold',
-                        color: 'black',
-                        fontSize: hp(20),
-                      }}
-                      numberOfLines={1}>
-                      {itemClicked.quantity}
-                    </Text>
-                    <IconButton
-                      rounded={'full'}
-                      onPress={onClose}
-                      icon={
-                        <Feather
-                          name="x"
-                          size={hp(25)}
-                          color={colors.textBlack}
-                        />
-                      }
-                    />
-                  </HStack>
-                </Box>
-                <Text numberOfLines={2}>{itemClicked.description}</Text>
-                <HStack
-                  alignItems={'center'}
-                  justifyContent={'space-between'}
-                  mt={'4'}>
-                  <VStack>
-                    <Box>
-                      <Feather name={'wifi'} size={30} color={'black'} />
-                    </Box>
-                  </VStack>
-                  <Box mt={'1'}>
-                    <Image
-                      alt={'logo'}
-                      style={{width: 40, height: 40, borderRadius: 100}}
-                      source={{uri: itemClicked.image}}
-                    />
-                  </Box>
-                  <VStack alignItems={'flex-end'}>
-                    <Text
-                      style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
-                      Validity
-                    </Text>
-                    <Text
-                      style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
-                      {itemClicked.validity}
-                    </Text>
-                  </VStack>
-                </HStack>
-              </VStack>
-
-              <View style={{marginBottom: hp(20), marginTop: hp(15)}}>
-                {error && (
+          <View
+            style={{
+              height: phoneInputFocus ? hp(900) : hp(450),
+              paddingHorizontal: wp(5),
+              width: '100%',
+            }}>
+            <VStack
+              borderWidth={1}
+              borderColor={'gray.200'}
+              rounded={'lg'}
+              py={4}
+              width={'full'}
+              px={'10px'}
+              mt={1}
+              space={1}
+              shadow={4}
+              pt={'2'}>
+              <Box width={'full'}>
+                <HStack justifyContent={'space-between'}>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
-                      color: 'red',
-                      fontSize: hp(13),
-                      width: '100%',
-                      textAlign: 'center',
-                      marginBottom: hp(10),
-                    }}>
-                    {error}
+                      fontFamily: 'Poppins-Bold',
+                      color: 'black',
+                      fontSize: hp(20),
+                    }}
+                    numberOfLines={1}>
+                    {itemClicked?.quantity}
                   </Text>
-                )}
-
-                <Box bgColor={'gray.200'}>
-                  <Input
-                    ref={phoneInputRef}
-                    placeholder="PHONE"
-                    onChangeText={text => handleSetCustomer(text)}
-                    onFocus={() => setPhoneInputFocus(true)}
-                    onBlur={() => setPhoneInputFocus(false)}
-                    autoFocus={true}
-                    keyboardType={'numeric'}
-                    maxLength={11}
-                    variant={'underlined'}
-                    value={customer}
-                    size={'lg'}
-                    InputRightElement={
-                      <IconButton
-                        onPress={handleAddContact}
-                        rounded={'full'}
-                        icon={
-                          <AntDesign
-                            name="contacts"
-                            size={hp(25)}
-                            color={'gray'}
-                          />
-                        }
+                  <IconButton
+                    rounded={'full'}
+                    onPress={onClose}
+                    icon={
+                      <Feather
+                        name="x"
+                        size={hp(25)}
+                        color={colors.textBlack}
                       />
                     }
                   />
-                </Box>
-              </View>
-              {itemClicked.service.toLowerCase() === 'mtn' && (
-                <HStack alignItems={'center'} space={2}>
-                  <Switch
-                    defaultIsChecked={true}
-                    onValueChange={e => setCheckMtnNumber(e)}
-                  />
-                  <Text
-                    style={{
-                      fontSize: hp(14),
-                      fontFamily: 'Poppins-Medium',
-                      color: colors.textBlack,
-                    }}>
-                    Turn off number validation
-                  </Text>
                 </HStack>
+              </Box>
+              <Text numberOfLines={2}>{itemClicked?.description}</Text>
+              <HStack
+                alignItems={'center'}
+                justifyContent={'space-between'}
+                mt={'4'}>
+                <VStack>
+                  <Box>
+                    <Feather name={'wifi'} size={30} color={'black'} />
+                  </Box>
+                </VStack>
+                <Box mt={'1'}>
+                  <Image
+                    alt={'logo'}
+                    style={{width: 40, height: 40, borderRadius: 100}}
+                    source={{uri: itemClicked?.image}}
+                  />
+                </Box>
+                <VStack alignItems={'flex-end'}>
+                  <Text style={{color: 'gray', fontFamily: 'Poppins-Regular'}}>
+                    Validity
+                  </Text>
+                  <Text
+                    style={{fontFamily: 'Poppins-SemiBold', color: 'black'}}>
+                    {itemClicked?.validity}
+                  </Text>
+                </VStack>
+              </HStack>
+            </VStack>
+
+            <View style={{marginBottom: hp(20), marginTop: hp(15)}}>
+              {error && (
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Medium',
+                    color: 'red',
+                    fontSize: hp(13),
+                    width: '100%',
+                    textAlign: 'center',
+                    marginBottom: hp(10),
+                  }}>
+                  {error}
+                </Text>
               )}
 
-              <Button
-                mt={'2'}
-                size={'lg'}
-                py={'3'}
-                isDisabled={isLoading}
-                onPress={handleCheckout}
-                isLoading={isLoading}>
-                Buy Data
-              </Button>
-
-              <HStack pt={'2'}>
-                <FlatList
-                  horizontal
-                  data={dataContact}
-                  renderItem={({item}) => (
-                    <RecentContactCard
-                      contact={item}
-                      onRecentClick={recentNumber => setCustomer(recentNumber)}
+              <Box bgColor={'gray.200'}>
+                <Input
+                  ref={phoneInputRef}
+                  placeholder="PHONE"
+                  onChangeText={text => handleSetCustomer(text)}
+                  onFocus={() => setPhoneInputFocus(true)}
+                  onBlur={() => setPhoneInputFocus(false)}
+                  autoFocus={true}
+                  keyboardType={'numeric'}
+                  maxLength={11}
+                  variant={'underlined'}
+                  value={customer}
+                  size={'lg'}
+                  InputRightElement={
+                    <IconButton
+                      onPress={handleAddContact}
+                      rounded={'full'}
+                      icon={
+                        <AntDesign
+                          name="contacts"
+                          size={hp(25)}
+                          color={'gray'}
+                        />
+                      }
                     />
-                  )}
-                  keyExtractor={item => item.id}
-                  showsHorizontalScrollIndicator={false}
+                  }
                 />
-              </HStack>
+              </Box>
             </View>
-          )}
+            {itemClicked?.service.toLowerCase() === 'mtn' && (
+              <HStack alignItems={'center'} space={2}>
+                <Switch
+                  defaultIsChecked={true}
+                  onValueChange={e => setCheckMtnNumber(e)}
+                />
+                <Text
+                  style={{
+                    fontSize: hp(14),
+                    fontFamily: 'Poppins-Medium',
+                    color: colors.textBlack,
+                  }}>
+                  Turn off number validation
+                </Text>
+              </HStack>
+            )}
+
+            <Button
+              mt={'2'}
+              size={'lg'}
+              py={'3'}
+              isDisabled={isLoading}
+              onPress={handleCheckout}
+              isLoading={isLoading}>
+              Buy Data
+            </Button>
+
+            <HStack pt={'2'}>
+              <FlatList
+                horizontal
+                data={dataContact}
+                renderItem={({item}) => (
+                  <RecentContactCard
+                    contact={item}
+                    onRecentClick={recentNumber => setCustomer(recentNumber)}
+                  />
+                )}
+                keyExtractor={item => item.id}
+                showsHorizontalScrollIndicator={false}
+              />
+            </HStack>
+          </View>
         </Actionsheet.Content>
-      </Actionsheet>
+      </Actionsheet> */}
     </MainLayout>
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.background,
-    paddingHorizontal: 25,
-  },
-  headerWrapper: {
-    marginTop: hp(3),
-    flexDirection: 'row',
-    width: '100%',
-
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  headerTitleText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-  },
-  headerUnderLine: {
-    marginTop: hp(10),
-    height: hp(1),
-    width: '100%',
-
-    backgroundColor: colors.textLight,
-  },
-  dataBundleCategoryWrapper: {
-    flexDirection: 'row',
-    width: '100%',
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  dataBundleItemsWrapper: {
-    width: '47%',
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    borderRadius: hp(10),
-    alignItems: 'center',
-    marginRight: wp(15),
-    marginBottom: hp(20),
-    shadowColor: colors.textBlack,
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 4,
-    shadowRadius: 20,
-    elevation: 4,
-    paddingBottom: hp(10),
-  },
-  mtnLogoImage: {
-    width: '100%',
-    height: '100%',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    position: 'absolute',
-  },
-  roundIconEnter: {
-    marginTop: hp(10),
-    width: wp(40),
-    height: hp(40),
-    borderRadius: 20,
-    borderWidth: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.textWhite,
-    shadowColor: colors.textBlack,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 4,
-    shadowRadius: 20,
-    elevation: 4,
-  },
-  quantityText: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: hp(13),
-    color: colors.textBlack,
-  },
-  priceText: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(12),
-    color: colors.textBlack,
-  },
-
-  // model
-  modelContainer: {
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-
-  modelWrapper: {
-    paddingHorizontal: wp(25),
-    width: '100%',
-    backgroundColor: 'white',
-    paddingBottom: hp(30),
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-  },
-  buttonStyle: {
-    width: '100%',
-    backgroundColor: colors.primary,
-    paddingVertical: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontFamily: 'Poppins-Medium',
-    color: colors.textWhite,
-    fontSize: hp(16),
-  },
-  nairaSign: {
-    position: 'absolute',
-    top: 12,
-    left: 10,
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    color: colors.textBlack,
-  },
-  dataPriceInput: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: hp(16),
-    color: colors.textBlack,
-    paddingLeft: 70,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    marginBottom: hp(10),
-  },
 });

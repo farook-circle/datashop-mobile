@@ -11,6 +11,11 @@ import {
   RefreshControl,
   ScrollView,
   Linking,
+  FlatList,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+  ToastAndroid,
 } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
@@ -18,7 +23,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useDispatch, useSelector} from 'react-redux';
 import {wp, hp} from '../config/dpTopx';
 import colors from '../../assets/colors/colors';
-import {Button as NBButton, useTheme} from 'native-base';
+import {
+  Actionsheet,
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Button as NBButton,
+  useTheme,
+} from 'native-base';
 
 import {
   getDataBundle,
@@ -48,6 +61,9 @@ import moment from 'moment-timezone';
 
 import {useIsFocused} from '@react-navigation/native';
 import {getAppDashboardWallpaper} from '../redux/actions/system';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {BankAccountsOverlay} from '../components/BankAccountsOverlay';
+import {ROUTES} from '../lib';
 
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -70,12 +86,16 @@ export const Home = ({navigation}) => {
   const dispatch = useDispatch();
   const color = useTheme().colors;
 
+  const {user} = useSelector(state => state.auth);
+  const {cart_items} = useSelector(state => state.wallet);
   const whatsapp = useSelector(state => state.config.contact_info);
   const [refreshing, setRefreshing] = useState(false);
 
   const [showBalance, setShowBalance] = useState(true);
 
   const [messageAvailable, setMessageAvailable] = useState(true);
+
+  const [isAccountModelOpen, setIsAccountModelOpen] = useState(false);
 
   const data_purchase_history = useSelector(
     state => state.data_bundles.data_purchase_history,
@@ -132,20 +152,22 @@ export const Home = ({navigation}) => {
     ];
 
   const handleReloadData = useCallback(async () => {
-    dispatch(getDataBundle());
-    dispatch(getDataPurchaseHistory());
-    dispatch(getWalletBalance());
-    dispatch(getMessages());
-    dispatch(getNotifications());
-    dispatch(getPaymentStatus());
-    dispatch(getDataCategory());
-    dispatch(getElectricProviders());
-    dispatch(getCableProviders());
-    dispatch(getExamProviders());
-    dispatch(getAirtimeServices());
-    dispatch(getDataRecentContacts());
-    dispatch(getAppDashboardWallpaper());
-  }, [dispatch]);
+    if (refreshing) {
+      dispatch(getDataBundle());
+      dispatch(getDataPurchaseHistory());
+      dispatch(getWalletBalance());
+      dispatch(getMessages());
+      dispatch(getNotifications());
+      dispatch(getPaymentStatus());
+      dispatch(getDataCategory());
+      dispatch(getElectricProviders());
+      dispatch(getCableProviders());
+      dispatch(getExamProviders());
+      dispatch(getAirtimeServices());
+      dispatch(getDataRecentContacts());
+      dispatch(getAppDashboardWallpaper());
+    }
+  }, [dispatch, refreshing]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -163,156 +185,205 @@ export const Home = ({navigation}) => {
     );
   };
 
+  const randomImages = [
+    'https://picsum.photos/290/120?random=1',
+    'https://picsum.photos/290/120?random=2',
+    'https://picsum.photos/290/120?random=3',
+  ];
+
+  const {width: screenWidth} = Dimensions.get('window');
+
+  const ITEM_WIDTH = screenWidth * 0.8; // 80% of screen
+  const ITEM_SPACING = 10; // space between items
+  const SIDE_PADDING = (screenWidth - ITEM_WIDTH) / 2;
+
+  const handleCopyText = text => {
+    Clipboard.setString(text);
+    ToastAndroid.show('Copied', ToastAndroid.SHORT);
+  };
+
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.secContainer}>
-          <SafeAreaView />
-          <View
-            style={{
-              marginTop: 0,
-              position: 'absolute',
-              width: '100%',
-              height: hp(260),
-              zIndex: 0,
-            }}>
-            <Image
-              style={{width: '100%', height: '100%'}}
-              source={{
-                uri: current_image,
-              }}
-              alt={'bgimage'}
-            />
-          </View>
-          <ScrollView
-            style={{
-              position: 'absolute',
-              top: 0,
-              height: hp(700),
-              width: '100%',
-              // backgroundColor: 'red',
-              zIndex: -1,
-            }}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-          {/* Header */}
-          <View style={styles.headerWrapper}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+      <View style={[styles.container, {backgroundColor: color.gray[50]}]}>
+        {/* Header */}
+        <VStack bgColor={'primary.500'}>
+          <HStack
+            px={'10px'}
+            justifyContent={'space-between'}
+            mt={'2'}
+            py={'1'}>
+            <VStack>
+              <Text
+                style={{
+                  color: 'white',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: hp(16),
+                }}>
+                Hi, {user?.first_name}
+              </Text>
               <Pressable onPress={() => navigation.openDrawer()}>
-                <Avatar size={'sm'} bgColor={'rgba(0,0,0,0.5)'}>
-                  <Feather name="menu" size={hp(20)} color={'white'} />
-                </Avatar>
-              </Pressable>
-            </View>
-            <HStack
-              bgColor={'rgba(0,0,0,0.5)'}
-              p={'2'}
-              px={'1'}
-              rounded={'full'}
-              alignItems={'center'}
-              space={'4'}>
-              <Pressable onPress={openWhatsapp}>
                 <MaterialCommunityIcons
-                  name="whatsapp"
-                  size={hp(24)}
+                  name="menu"
+                  size={hp(25)}
                   color="white"
                 />
               </Pressable>
-              <Pressable onPress={handleMessages}>
-                <Feather name="bell" size={hp(24)} color={'white'} />
-                {messageAvailable && <View style={styles.dotIcon} />}
-              </Pressable>
-            </HStack>
-          </View>
+            </VStack>
+            <Text
+              style={{
+                fontFamily: 'Poppins-SemiBold',
+                color: 'white',
+                fontSize: hp(16),
+              }}>
+              {user?.username}
+            </Text>
+          </HStack>
+          <HStack
+            justifyContent={'flex-end'}
+            space={'1'}
+            px={'10px'}
+            bgColor={'rgba(0,0,0,0.3)'}
+            py={2}>
+            <Text
+              numberOfLines={1}
+              style={{
+                fontFamily: 'Poppins-SemiBold',
+                letterSpacing: 0.2,
+                fontSize: hp(13),
+                color: 'white',
+              }}>
+              Sic Parvis Magna yessss has atrhs and yessssssss
+            </Text>
+            <Pressable onPress={() => navigation.openDrawer()}>
+              <MaterialCommunityIcons name="bell" size={hp(20)} color="white" />
+            </Pressable>
+          </HStack>
+        </VStack>
 
+        <VStack px={'10px'} bgColor={'primary.500'} py={'4'}>
           {/* Wallet Balance Container */}
           <View style={styles.balanceContainerWrapper}>
-            <Text style={styles.balanceTitle}>BALANCE:</Text>
-            <HStack alignItems={'center'}>
-              <Text style={styles.balanceText}>
-                {showBalance ? formatCurrency(balance) : '******'}
-              </Text>
-              <IconButton
-                rounded={'full'}
-                onPress={() => setShowBalance(!showBalance)}
-                icon={
-                  <Feather
-                    name={showBalance ? 'eye-off' : 'eye'}
-                    color={'white'}
-                  />
-                }
-              />
-            </HStack>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginVertical: hp(10),
-              }}>
-              <HStack space={2}>
-                {Platform.OS === 'ios' ? (
-                  <Pressable onPress={() => navigation.navigate('Deposit')}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: 'white',
-                        padding: hp(8),
-                        borderRadius: hp(20),
-                      }}>
+            <HStack justifyContent={'space-between'} mt={'2'}>
+              <VStack>
+                <HStack alignItems={'center'} space={'1'}>
+                  <TouchableOpacity onPress={() => setIsAccountModelOpen(true)}>
+                    <HStack alignItems={'center'}>
                       <Feather
-                        name={'plus'}
-                        size={hp(20)}
-                        color={colors.primary}
+                        name="chevron-down"
+                        size={17}
+                        color={'white'}
+                        style={{marginBottom: 3}}
                       />
                       <Text
-                        style={{
-                          fontFamily: 'Poppins-Regular',
-                          fontSize: hp(13),
-                        }}>
-                        Add Fund
+                        selectable={true}
+                        style={[
+                          styles.balanceTitle,
+                          {
+                            color: 'white',
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: hp(14),
+                            lineHeight: hp(16),
+                          },
+                        ]}>
+                        Opay
                       </Text>
-                    </View>
-                  </Pressable>
-                ) : (
-                  <>
-                    <IconButton
-                      rounded={'full'}
-                      bgColor={'white'}
-                      onPress={() => navigation.navigate('Deposit')}
-                      icon={
-                        <Feather name={'plus'} size={hp(20)} color={'blue'} />
-                      }
-                      variant={'solid'}
-                    />
-                    <IconButton
-                      rounded={'full'}
-                      onPress={() =>
-                        navigation.navigate('WalletTransferScreen')
-                      }
-                      icon={
-                        <Feather name={'send'} size={hp(20)} color={'white'} />
-                      }
-                      variant={'solid'}
-                    />
-                  </>
-                )}
-              </HStack>
-            </View>
+                    </HStack>
+                  </TouchableOpacity>
+
+                  <Text
+                    style={[
+                      styles.balanceTitle,
+                      {
+                        color: 'white',
+                        fontFamily: 'Poppins-SemiBold',
+                        fontSize: hp(14),
+                        lineHeight: hp(16),
+                      },
+                    ]}>
+                    |
+                  </Text>
+                  <TouchableOpacity onPress={() => handleCopyText()}>
+                    <Text
+                      style={[
+                        styles.balanceTitle,
+                        {
+                          color: 'white',
+                          fontFamily: 'Poppins-SemiBold',
+                          fontSize: hp(14),
+                          lineHeight: hp(16),
+                        },
+                      ]}>
+                      9066424203
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
+
+                <HStack alignItems={'center'} mt={'1'}>
+                  <Text style={[styles.balanceText, {color: 'white'}]}>
+                    {showBalance ? formatCurrency(balance) : '******'}
+                  </Text>
+                  <IconButton
+                    rounded={'full'}
+                    onPress={() => setShowBalance(!showBalance)}
+                    icon={
+                      <Feather
+                        name={showBalance ? 'eye-off' : 'eye'}
+                        color={'white'}
+                      />
+                    }
+                  />
+                </HStack>
+
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: hp(14),
+                    fontFamily: 'Poppins-Medium',
+                  }}>
+                  Bonus:{' '}
+                  <Text style={{color: colors.secondary}}>
+                    {formatCurrency(3000)}
+                  </Text>
+                </Text>
+              </VStack>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginVertical: hp(10),
+                }}>
+                <HStack space={'3'}>
+                  <IconButton
+                    rounded={'full'}
+                    bgColor={'white'}
+                    borderWidth={1}
+                    size={'lg'}
+                    onPress={() => navigation.navigate('Deposit')}
+                    icon={
+                      <Feather name={'plus'} size={hp(16)} color={'blue'} />
+                    }
+                    variant={'solid'}
+                  />
+                  <IconButton
+                    rounded={'full'}
+                    borderWidth={1}
+                    size={'lg'}
+                    onPress={() => navigation.navigate('WalletTransferScreen')}
+                    icon={
+                      <Feather name={'send'} size={hp(16)} color={'white'} />
+                    }
+                    variant={'solid'}
+                  />
+                </HStack>
+              </View>
+            </HStack>
           </View>
-        </View>
-        <View style={styles.underLine} />
+        </VStack>
 
         {/* List of data Bundle */}
         <HStack
-          pt={'6'}
+          mt={hp(20)}
           pb={'3'}
           px={'4'}
           alignItems={'center'}
@@ -330,48 +401,65 @@ export const Home = ({navigation}) => {
             onPress={() => navigation.navigate('Airtime')}
           />
           <ServiceItemCard
-            name={'More'}
+            name={'Billing'}
             icon={'align-justify'}
             color={colors.primary}
             onPress={() => navigation.navigate('Other')}
           />
         </HStack>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          style={{paddingBottom: 100}}>
+          <View style={{marginTop: hp(10)}}>
+            <FlatList
+              horizontal
+              data={randomImages}
+              keyExtractor={item => item}
+              renderItem={({item}) => (
+                <View style={{marginHorizontal: ITEM_SPACING / 2}}>
+                  <Image
+                    style={{
+                      width: ITEM_WIDTH,
+                      height: 130,
+                      borderRadius: hp(2),
+                    }}
+                    source={{uri: dashboard_wallpaper[0]}}
+                    alt="bgimage"
+                    resizeMode="stretch"
+                  />
+                </View>
+              )}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: SIDE_PADDING,
+              }}
+              snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+              decelerationRate="fast"
+              pagingEnabled={false}
+            />
+          </View>
 
-        <HStack
-          alignItems={'center'}
-          justifyContent={'space-between'}
-          py={'3'}
-          px={'5'}>
-          <Text
-            style={{
-              fontFamily: 'Poppins-Bold',
-              color: 'black',
-              fontSize: hp(18),
-            }}>
-            History
-          </Text>
-          <NBButton
-            onPress={() => navigation.navigate('History')}
-            variant={'ghost'}>
-            See All
-          </NBButton>
-        </HStack>
+          {/* Recent transaction  */}
+          <TouchableOpacity
+            style={{marginTop: 20}}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('History')}>
+            <HStack mx={'4'} justifyContent={'space-between'} my={'2'}>
+              <Text style={{color: color.primary[500]}}>Transactions</Text>
+              <Feather
+                name={'chevron-right'}
+                size={20}
+                color={color.primary[500]}
+              />
+            </HStack>
+          </TouchableOpacity>
 
-        <ScrollView>
           {Object.entries(
-            data_purchase_history.slice(0, 5).groupBy('date'),
+            data_purchase_history.slice(0, 10).groupBy('date'),
           ).map(([key, value]) => (
-            <VStack space={'2'}>
-              <Box px={'4'} mt={'2'}>
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Medium',
-                    color: color.gray[500],
-                    fontSize: hp(14),
-                  }}>
-                  {moment(key).format('MMMM D, YYYY')}
-                </Text>
-              </Box>
+            <VStack space={'2'} key={key}>
               <VStack space={'2'}>
                 {value.map(item => (
                   <HistoryItemList
@@ -387,27 +475,56 @@ export const Home = ({navigation}) => {
           ))}
         </ScrollView>
       </View>
+      <VStack position={'absolute'} bottom={10} right={5}>
+        <Badge // bg="red.400"
+          colorScheme="danger"
+          rounded="full"
+          mb={-4}
+          mr={-4}
+          zIndex={1}
+          variant="solid"
+          alignSelf="flex-end"
+          _text={{
+            fontSize: 12,
+          }}>
+          {cart_items?.length || 0}
+        </Badge>
+        <IconButton
+          onPress={() => navigation.navigate(ROUTES.CART_SCREEN)}
+          mx={{
+            base: 'auto',
+            md: 0,
+          }}
+          size={'50px'}
+          icon={<Feather name={'shopping-cart'} size={20} color={'white'} />}
+          variant={'solid'}
+          rounded={'full'}
+          p="2"
+          _text={{
+            fontSize: 14,
+          }}
+        />
+      </VStack>
+
+      <BankAccountsOverlay
+        isOpen={isAccountModelOpen}
+        setClose={() => setIsAccountModelOpen(false)}
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  secContainer: {
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    backgroundColor: colors.primary,
-    height: hp(260),
-  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
   },
   headerWrapper: {
     width: '100%',
-    height: hp(50),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    // marginTop: hp(13),
   },
   dotIcon: {
     position: 'absolute',
@@ -426,9 +543,6 @@ const styles = StyleSheet.create({
     color: colors.textBlack,
   },
   balanceContainerWrapper: {
-    paddingHorizontal: 20,
-    // flexDirection: 'row',
-    marginTop: hp(30),
     width: '100%',
   },
   balanceTextWrapper: {
@@ -442,7 +556,7 @@ const styles = StyleSheet.create({
   },
   balanceText: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: hp(20),
+    fontSize: hp(30),
     color: colors.textWhite,
   },
   buttonStyle: {

@@ -10,6 +10,7 @@ import {
 } from '../constants/data_bundles';
 import {GET_BALANCE} from '../constants/wallet';
 import {AUTH_ERROR} from '../constants/auth';
+import {api} from '../../api';
 
 export const getDataBundle = () => (dispatch, getState) => {
   //Get Token from the state
@@ -57,24 +58,19 @@ export const getDataCategory = () => (dispatch, getState) => {
 
   //Check to see if there is an token and to header
   if (token) {
-    config.headers['Authorization'] = `Token ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
-
-  axios
-    .get('/dataplans/data-category', config)
-    .then(res => {
+  
+  api.get('/dataplans/data-category', {}, config).then(res => {
+    if (res.ok) {
       dispatch({
         type: GET_DATA_CATEGORY,
         payload: res.data,
       });
-    })
-    .catch(error => {
-      if (error.response) {
-        // do nothing
-      } else {
-        // do nothing
-      }
-    });
+    } else {
+      console.log(res.problem);
+    }
+  });
 };
 
 export const buyDataBundle =

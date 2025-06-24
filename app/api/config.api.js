@@ -1,5 +1,5 @@
 import {create} from 'apisauce';
-import {CURRENT_API} from '../lib';
+import {CURRENT_API, NODE_CURRENT_API} from '../lib';
 import {Platform} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
@@ -45,6 +45,25 @@ export const api = create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+});
+
+// Create the Node API Instance
+export const nodeApi = create({
+  baseURL: NODE_CURRENT_API,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add interceptor to include device headers dynamically in every request
+nodeApi.addAsyncRequestTransform(async request => {
+  const deviceHeaders = await getDeviceHeaders();
+
+  // Add all dynamic headers to the request
+  Object.entries(deviceHeaders).forEach(([key, value]) => {
+    request.headers[key] = value;
+  });
 });
 
 // Add interceptor to include device headers dynamically in every request

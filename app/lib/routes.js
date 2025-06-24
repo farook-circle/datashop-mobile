@@ -24,6 +24,8 @@ export const ROUTES = {
   DATA_MANAGEMENT_SCREEN: 'DataManagement',
   AGENT_MANAGEMENT_SCREEN: 'AgentManagement',
   DATA_PLAN_SCREEN: 'DataPlan',
+  DATA_CHECKOUT_SCREEN: 'DataCheckoutScreen',
+  CART_SCREEN: 'CartScreen',
   AIRTIME_SCREEN: 'Airtime',
   ELECTRICITY_PAYMENT: 'ElectricityPayment',
   OTHER_SCREEN: 'Other',

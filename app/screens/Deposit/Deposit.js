@@ -179,7 +179,41 @@ export const DepositScreen = ({navigation}) => {
       )}
       <ScrollView flex={1} px={'4'}>
         <VStack alignItems={'center'}>
-          <VStack
+          <VStack width={'100%'}>
+            <VStack
+              bgColor={'primary.500'}
+              width={'100%'}
+              justifyContent={'space-between'}
+              height={hp(180)}
+              padding={6}
+              rounded={'xl'}>
+              <VStack>
+                <Text color={'white'} fontSize={'3xl'} fontWeight={'bold'}>
+                  ??
+                </Text>
+                <Text color={'white'} fontSize={'xs'}>**********</Text>
+              </VStack>
+              <VStack>
+                <Text color={'white'}>{'****  **** **** ****'}</Text>
+                <HStack space={'2'}>
+                  <Text fontSize={'xs'} color={'white'}>Expiry Data</Text>
+                  <Text color={'white'}>**/**</Text>
+                </HStack>
+              </VStack>
+            </VStack>
+            <HStack width={'full'} space={'2'} mt={'4'}>
+              <Button rounded={'xl'} colorScheme={'coolGray'} flex={1}>
+                Add new card
+              </Button>
+              {/* <Button
+                rounded={'xl'}
+                flex={1}
+                onPress={handleShareAccountDetails}>
+                Share Details
+              </Button> */}
+            </HStack>
+          </VStack>
+          {/* <VStack
             width={'100%'}
             mt={hp(5)}
             p={hp(20)}
@@ -299,7 +333,7 @@ export const DepositScreen = ({navigation}) => {
                 </HStack>
               </>
             )}
-          </VStack>
+          </VStack> */}
 
           <HStack
             space={'4'}

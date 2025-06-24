@@ -6,19 +6,22 @@ import {Pressable, VStack, HStack, Avatar} from 'native-base';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
 
-export default function CategoryItem({title, onPress, icon}) {
+export default function CategoryItem({title, onPress, icon, children}) {
   return (
-    <Pressable onPress={onPress}>
-      <HStack alignItems={'center'} justifyContent={'space-between'}>
-        <HStack space={'4'} alignItems={'center'}>
-          <Avatar rounded={'4'} size={'sm'} bgColor={'white'} shadow={'3'}>
-            <FontAwesome name={icon} size={hp(15)} color={colors.primary} />
-          </Avatar>
-          <Text style={styles.itemTitle}>{title}</Text>
+    <VStack>
+      <Pressable onPress={onPress}>
+        <HStack alignItems={'center'} justifyContent={'space-between'}>
+          <HStack space={'4'} alignItems={'center'}>
+            <Avatar rounded={'full'} size={'sm'} bgColor={'white'} shadow={'3'}>
+              <FontAwesome name={icon} size={hp(15)} color={colors.primary} />
+            </Avatar>
+            <Text style={styles.itemTitle}>{title}</Text>
+          </HStack>
+          {/* <Feather name="chevron-right" size={hp(20)} color={colors.textLight} /> */}
         </HStack>
-        <Feather name="chevron-right" size={hp(20)} color={colors.textLight} />
-      </HStack>
-    </Pressable>
+      </Pressable>
+      {children}
+    </VStack>
   );
 }
 

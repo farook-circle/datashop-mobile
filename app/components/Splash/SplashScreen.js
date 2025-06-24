@@ -8,9 +8,7 @@ export const SplashScreen = () => {
   return (
     <ImageBackground
       blurRadius={10}
-      source={{
-        uri: 'https://plus.unsplash.com/premium_photo-1701791988754-d200cc1b78c7?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      }}
+      source={require('../../../assets/images/datashopbg.png')}
       style={styles.container}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <View style={styles.headerWrapper}>

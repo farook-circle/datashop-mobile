@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Avatar} from 'native-base';
+import {Avatar, Button, HStack, useTheme} from 'native-base';
 import React from 'react';
 import {Text, StyleSheet, Image, TouchableOpacity, View} from 'react-native';
 import colors from '../../../assets/colors/colors';
@@ -8,6 +8,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {formatCurrency} from '../../utils';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment-timezone';
 
 const TRANSACTIONS = {
   DATA_PURCHASE: 'DATA_PURCHASE',
@@ -21,6 +22,8 @@ const TRANSACTIONS = {
 };
 
 export default function HistoryItemList({item, onPress}) {
+  const color = useTheme().colors;
+
   const getType = transaction_type => {
     if (!transaction_type) {
       return '';
@@ -87,24 +90,55 @@ export default function HistoryItemList({item, onPress}) {
         )}
 
         <View style={{flex: 1, marginHorizontal: hp(7)}}>
-          <Text style={styles.nameStyle}>{item?.name}</Text>
-          <Text style={styles.type}>{getType(item?.transaction_type)}</Text>
+          <Text style={styles.nameStyle}>
+            {'DATA'} | {item.quantity}
+          </Text>
+          <Text style={styles.amountStyle}>{item?.customer}</Text>
         </View>
 
         <View style={{alignItems: 'flex-end'}}>
-          <Text style={styles.amountStyle}>{formatCurrency(item.amount)}</Text>
-          <Text
-            style={{
-              color:
-                item.status.toLowerCase() === 'pending'
-                  ? 'orange'
-                  : item.status.toLowerCase() === 'failed'
-                  ? 'red'
-                  : 'green',
-              fontSize: hp(10),
-            }}>
-            {item.status.toUpperCase()}
+          <Text style={styles.amountStyle}>
+            {moment(new Date()).calendar()}
           </Text>
+
+          <HStack alignItems={'center'} space={'2'}>
+            <Text
+              style={{
+                color:
+                  item.status.toLowerCase() === 'pending'
+                    ? 'orange'
+                    : item.status.toLowerCase() === 'failed'
+                    ? 'red'
+                    : 'green',
+                fontSize: hp(10),
+              }}>
+              {item.status.toUpperCase()}
+            </Text>
+            {item?.status.toLowerCase() === 'pending' && (
+              <Button
+                variant={'outline'}
+                px={'2'}
+                py={0.4}
+                size={'xs'}
+                leftIcon={
+                  <Feather name="x" color={color.red[500]} size={10} />
+                }>
+                Cancel
+              </Button>
+            )}
+            {item?.status.toLowerCase() === 'failed' && (
+              <Button
+                variant={'outline'}
+                px={'2'}
+                py={0.4}
+                size={'xs'}
+                leftIcon={
+                  <Feather name="arrow-up" color={color.red[500]} size={10} />
+                }>
+                Retry
+              </Button>
+            )}
+          </HStack>
         </View>
       </View>
     </TouchableOpacity>
